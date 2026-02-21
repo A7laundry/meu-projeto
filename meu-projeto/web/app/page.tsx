@@ -5,7 +5,7 @@ export default async function Home() {
   const user = await getUser()
 
   if (!user) {
-    redirect('/login')
+    redirect('/home')
   }
 
   switch (user.role) {
