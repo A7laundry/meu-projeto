@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { UserProfile } from '@/types/auth'
 
 export async function getUser(): Promise<UserProfile | null> {
@@ -7,7 +8,9 @@ export async function getUser(): Promise<UserProfile | null> {
 
   if (!user) return null
 
-  const { data: profile } = await supabase
+  // Admin client para bypassar RLS na leitura do profile
+  const admin = createAdminClient()
+  const { data: profile } = await admin
     .from('profiles')
     .select('*')
     .eq('id', user.id)

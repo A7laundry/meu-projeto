@@ -5,6 +5,8 @@ export type UserRole =
   | 'driver'
   | 'store'
   | 'customer'
+  | 'sdr'
+  | 'closer'
 
 export type Sector =
   | 'sorting'

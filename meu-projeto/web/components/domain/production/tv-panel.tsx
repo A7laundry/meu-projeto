@@ -30,7 +30,7 @@ export function TVPanel({ unitId, unitName }: TVPanelProps) {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-3 bg-[#0d0d1a] border-b border-gray-800 flex-shrink-0">
         <div className="flex items-center gap-4">
-          <span className="text-xl font-bold tracking-tight">Synkra</span>
+          <span className="text-xl font-bold tracking-tight">A7x OS</span>
           <span className="text-gray-500">|</span>
           <span className="text-lg font-medium text-gray-300">{unitName}</span>
         </div>

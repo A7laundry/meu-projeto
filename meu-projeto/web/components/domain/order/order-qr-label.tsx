@@ -45,7 +45,7 @@ export function OrderQRLabel({ order }: OrderQRLabelProps) {
     <div id="label-print" className="label-container font-mono text-black bg-white border border-gray-300 rounded-lg p-4 w-80">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-gray-200 pb-2 mb-3">
-        <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Synkra</span>
+        <span className="text-xs font-bold uppercase tracking-widest text-gray-500">A7x OS</span>
         <span className="text-lg font-bold">{order.order_number}</span>
       </div>
 

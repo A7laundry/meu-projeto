@@ -31,35 +31,42 @@ export function SectorQueueChart({ data }: SectorQueueChartProps) {
   }))
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5">
-      <h3 className="text-sm font-semibold text-gray-700 mb-1">
+    <div className="card-dark rounded-xl p-5">
+      <h3 className="section-header mb-1">
         Peças Processadas — Última Hora por Setor
       </h3>
-      <p className="text-xs text-gray-400 mb-4">Eventos de saída registrados</p>
+      <p className="text-xs text-white/30 mb-4">Eventos de saída registrados</p>
       {chartData.length === 0 ? (
-        <div className="flex items-center justify-center h-40 text-gray-400 text-sm">
+        <div className="flex items-center justify-center h-40 text-white/25 text-sm italic">
           Nenhum evento na última hora
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: -20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
             <XAxis
               dataKey="name"
-              tick={{ fontSize: 11, fill: '#94a3b8' }}
+              tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.35)' }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
-              tick={{ fontSize: 11, fill: '#94a3b8' }}
+              tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.35)' }}
               axisLine={false}
               tickLine={false}
               allowDecimals={false}
             />
             <Tooltip
-              contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e2e8f0' }}
+              contentStyle={{
+                fontSize: 12,
+                borderRadius: 8,
+                border: '1px solid rgba(214,178,94,0.2)',
+                background: '#12121a',
+                color: '#fff',
+              }}
+              cursor={{ fill: 'rgba(255,255,255,0.04)' }}
             />
-            <Bar dataKey="peças" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="peças" fill="#d6b25e" fillOpacity={0.85} radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       )}

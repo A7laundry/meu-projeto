@@ -9,14 +9,14 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Synkra Laundry OS',
-  description: 'Sistema de gestão operacional para redes de lavanderias industriais',
+  title: 'A7x TecNologia - OS.',
+  description: 'Sistema Operacional Inteligente para gestão de lavanderias industriais',
   manifest: '/manifest.json',
-  themeColor: '#1a1a2e',
+  themeColor: '#07070a',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Synkra',
+    title: 'A7x OS',
   },
   viewport: {
     width: 'device-width',

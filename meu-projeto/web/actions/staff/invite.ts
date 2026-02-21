@@ -2,7 +2,6 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import type { UserProfile } from '@/types/auth'
 
@@ -18,7 +17,7 @@ const inviteSchema = z.object({
 })
 
 export async function listStaff(unitId: string): Promise<UserProfile[]> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('profiles')
     .select('*')

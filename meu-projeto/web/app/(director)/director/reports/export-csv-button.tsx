@@ -36,8 +36,13 @@ export function ExportCsvButton({ days }: Props) {
 
   return (
     <div className="flex items-center gap-2">
-      {error && <p className="text-xs text-red-600">{error}</p>}
-      <Button onClick={handleExport} disabled={isPending} size="sm" variant="outline">
+      {error && <p className="text-xs text-red-400">{error}</p>}
+      <Button
+        onClick={handleExport}
+        disabled={isPending}
+        size="sm"
+        className="btn-ghost text-white/70 text-xs"
+      >
         {isPending ? 'Gerando...' : '⬇ Exportar CSV'}
       </Button>
     </div>

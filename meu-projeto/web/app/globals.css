@@ -70,6 +70,31 @@ body {
   background: rgba(214, 178, 94, 0.25);
 }
 
+/* ── Animações ───────────────────────────────────────────── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(214,178,94,0.4); }
+  50%       { box-shadow: 0 0 0 6px rgba(214,178,94,0); }
+}
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@layer utilities {
+  .animate-fade-up   { animation: fade-up 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+  .animate-fade-in   { animation: fade-in 0.4s ease both; }
+  .animate-pulse-gold { animation: pulse-gold 2.5s ease-in-out infinite; }
+  .animate-slide-right { animation: slide-in-right 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+}
+
 @layer components {
   .gold-text {
     background: linear-gradient(90deg, var(--gold) 0%, #fff2c0 30%, var(--gold2) 70%, var(--gold) 100%);
@@ -88,26 +113,114 @@ body {
     border: 1px solid rgba(214, 178, 94, 0.18);
   }
 
+  /* Card escuro padrão */
+  .card-dark {
+    background: linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.18) 100%);
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+
+  /* Card KPI/Stat com linha dourada no topo */
+  .card-stat {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.25) 100%);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .card-stat::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(214,178,94,0.55) 0%, rgba(214,178,94,0.08) 60%, transparent 100%);
+  }
+
+  /* Card KPI gold (destaque) */
+  .card-gold {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, rgba(214,178,94,0.09) 0%, rgba(0,0,0,0.28) 100%);
+    border: 1px solid rgba(214,178,94,0.22);
+    box-shadow: 0 0 32px rgba(214,178,94,0.07), inset 0 1px 0 rgba(214,178,94,0.14);
+  }
+  .card-gold::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold) 0%, rgba(214,178,94,0.3) 55%, transparent 100%);
+  }
+
+  /* Card alerta (vermelho) */
+  .card-alert {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, rgba(239,68,68,0.09) 0%, rgba(0,0,0,0.28) 100%);
+    border: 1px solid rgba(239,68,68,0.22);
+  }
+  .card-alert::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(239,68,68,0.9) 0%, transparent 60%);
+  }
+
+  /* Card aviso (amarelo) */
+  .card-warn {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, rgba(234,179,8,0.08) 0%, rgba(0,0,0,0.28) 100%);
+    border: 1px solid rgba(234,179,8,0.18);
+  }
+  .card-warn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(234,179,8,0.8) 0%, transparent 60%);
+  }
+
+  /* Glow suave dourado */
+  .glow-gold {
+    box-shadow: 0 0 28px rgba(214,178,94,0.10), 0 0 72px rgba(214,178,94,0.04);
+  }
+
+  /* Seção header padrão */
+  .section-header {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(214,178,94,0.5);
+  }
+
   .btn-gold {
     background: linear-gradient(135deg, rgba(214, 178, 94, 1) 0%, rgba(185, 138, 44, 1) 100%);
     color: #0b0b10;
-    box-shadow: 0 12px 30px rgba(214, 178, 94, 0.18);
+    box-shadow: 0 8px 24px rgba(214, 178, 94, 0.22);
+    transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
   }
-
   .btn-gold:hover {
-    filter: brightness(1.02);
+    filter: brightness(1.06);
     transform: translateY(-1px);
+    box-shadow: 0 12px 32px rgba(214, 178, 94, 0.30);
   }
 
   .btn-ghost {
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     background: rgba(255, 255, 255, 0.04);
+    transition: all 0.2s;
   }
-
   .btn-ghost:hover {
-    border-color: rgba(214, 178, 94, 0.30);
+    border-color: rgba(214, 178, 94, 0.28);
     background: rgba(214, 178, 94, 0.06);
   }
+
+  /* Scrollbar dark */
+  .scrollbar-dark::-webkit-scrollbar { width: 4px; height: 4px; }
+  .scrollbar-dark::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-dark::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+  .scrollbar-dark::-webkit-scrollbar-thumb:hover { background: rgba(214,178,94,0.25); }
 }
 
 @theme inline {

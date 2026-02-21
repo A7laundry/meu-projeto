@@ -10,7 +10,7 @@ export function SectorHeader({ sectorName, operatorName }: SectorHeaderProps) {
   return (
     <header className="bg-gray-900 border-b border-gray-700 px-6 py-3 flex items-center justify-between flex-shrink-0">
       <div className="flex items-center gap-4">
-        <span className="text-xs text-gray-500 font-medium uppercase tracking-widest">Synkra</span>
+        <span className="text-xs text-gray-500 font-medium uppercase tracking-widest">A7x OS</span>
         <span className="text-gray-600">|</span>
         <h1 className="text-lg font-bold text-white">{sectorName}</h1>
         {operatorName && (

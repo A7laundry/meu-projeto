@@ -11,34 +11,28 @@ interface FinancialNetworkSummaryProps {
 export function FinancialNetworkSummary({ financial }: FinancialNetworkSummaryProps) {
   return (
     <div className="grid grid-cols-3 gap-4">
-      <div className="rounded-lg border bg-green-50 border-green-200 p-4 text-center">
-        <p className="text-xl font-bold text-green-800">{fmt(financial.totalReceivable)}</p>
-        <p className="text-xs text-green-600 mt-1">A receber (rede)</p>
+      <div className="card-stat rounded-xl p-5 text-center">
+        <p className="text-xs text-emerald-400/70 uppercase tracking-widest font-semibold mb-1">A receber (rede)</p>
+        <p className="text-2xl font-bold text-emerald-400">{fmt(financial.totalReceivable)}</p>
       </div>
-      <div className="rounded-lg border bg-red-50 border-red-200 p-4 text-center">
-        <p className="text-xl font-bold text-red-800">{fmt(financial.totalPayable)}</p>
-        <p className="text-xs text-red-600 mt-1">A pagar (rede)</p>
+      <div className="card-alert rounded-xl p-5 text-center">
+        <p className="text-xs text-red-400/70 uppercase tracking-widest font-semibold mb-1">A pagar (rede)</p>
+        <p className="text-2xl font-bold text-red-400">{fmt(financial.totalPayable)}</p>
       </div>
       <div
-        className={`rounded-lg border p-4 text-center ${
-          financial.balance >= 0
-            ? 'bg-blue-50 border-blue-200'
-            : 'bg-orange-50 border-orange-200'
+        className={`rounded-xl p-5 text-center ${
+          financial.balance >= 0 ? 'card-gold' : 'card-warn'
         }`}
       >
-        <p
-          className={`text-xl font-bold ${
-            financial.balance >= 0 ? 'text-blue-800' : 'text-orange-800'
-          }`}
-        >
-          {fmt(financial.balance)}
-        </p>
-        <p
-          className={`text-xs mt-1 ${
-            financial.balance >= 0 ? 'text-blue-600' : 'text-orange-600'
-          }`}
-        >
+        <p className={`text-xs uppercase tracking-widest font-semibold mb-1 ${
+          financial.balance >= 0 ? 'text-[#d6b25e]/70' : 'text-yellow-400/70'
+        }`}>
           Saldo projetado
+        </p>
+        <p className={`text-2xl font-bold ${
+          financial.balance >= 0 ? 'gold-text' : 'text-yellow-400'
+        }`}>
+          {fmt(financial.balance)}
         </p>
       </div>
     </div>

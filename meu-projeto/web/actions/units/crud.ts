@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { Unit } from '@/types/unit'
 import { z } from 'zod'
@@ -24,7 +23,7 @@ export type ActionResult<T = void> =
   | { success: false; error: string }
 
 export async function listUnits(): Promise<Unit[]> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('units')
     .select('*')
@@ -35,7 +34,7 @@ export async function listUnits(): Promise<Unit[]> {
 }
 
 export async function getUnit(id: string): Promise<Unit | null> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data } = await supabase
     .from('units')
     .select('*')

@@ -4,6 +4,14 @@ interface Props {
   kpis: AdvancedKpis
 }
 
+const ACCENT_COLORS: Record<string, string> = {
+  blue: 'text-blue-400',
+  green: 'text-emerald-400',
+  orange: 'text-orange-400',
+  purple: 'text-violet-400',
+  red: 'text-red-400',
+}
+
 function StatCard({
   label,
   value,
@@ -15,20 +23,11 @@ function StatCard({
   sub?: string
   color: 'blue' | 'green' | 'orange' | 'purple' | 'red'
 }) {
-  const colors = {
-    blue: 'bg-blue-50 border-blue-200 text-blue-800 text-blue-600',
-    green: 'bg-green-50 border-green-200 text-green-800 text-green-600',
-    orange: 'bg-orange-50 border-orange-200 text-orange-800 text-orange-600',
-    purple: 'bg-purple-50 border-purple-200 text-purple-800 text-purple-600',
-    red: 'bg-red-50 border-red-200 text-red-800 text-red-600',
-  }
-  const [bg, border, textMain, textSub] = colors[color].split(' ')
-
   return (
-    <div className={`rounded-lg border ${bg} ${border} p-4`}>
-      <p className={`text-lg font-bold ${textMain}`}>{value}</p>
-      <p className={`text-xs ${textSub} mt-0.5`}>{label}</p>
-      {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
+    <div className="card-stat rounded-xl p-4">
+      <p className={`text-2xl font-bold ${ACCENT_COLORS[color]}`}>{value}</p>
+      <p className="text-xs text-white/50 mt-1 font-semibold uppercase tracking-wide">{label}</p>
+      {sub && <p className="text-xs text-white/25 mt-0.5">{sub}</p>}
     </div>
   )
 }

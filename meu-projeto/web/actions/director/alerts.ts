@@ -1,5 +1,3 @@
-'use server'
-
 import { KPI_THRESHOLDS, type KpiAlert } from '@/lib/kpi-thresholds'
 import type { AdvancedKpis } from '@/actions/director/kpis-advanced'
 import type { UnitSlaCount, UnitManifestSummary } from '@/actions/director/consolidated'

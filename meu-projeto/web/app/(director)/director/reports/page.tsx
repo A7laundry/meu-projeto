@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getHistoricalKpis } from '@/actions/director/historical'
 import { ExportCsvButton } from './export-csv-button'
 import type { Unit } from '@/types/unit'
@@ -20,7 +20,7 @@ export default async function DirectorReportsPage({ searchParams }: Props) {
   const params = await searchParams
   const days = Number(params.days ?? 30)
 
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data: units } = await supabase
     .from('units')
     .select('id, name')
@@ -37,8 +37,8 @@ export default async function DirectorReportsPage({ searchParams }: Props) {
   return (
     <div className="p-8 max-w-5xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Relatórios da Rede</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-bold text-white">Relatórios da Rede</h1>
+        <p className="text-sm text-white/40 mt-1">
           Dados históricos consolidados de {units?.length ?? 0} unidades
         </p>
       </div>
@@ -49,10 +49,10 @@ export default async function DirectorReportsPage({ searchParams }: Props) {
           <Link
             key={opt.days}
             href={`?days=${opt.days}`}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
               days === opt.days
-                ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
+                ? 'btn-gold rounded-full'
+                : 'border-white/15 bg-white/04 text-white/60 hover:border-[#d6b25e]/40 hover:text-white'
             }`}
           >
             {opt.label}
@@ -61,61 +61,63 @@ export default async function DirectorReportsPage({ searchParams }: Props) {
       </div>
 
       {/* Tabela histórica */}
-      <div className="rounded-lg border bg-white overflow-hidden">
-        <div className="px-5 py-4 border-b flex items-center justify-between">
-          <h2 className="font-semibold text-gray-800">KPIs Diários — Últimos {days} dias</h2>
+      <div className="card-dark rounded-xl overflow-hidden">
+        <div className="px-5 py-4 border-b border-white/08 flex items-center justify-between">
+          <h2 className="font-semibold text-white">KPIs Diários — Últimos {days} dias</h2>
           <ExportCsvButton days={days} />
         </div>
 
         {rows.length === 0 ? (
-          <p className="px-5 py-8 text-sm text-gray-400 italic text-center">
+          <p className="px-5 py-8 text-sm text-white/30 italic text-center">
             Nenhum dado encontrado para o período.
           </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
+              <thead className="border-b border-white/08">
                 <tr>
-                  <th className="text-left px-4 py-2 font-medium text-gray-600">Data</th>
-                  <th className="text-right px-4 py-2 font-medium text-gray-600">Comandas</th>
-                  <th className="px-4 py-2 font-medium text-gray-600 w-32">Volume</th>
-                  <th className="text-right px-4 py-2 font-medium text-gray-600">Receita paga</th>
-                  <th className="text-right px-4 py-2 font-medium text-gray-600">Ruptura</th>
+                  <th className="text-left px-4 py-3 section-header">Data</th>
+                  <th className="text-right px-4 py-3 section-header">Comandas</th>
+                  <th className="px-4 py-3 section-header w-32">Volume</th>
+                  <th className="text-right px-4 py-3 section-header">Receita paga</th>
+                  <th className="text-right px-4 py-3 section-header">Ruptura</th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-white/05">
                 {rows.map((row) => (
-                  <tr key={row.date} className="hover:bg-gray-50">
-                    <td className="px-4 py-2 text-gray-700">
+                  <tr key={row.date} className="hover:bg-white/03 transition-colors">
+                    <td className="px-4 py-2.5 text-white/70">
                       {new Date(row.date + 'T12:00:00').toLocaleDateString('pt-BR', {
                         weekday: 'short',
                         day: '2-digit',
                         month: '2-digit',
                       })}
                     </td>
-                    <td className="px-4 py-2 text-right font-medium text-gray-800">
+                    <td className="px-4 py-2.5 text-right font-medium text-white">
                       {row.totalOrders}
                     </td>
-                    <td className="px-4 py-2">
-                      {/* Sparkline CSS */}
-                      <div className="h-4 bg-gray-100 rounded overflow-hidden">
+                    <td className="px-4 py-2.5">
+                      <div className="h-2 bg-white/08 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-blue-400 rounded"
-                          style={{ width: `${(row.totalOrders / maxOrders) * 100}%` }}
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${(row.totalOrders / maxOrders) * 100}%`,
+                            background: 'linear-gradient(90deg, #d6b25e, #b98a2c)',
+                          }}
                         />
                       </div>
                     </td>
-                    <td className="px-4 py-2 text-right text-green-700">
+                    <td className="px-4 py-2.5 text-right text-emerald-400">
                       {fmtCurrency(row.totalRevenue)}
                     </td>
-                    <td className="px-4 py-2 text-right">
+                    <td className="px-4 py-2.5 text-right">
                       <span
                         className={`font-medium ${
                           row.breakageRate >= 20
-                            ? 'text-red-700'
+                            ? 'text-red-400'
                             : row.breakageRate >= 10
-                              ? 'text-yellow-600'
-                              : 'text-gray-600'
+                              ? 'text-yellow-400'
+                              : 'text-white/50'
                         }`}
                       >
                         {row.breakageRate}%
@@ -124,17 +126,17 @@ export default async function DirectorReportsPage({ searchParams }: Props) {
                   </tr>
                 ))}
               </tbody>
-              <tfoot className="bg-gray-50 border-t font-semibold">
+              <tfoot className="border-t border-white/10 font-semibold bg-white/02">
                 <tr>
-                  <td className="px-4 py-2 text-gray-700">Total</td>
-                  <td className="px-4 py-2 text-right text-gray-800">
+                  <td className="px-4 py-3 text-white/60">Total</td>
+                  <td className="px-4 py-3 text-right text-white">
                     {rows.reduce((s, r) => s + r.totalOrders, 0)}
                   </td>
-                  <td className="px-4 py-2" />
-                  <td className="px-4 py-2 text-right text-green-700">
+                  <td className="px-4 py-3" />
+                  <td className="px-4 py-3 text-right text-emerald-400">
                     {fmtCurrency(rows.reduce((s, r) => s + r.totalRevenue, 0))}
                   </td>
-                  <td className="px-4 py-2 text-right text-gray-600">
+                  <td className="px-4 py-3 text-right text-white/50">
                     {rows.length > 0
                       ? Math.round(
                           rows.reduce((s, r) => s + r.breakageRate, 0) / rows.length,

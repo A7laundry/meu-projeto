@@ -22,5 +22,7 @@ export interface ClientStats {
   totalOrders: number
   totalSpent: number
   avgTicket: number
+  firstOrderAt: string | null
   lastOrderAt: string | null
+  annualLtv: number
 }

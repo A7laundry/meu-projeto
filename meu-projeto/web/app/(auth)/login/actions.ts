@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { UserRole } from '@/types/auth'
 
 function getRedirectPath(role: UserRole, unitId?: string | null, sector?: string | null): string {
@@ -19,42 +20,39 @@ function getRedirectPath(role: UserRole, unitId?: string | null, sector?: string
     case 'customer':
       return '/client/orders'
     default:
-      return '/'
+      return '/profile/setup' // <- em vez de '/'
   }
 }
 
 export async function login(formData: FormData) {
   const supabase = await createClient()
 
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
+  const email = String(formData.get('email') || '')
+  const password = String(formData.get('password') || '')
 
   const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
-  if (error) {
+  if (error || !data?.user) {
     const loginUrl = new URL('/login', process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000')
     loginUrl.searchParams.set('error', 'Email ou senha incorretos. Verifique seus dados e tente novamente.')
     redirect(loginUrl.pathname + '?' + loginUrl.searchParams.toString())
   }
 
-  // Buscar perfil para determinar redirecionamento
-  const { data: profile } = await supabase
+  const admin = createAdminClient()
+  const { data: profile, error: profileError } = await admin
     .from('profiles')
     .select('role, unit_id, sector')
     .eq('id', data.user.id)
     .single()
 
+  // Se não existe profile ainda, manda para setup em vez de cair em /
+  if (profileError || !profile) {
+    revalidatePath('/', 'layout')
+    redirect('/profile/setup')
+  }
+
   revalidatePath('/', 'layout')
-
-  const redirectPath = profile
-    ? getRedirectPath(
-        profile.role as UserRole,
-        profile.unit_id,
-        profile.sector
-      )
-    : '/'
-
-  redirect(redirectPath)
+  redirect(getRedirectPath(profile.role as UserRole, profile.unit_id, profile.sector))
 }
 
 export async function logout() {

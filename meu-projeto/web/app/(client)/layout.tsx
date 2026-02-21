@@ -6,7 +6,7 @@ export default async function ClientLayout({ children }: { children: React.React
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <AppHeader user={user} title="Synkra" subtitle="Portal do Cliente" />
+      <AppHeader user={user} title="A7x TecNologia - OS." subtitle="Portal do Cliente" />
       <main className="flex-1 overflow-auto">
         {children}
       </main>

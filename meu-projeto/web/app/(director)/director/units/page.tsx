@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { listUnits } from '@/actions/units/crud'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -40,6 +41,7 @@ export default async function UnitsPage() {
               <TableHead>Telefone</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Ações</TableHead>
+              <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -67,6 +69,14 @@ export default async function UnitsPage() {
                     <UnitFormDialog mode="edit" unit={unit} />
                     <UnitToggleButton id={unit.id} active={unit.active} />
                   </div>
+                </TableCell>
+                <TableCell>
+                  <Link
+                    href={`/unit/${unit.id}/dashboard`}
+                    className="inline-flex items-center gap-1 text-xs bg-gray-900 hover:bg-gray-700 text-white px-3 py-1.5 rounded-md transition-colors whitespace-nowrap"
+                  >
+                    Acessar Painel →
+                  </Link>
                 </TableCell>
               </TableRow>
             ))}

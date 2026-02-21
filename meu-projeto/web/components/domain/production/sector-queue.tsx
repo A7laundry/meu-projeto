@@ -1,13 +1,58 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { format } from 'date-fns'
+import { format, differenceInMinutes } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { Badge } from '@/components/ui/badge'
 import { useQRScanner } from '@/hooks/use-qr-scanner'
 import { useSectorQueue } from '@/hooks/use-sector-queue'
 import { NetworkIndicator } from '@/components/layout/network-indicator'
 import type { Order, OrderStatus, PieceType } from '@/types/order'
+
+function getSlaStatus(promisedAt: string): {
+  label: string
+  color: string
+  ring: string
+  urgent: boolean
+} {
+  const now = new Date()
+  const promised = new Date(promisedAt)
+  const minutesLeft = differenceInMinutes(promised, now)
+
+  if (minutesLeft < 0) {
+    const overdue = Math.abs(minutesLeft)
+    const h = Math.floor(overdue / 60)
+    const m = overdue % 60
+    return {
+      label: `⚠ ${h > 0 ? `${h}h ` : ''}${m}min atrasada`,
+      color: 'border-red-500 bg-red-950',
+      ring: 'hover:border-red-400',
+      urgent: true,
+    }
+  }
+  if (minutesLeft <= 60) {
+    return {
+      label: `⏱ ${minutesLeft}min restantes`,
+      color: 'border-yellow-500 bg-yellow-950/40',
+      ring: 'hover:border-yellow-400',
+      urgent: true,
+    }
+  }
+  if (minutesLeft <= 240) {
+    return {
+      label: `⏱ ${Math.floor(minutesLeft / 60)}h${minutesLeft % 60 > 0 ? ` ${minutesLeft % 60}min` : ''} restantes`,
+      color: 'border-gray-700 bg-gray-800',
+      ring: 'hover:border-emerald-500',
+      urgent: false,
+    }
+  }
+  return {
+    label: format(promised, "dd/MM 'às' HH:mm", { locale: ptBR }),
+    color: 'border-gray-700 bg-gray-800',
+    ring: 'hover:border-emerald-500',
+    urgent: false,
+  }
+}
 
 const PIECE_LABEL: Record<PieceType, string> = {
   clothing: 'Roupa',
@@ -119,6 +164,29 @@ export function SectorQueue({
         )}
       </div>
 
+      {/* Contadores SLA */}
+      {!isLoading && filtered.length > 0 && (() => {
+        const overdueCount = filtered.filter(o => differenceInMinutes(new Date(o.promised_at), new Date()) < 0).length
+        const urgentCount = filtered.filter(o => {
+          const m = differenceInMinutes(new Date(o.promised_at), new Date())
+          return m >= 0 && m <= 60
+        }).length
+        return (overdueCount > 0 || urgentCount > 0) ? (
+          <div className="px-6 py-2 flex gap-3 text-sm border-b border-gray-700 flex-shrink-0">
+            {overdueCount > 0 && (
+              <span className="bg-red-900/60 text-red-300 px-3 py-1 rounded-full font-medium">
+                🚨 {overdueCount} atrasada{overdueCount > 1 ? 's' : ''}
+              </span>
+            )}
+            {urgentCount > 0 && (
+              <span className="bg-yellow-900/60 text-yellow-300 px-3 py-1 rounded-full font-medium">
+                ⏱ {urgentCount} urgente{urgentCount > 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
+        ) : null
+      })()}
+
       {/* Lista de comandas */}
       <div className="flex-1 overflow-auto p-6">
         {isLoading ? (
@@ -133,33 +201,39 @@ export function SectorQueue({
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {filtered.map((order) => (
-              <button
-                key={order.id}
-                onClick={() => onSelectOrder(order)}
-                className="text-left bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-emerald-500 rounded-xl p-5 transition-all group"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <span className="font-mono text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">
-                    {order.order_number}
-                  </span>
-                  <Badge variant="secondary" className="text-xs">
-                    {order.items?.reduce((s, i) => s + i.quantity, 0) ?? 0} peças
-                  </Badge>
-                </div>
-                <p className="text-gray-300 font-medium text-lg mb-2 truncate">{order.client_name}</p>
-                <div className="text-sm text-gray-500 space-y-1">
-                  <p>
-                    {order.items
-                      ?.map((i) => `${i.quantity}× ${i.piece_type === 'other' ? (i.piece_type_label ?? 'Outro') : PIECE_LABEL[i.piece_type]}`)
-                      .join(', ')}
-                  </p>
-                  <p>
-                    Promessa: {format(new Date(order.promised_at), 'dd/MM HH:mm', { locale: ptBR })}
-                  </p>
-                </div>
-              </button>
-            ))}
+            {[...filtered].sort((a, b) =>
+              new Date(a.promised_at).getTime() - new Date(b.promised_at).getTime()
+            ).map((order) => {
+              const sla = getSlaStatus(order.promised_at)
+              const totalPieces = order.items?.reduce((s, i) => s + i.quantity, 0) ?? 0
+              return (
+                <button
+                  key={order.id}
+                  onClick={() => onSelectOrder(order)}
+                  className={`text-left border rounded-xl p-5 transition-all group ${sla.color} ${sla.ring}`}
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <span className="font-mono text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">
+                      {order.order_number}
+                    </span>
+                    <Badge variant="secondary" className="text-xs">
+                      {totalPieces} peça{totalPieces !== 1 ? 's' : ''}
+                    </Badge>
+                  </div>
+                  <p className="text-gray-300 font-medium text-lg mb-2 truncate">{order.client_name}</p>
+                  <div className="text-sm text-gray-500 space-y-1">
+                    <p className="truncate">
+                      {order.items
+                        ?.map((i) => `${i.quantity}× ${i.piece_type === 'other' ? (i.piece_type_label ?? 'Outro') : PIECE_LABEL[i.piece_type]}`)
+                        .join(', ')}
+                    </p>
+                    <p className={sla.urgent ? 'text-yellow-400 font-medium' : 'text-gray-500'}>
+                      {sla.label}
+                    </p>
+                  </div>
+                </button>
+              )
+            })}
           </div>
         )}
       </div>

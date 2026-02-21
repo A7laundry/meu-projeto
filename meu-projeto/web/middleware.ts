@@ -2,8 +2,21 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import type { UserRole } from '@/types/auth'
 
+async function getProfileFromAdmin(userId: string): Promise<{ role: string; active: boolean } | null> {
+  const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}&select=role,active&limit=1`
+  const res = await fetch(url, {
+    headers: {
+      apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,
+    },
+  })
+  if (!res.ok) return null
+  const rows = await res.json()
+  return rows[0] ?? null
+}
+
 // Rotas públicas — sem autenticação
-const PUBLIC_ROUTES = ['/login', '/auth/error']
+const PUBLIC_ROUTES = ['/login', '/auth/error', '/captacao']
 
 // Mapa de rotas protegidas → roles permitidos
 const PROTECTED_ROUTES: Record<string, UserRole[]> = {
@@ -12,7 +25,8 @@ const PROTECTED_ROUTES: Record<string, UserRole[]> = {
   '/sector': ['operator'],
   '/driver': ['driver'],
   '/client': ['store', 'customer'],
-  '/tv': ['director', 'unit_manager'], // Painel TV — acesso gerencial
+  '/tv': ['director', 'unit_manager'],
+  '/commercial': ['director', 'unit_manager', 'sdr', 'closer'],
 }
 
 function getRequiredRoles(pathname: string): UserRole[] | null {
@@ -70,11 +84,8 @@ export async function middleware(request: NextRequest) {
   // Verificar autorização por role para rotas protegidas
   const requiredRoles = getRequiredRoles(pathname)
   if (requiredRoles) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role, active')
-      .eq('id', user.id)
-      .single()
+    // Usa fetch direto com service role key (Edge Runtime não suporta @supabase/supabase-js)
+    const profile = await getProfileFromAdmin(user.id)
 
     // Perfil inativo ou sem role
     if (!profile || !profile.active) {

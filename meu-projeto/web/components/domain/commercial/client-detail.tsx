@@ -60,6 +60,34 @@ export function ClientDetail({ unitId, client, stats, notes }: ClientDetailProps
         ))}
       </div>
 
+      {/* LTV */}
+      {stats.annualLtv > 0 && (
+        <div className="rounded-lg border border-[#d6b25e]/30 bg-gradient-to-r from-[#07070a] to-[#111118] p-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-[#d6b25e]/60 uppercase tracking-wide font-semibold">
+                LTV Anual Estimado
+              </p>
+              <p className="text-3xl font-bold text-[#d6b25e] mt-1">
+                {formatCurrency(stats.annualLtv)}
+              </p>
+              <p className="text-xs text-white/40 mt-1">
+                Baseado em {stats.totalOrders} pedido{stats.totalOrders !== 1 ? 's' : ''} ·{' '}
+                {stats.firstOrderAt
+                  ? `Cliente desde ${format(new Date(stats.firstOrderAt), 'MMM/yyyy', { locale: ptBR })}`
+                  : ''}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-white/40 uppercase tracking-wide">Por mês</p>
+              <p className="text-lg font-semibold text-white/80 mt-1">
+                {formatCurrency(stats.annualLtv / 12)}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Notas de atendimento */}
       <div className="rounded-lg border bg-white p-5 space-y-4">
         <h3 className="font-semibold text-gray-900">Notas de Atendimento</h3>

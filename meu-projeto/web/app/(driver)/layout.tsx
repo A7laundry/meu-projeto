@@ -6,7 +6,7 @@ export default async function DriverLayout({ children }: { children: React.React
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <AppHeader user={user} title="Synkra" subtitle="Motorista" />
+      <AppHeader user={user} title="A7x TecNologia - OS." subtitle="Motorista" />
       <main className="flex-1 overflow-auto px-4 py-6 max-w-lg mx-auto w-full">
         {children}
       </main>

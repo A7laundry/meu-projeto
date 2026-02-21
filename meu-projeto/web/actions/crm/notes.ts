@@ -63,23 +63,30 @@ export async function getClientStats(
 ): Promise<ClientStats> {
   const supabase = createAdminClient()
 
-  // Busca comandas do cliente via client_name (simplificado — Wave 2 usa client_id FK)
   const { data: quotes } = await supabase
     .from('quotes')
     .select('total, created_at, status')
     .eq('client_id', clientId)
     .eq('unit_id', unitId)
     .eq('status', 'approved')
+    .order('created_at', { ascending: true })
 
   const totalOrders = quotes?.length ?? 0
   const totalSpent = (quotes ?? []).reduce((sum, q) => sum + Number(q.total), 0)
   const avgTicket = totalOrders > 0 ? totalSpent / totalOrders : 0
-  const lastOrderAt =
-    (quotes ?? []).length > 0
-      ? [...(quotes ?? [])].sort((a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-        )[0].created_at
-      : null
+  const firstOrderAt = quotes?.[0]?.created_at ?? null
+  const lastOrderAt = quotes?.[quotes.length - 1]?.created_at ?? null
 
-  return { totalOrders, totalSpent, avgTicket, lastOrderAt }
+  // LTV anual = (total gasto / meses ativos) × 12
+  let annualLtv = 0
+  if (totalOrders > 0 && firstOrderAt && lastOrderAt) {
+    const msPerMonth = 1000 * 60 * 60 * 24 * 30.44
+    const monthsActive = Math.max(
+      (new Date(lastOrderAt).getTime() - new Date(firstOrderAt).getTime()) / msPerMonth,
+      1,
+    )
+    annualLtv = (totalSpent / monthsActive) * 12
+  }
+
+  return { totalOrders, totalSpent, avgTicket, firstOrderAt, lastOrderAt, annualLtv }
 }

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getProductionKpis } from '@/lib/queries/production-kpis'
 import { getNetworkFinancial, getNetworkSlaAlerts, getNetworkManifests } from '@/actions/director/consolidated'
 import { getAdvancedKpis } from '@/actions/director/kpis-advanced'
@@ -16,7 +16,7 @@ import type { Unit } from '@/types/unit'
 export const revalidate = 60
 
 export default async function DirectorDashboardPage() {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const { data: units } = await supabase
     .from('units')
@@ -62,17 +62,17 @@ export default async function DirectorDashboardPage() {
     <div className="p-6 space-y-8">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard do Diretor</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <h1 className="text-2xl font-bold text-white">Dashboard do Diretor</h1>
+          <p className="text-sm text-white/40 mt-0.5">
             Consolidado de {units?.length ?? 0} unidades — atualiza a cada 60s
           </p>
         </div>
         <div className="flex gap-4">
-          <Link href="/director/nps" className="text-sm text-blue-600 hover:underline">
-            ⭐ NPS
+          <Link href="/director/nps" className="text-sm text-[#d6b25e] hover:text-[#b98a2c] transition-colors">
+            NPS
           </Link>
-          <Link href="/director/reports" className="text-sm text-blue-600 hover:underline">
-            📊 Relatórios
+          <Link href="/director/reports" className="text-sm text-[#d6b25e] hover:text-[#b98a2c] transition-colors">
+            Relatórios
           </Link>
         </div>
       </div>
@@ -85,15 +85,13 @@ export default async function DirectorDashboardPage() {
         <KpiCard title="Comandas hoje (rede)" value={totalOrders} highlight />
         <KpiCard title="Peças hoje (rede)" value={totalPieces} unit="peças" />
         <KpiCard title="Em processo agora" value={totalInQueue} />
-        <KpiCard title="Atrasadas" value={totalLate} subtitle="Todas as unidades" />
-        <KpiCard title="Alertas SLA" value={totalSlaAlerts} subtitle="Em excesso agora" />
+        <KpiCard title="Atrasadas" value={totalLate} subtitle="Todas as unidades" alert={totalLate > 0} />
+        <KpiCard title="Alertas SLA" value={totalSlaAlerts} subtitle="Em excesso agora" alert={totalSlaAlerts > 0} />
       </div>
 
       {/* KPIs Avançados */}
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-          KPIs Avançados
-        </h2>
+        <h2 className="section-header">KPIs Avançados</h2>
         <KpiAdvancedGrid kpis={advancedKpis} />
       </section>
 
@@ -101,10 +99,8 @@ export default async function DirectorDashboardPage() {
       {npsWithData.length > 0 && (
         <section className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-              NPS — Satisfação dos Clientes
-            </h2>
-            <Link href="/director/nps" className="text-xs text-blue-600 hover:underline">
+            <h2 className="section-header">NPS — Satisfação dos Clientes</h2>
+            <Link href="/director/nps" className="text-xs text-[#d6b25e] hover:underline">
               Ver detalhes →
             </Link>
           </div>
@@ -114,15 +110,13 @@ export default async function DirectorDashboardPage() {
 
       {/* Financeiro da Rede */}
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-          Financeiro da Rede
-        </h2>
+        <h2 className="section-header">Financeiro da Rede</h2>
         <FinancialNetworkSummary financial={networkFinancial} />
       </section>
 
       {/* Cards por unidade */}
       <section className="space-y-4">
-        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Por Unidade</h2>
+        <h2 className="section-header">Por Unidade</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {allKpis.map(({ unit, kpis }) => {
             const inQueue = kpis.queueByStatus.reduce((s, q) => s + q.count, 0)
@@ -132,24 +126,22 @@ export default async function DirectorDashboardPage() {
             return (
               <div
                 key={unit.id}
-                className={`rounded-xl border bg-white p-5 space-y-4 ${
-                  unitSla > 0 ? 'border-red-200' : 'border-gray-200'
-                }`}
+                className={`rounded-xl p-5 space-y-4 ${unitSla > 0 ? 'card-alert' : 'card-dark'}`}
               >
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-gray-800">{unit.name}</h3>
+                  <h3 className="font-semibold text-white">{unit.name}</h3>
                   <div className="flex items-center gap-2">
                     {unitSla > 0 && (
                       <Link
                         href={`/unit/${unit.id}/alerts`}
-                        className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-medium hover:bg-red-200"
+                        className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full font-medium hover:bg-red-500/30 transition-colors"
                       >
-                        🚨 {unitSla} alerta{unitSla !== 1 ? 's' : ''}
+                        {unitSla} alerta{unitSla !== 1 ? 's' : ''}
                       </Link>
                     )}
                     <Link
                       href={`/unit/${unit.id}/dashboard`}
-                      className="text-xs text-blue-600 hover:underline"
+                      className="text-xs text-[#d6b25e] hover:underline"
                     >
                       Ver unidade →
                     </Link>
@@ -158,7 +150,7 @@ export default async function DirectorDashboardPage() {
                 <div className="grid grid-cols-4 gap-3">
                   <KpiCard title="Comandas" value={kpis.dailyVolume.total_orders} />
                   <KpiCard title="Em fila" value={inQueue} />
-                  <KpiCard title="Atrasadas" value={kpis.onTimeVsLate.late} />
+                  <KpiCard title="Atrasadas" value={kpis.onTimeVsLate.late} alert={kpis.onTimeVsLate.late > 0} />
                   <KpiCard
                     title="Romaneios"
                     value={unitManifest ? `${unitManifest.completedManifests}/${unitManifest.totalManifests}` : '—'}

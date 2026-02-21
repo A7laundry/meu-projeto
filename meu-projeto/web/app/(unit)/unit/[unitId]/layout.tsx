@@ -14,16 +14,16 @@ export default async function UnitLayout({
   const [unit, user] = await Promise.all([getUnit(unitId), getUser()])
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-obsidian">
       <AppHeader
         user={user}
-        title="Synkra"
+        title="A7x TecNologia - OS."
         subtitle={unit?.name ?? 'Unidade'}
         logoHref="/director/dashboard"
       />
       <div className="flex flex-1">
         <UnitSidebar unitId={unitId} />
-        <main className="flex-1 overflow-auto">{children}</main>
+        <main className="flex-1 overflow-auto bg-obsidian scrollbar-dark">{children}</main>
       </div>
     </div>
   )

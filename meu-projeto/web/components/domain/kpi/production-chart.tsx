@@ -47,32 +47,39 @@ export function ProductionChart({ data }: ProductionChartProps) {
   }))
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5">
-      <h3 className="text-sm font-semibold text-gray-700 mb-4">
+    <div className="card-dark rounded-xl p-5">
+      <h3 className="section-header mb-4">
         Fila por Status — Agora
       </h3>
       <ResponsiveContainer width="100%" height={200}>
         <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: -20 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
           <XAxis
             dataKey="name"
-            tick={{ fontSize: 11, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.35)' }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
-            tick={{ fontSize: 11, fill: '#94a3b8' }}
+            tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.35)' }}
             axisLine={false}
             tickLine={false}
             allowDecimals={false}
           />
           <Tooltip
-            contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e2e8f0' }}
+            contentStyle={{
+              fontSize: 12,
+              borderRadius: 8,
+              border: '1px solid rgba(214,178,94,0.2)',
+              background: '#12121a',
+              color: '#fff',
+            }}
+            cursor={{ fill: 'rgba(255,255,255,0.04)' }}
             formatter={(v) => [`${v} comanda(s)`, 'Fila']}
           />
           <Bar dataKey="count" radius={[4, 4, 0, 0]}>
             {chartData.map((entry, index) => (
-              <Cell key={index} fill={entry.color} />
+              <Cell key={index} fill={entry.color} fillOpacity={0.85} />
             ))}
           </Bar>
         </BarChart>
