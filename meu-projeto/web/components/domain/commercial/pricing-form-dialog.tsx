@@ -1,7 +1,6 @@
 'use client'
 
 import { useRef, useState, useTransition } from 'react'
-import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -19,8 +18,23 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { upsertPrice } from '@/actions/pricing/crud'
-import { PIECE_TYPE_LABELS } from '@/types/recipe'
-import { PRICE_UNIT_LABELS, type PriceTableEntry } from '@/types/pricing'
+import type { PriceTableEntry } from '@/types/pricing'
+
+const PIECE_TYPES = [
+  { value: 'clothing',   label: 'Roupa comum',         icon: '👕' },
+  { value: 'costume',    label: 'Fantasia / Uniforme',  icon: '🎭' },
+  { value: 'sneaker',    label: 'Tênis / Calçado',      icon: '👟' },
+  { value: 'rug',        label: 'Tapete',               icon: '🪨' },
+  { value: 'curtain',    label: 'Cortina / Persiana',   icon: '🪟' },
+  { value: 'industrial', label: 'Industrial',           icon: '🏭' },
+  { value: 'other',      label: 'Outro',                icon: '📦' },
+]
+
+const UNIT_LABELS = [
+  { value: 'peça', label: 'por peça' },
+  { value: 'par',  label: 'por par' },
+  { value: 'kg',   label: 'por kg' },
+]
 
 interface PricingFormDialogProps {
   unitId: string
@@ -45,48 +59,67 @@ export function PricingFormDialog({ unitId, entry, trigger }: PricingFormDialogP
 
     startTransition(async () => {
       const result = await upsertPrice(unitId, formData)
-      if (!result.success) {
-        setError(result.error)
-        return
-      }
+      if (!result.success) { setError(result.error); return }
       setOpen(false)
       formRef.current?.reset()
     })
   }
 
+  const selectedPiece = PIECE_TYPES.find(p => p.value === pieceType)
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {trigger ?? <Button size="sm">{entry ? 'Editar' : 'Novo Preço'}</Button>}
+        {trigger ?? (
+          <button
+            className="btn-gold px-4 py-2 rounded-lg text-sm font-semibold"
+          >
+            + Novo Preço
+          </button>
+        )}
       </DialogTrigger>
-      <DialogContent className="max-w-sm">
+
+      <DialogContent
+        className="max-w-sm"
+        style={{
+          background: '#0d0d14',
+          border: '1px solid rgba(214,178,94,0.15)',
+        }}
+      >
         <DialogHeader>
-          <DialogTitle>{entry ? 'Editar Preço' : 'Definir Preço'}</DialogTitle>
+          <DialogTitle className="text-white font-semibold">
+            {entry ? 'Editar Preço' : 'Cadastrar Preço'}
+          </DialogTitle>
         </DialogHeader>
-        <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <Label>Tipo de peça *</Label>
+
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-4 mt-2">
+          {/* Tipo de peça */}
+          <div className="space-y-1.5">
+            <Label className="text-white/50 text-xs uppercase tracking-wider">Tipo de peça *</Label>
             <Select value={pieceType} onValueChange={setPieceType}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecionar..." />
+              <SelectTrigger className="h-11">
+                <SelectValue placeholder="Selecionar tipo..." />
               </SelectTrigger>
               <SelectContent>
-                {(Object.keys(PIECE_TYPE_LABELS) as Array<keyof typeof PIECE_TYPE_LABELS>).map(
-                  (key) => (
-                    <SelectItem key={key} value={key}>
-                      {PIECE_TYPE_LABELS[key]}
-                    </SelectItem>
-                  ),
-                )}
+                {PIECE_TYPES.map((p) => (
+                  <SelectItem key={p.value} value={p.value}>
+                    <span className="flex items-center gap-2">
+                      <span>{p.icon}</span>
+                      <span>{p.label}</span>
+                    </span>
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
 
+          {/* Preço + Unidade */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label htmlFor="price">Preço (R$) *</Label>
+            <div className="space-y-1.5">
+              <Label className="text-white/50 text-xs uppercase tracking-wider">
+                Preço (R$) *
+              </Label>
               <Input
-                id="price"
                 name="price"
                 type="number"
                 step="0.01"
@@ -94,36 +127,69 @@ export function PricingFormDialog({ unitId, entry, trigger }: PricingFormDialogP
                 required
                 defaultValue={entry?.price}
                 placeholder="0,00"
+                className="h-11 text-base font-semibold"
               />
             </div>
-            <div className="space-y-1">
-              <Label>Unidade</Label>
+            <div className="space-y-1.5">
+              <Label className="text-white/50 text-xs uppercase tracking-wider">Unidade</Label>
               <Select value={unitLabel} onValueChange={setUnitLabel}>
-                <SelectTrigger>
+                <SelectTrigger className="h-11">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {(Object.keys(PRICE_UNIT_LABELS) as Array<keyof typeof PRICE_UNIT_LABELS>).map(
-                    (key) => (
-                      <SelectItem key={key} value={key}>
-                        {PRICE_UNIT_LABELS[key]}
-                      </SelectItem>
-                    ),
-                  )}
+                  {UNIT_LABELS.map((u) => (
+                    <SelectItem key={u.value} value={u.value}>{u.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {/* Preview */}
+          {pieceType && (
+            <div
+              className="rounded-xl p-3 flex items-center gap-3"
+              style={{
+                background: 'rgba(214,178,94,0.06)',
+                border: '1px solid rgba(214,178,94,0.12)',
+              }}
+            >
+              <span className="text-xl">{selectedPiece?.icon}</span>
+              <div>
+                <p className="text-xs text-white/40">{selectedPiece?.label}</p>
+                <p className="text-sm font-semibold text-white/80">
+                  será cobrado{' '}
+                  <span style={{ color: '#d6b25e' }}>
+                    {UNIT_LABELS.find(u => u.value === unitLabel)?.label}
+                  </span>
+                </p>
+              </div>
+            </div>
+          )}
 
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+          {error && (
+            <p className="text-sm px-3 py-2 rounded-lg"
+              style={{ background: 'rgba(248,113,113,0.08)', color: '#fca5a5', border: '1px solid rgba(248,113,113,0.20)' }}>
+              {error}
+            </p>
+          )}
+
+          <div className="flex gap-2 pt-1">
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="flex-1 py-2.5 rounded-lg text-sm text-white/40 hover:text-white/60 transition-colors"
+              style={{ border: '1px solid rgba(255,255,255,0.08)' }}
+            >
               Cancelar
-            </Button>
-            <Button type="submit" disabled={isPending || !pieceType}>
-              {isPending ? 'Salvando...' : 'Salvar'}
-            </Button>
+            </button>
+            <button
+              type="submit"
+              disabled={isPending || !pieceType}
+              className="flex-1 btn-gold py-2.5 rounded-lg text-sm font-semibold disabled:opacity-50"
+            >
+              {isPending ? 'Salvando...' : 'Salvar Preço'}
+            </button>
           </div>
         </form>
       </DialogContent>
