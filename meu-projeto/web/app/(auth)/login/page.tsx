@@ -1,5 +1,5 @@
 import { login } from './actions'
-import { Input } from '@/components/ui/input'
+import Link from 'next/link'
 
 export default function LoginPage({
   searchParams,
@@ -7,48 +7,153 @@ export default function LoginPage({
   searchParams: Promise<{ error?: string; message?: string }>
 }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#07070a] px-6 py-12 relative">
-      {/* Ambient glow */}
-      <div className="pointer-events-none fixed inset-0">
-        <div className="absolute top-[-20%] left-[30%] w-[500px] h-[500px] rounded-full bg-[#d6b25e]/4 blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[20%] w-[400px] h-[400px] rounded-full bg-[#d6b25e]/3 blur-[100px]" />
-      </div>
+    <div
+      className="min-h-screen flex dot-grid-bg"
+      style={{ background: 'linear-gradient(135deg, #050508 0%, #07070f 100%)' }}
+    >
+      {/* Gold spotlight */}
+      <div
+        className="fixed pointer-events-none"
+        style={{
+          top: 0, left: 0, right: 0, height: '60vh',
+          background: 'radial-gradient(ellipse 80% 60% at 30% 0%, rgba(214,178,94,0.07) 0%, transparent 65%)',
+          zIndex: 0,
+        }}
+      />
 
-      {/* Logo */}
-      <div className="text-center mb-8 relative z-10">
-        <span className="text-3xl font-black tracking-tight gold-text">A7x</span>
-        <p className="text-xs text-[#d6b25e]/50 font-medium mt-1">TecNologia - OS.</p>
-      </div>
+      {/* ── LEFT PANEL — Branding ──────────────────────────────── */}
+      <div
+        className="hidden lg:flex flex-col justify-between relative z-10"
+        style={{
+          width: '52%',
+          padding: '48px 56px',
+          borderRight: '1px solid rgba(214,178,94,0.08)',
+          background: 'linear-gradient(160deg, rgba(214,178,94,0.04) 0%, transparent 50%)',
+        }}
+      >
+        {/* Logo */}
+        <Link href="/home" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+          <div style={{
+            width: 36, height: 36, borderRadius: 10,
+            background: 'linear-gradient(135deg, #d6b25e 0%, #b08030 100%)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 15, fontWeight: 900, color: '#05050a',
+          }}>A</div>
+          <span style={{ fontWeight: 700, fontSize: 15, color: 'rgba(255,255,255,0.85)', letterSpacing: '-0.01em' }}>
+            A7x <span style={{ color: 'rgba(255,255,255,0.28)', fontWeight: 400 }}>TecNologia</span>
+          </span>
+        </Link>
 
-      {/* Card */}
-      <div className="glass rounded-2xl p-8 w-full max-w-sm border border-[#d6b25e]/20 relative z-10">
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-white">Bem-vindo</h2>
-          <p className="text-sm text-white/40 mt-1">Acesse sua area de trabalho</p>
+        {/* Central — headline + features */}
+        <div>
+          <p style={{
+            fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase',
+            color: 'rgba(214,178,94,0.55)', marginBottom: 20,
+          }}>
+            Sistema Operacional Inteligente
+          </p>
+
+          <h1 style={{
+            fontSize: 'clamp(32px, 3.5vw, 52px)',
+            fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.06,
+            color: '#fff', marginBottom: 32,
+          }}>
+            Tudo que sua{' '}
+            <span className="shimmer-text">lavanderia</span>
+            {' '}precisa em um só lugar.
+          </h1>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {[
+              { icon: '◈', title: 'Dashboard Executivo', desc: 'KPIs em tempo real para toda a rede' },
+              { icon: '⊞', title: 'Controle de Produção', desc: 'Rastreie cada peça em cada setor' },
+              { icon: '◎', title: 'NPS Integrado', desc: 'Satisfação dos clientes sem terceiros' },
+              { icon: '⊡', title: 'Romaneios Digitais', desc: 'Logística gerenciada no celular' },
+            ].map(f => (
+              <div key={f.title} style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+                <span style={{
+                  width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                  background: 'rgba(214,178,94,0.08)', border: '1px solid rgba(214,178,94,0.16)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 16, color: '#d6b25e',
+                }}>{f.icon}</span>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.80)', margin: '0 0 2px' }}>{f.title}</p>
+                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.36)', margin: 0 }}>{f.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <LoginForm searchParams={searchParams} />
+        {/* Bottom */}
+        <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.18)' }}>
+          © {new Date().getFullYear()} A7x TecNologia · Sistema Operacional Inteligente
+        </p>
       </div>
 
-      {/* Features grid */}
-      <div className="grid grid-cols-2 gap-4 mt-8 max-w-sm w-full relative z-10">
-        {[
-          { icon: '◈', label: 'Dashboard em tempo real' },
-          { icon: '⊞', label: 'Gestao multi-unidade' },
-          { icon: '◎', label: 'NPS e satisfacao' },
-          { icon: '⊟', label: 'Relatorios completos' },
-        ].map(({ icon, label }) => (
-          <div key={label} className="flex items-center gap-2 text-xs text-white/30">
-            <span className="text-[#d6b25e]/40">{icon}</span>
-            {label}
+      {/* ── RIGHT PANEL — Form ────────────────────────────────── */}
+      <div
+        className="flex-1 flex flex-col items-center justify-center relative z-10"
+        style={{ padding: '48px 24px' }}
+      >
+        {/* Mobile logo */}
+        <div className="lg:hidden mb-10 text-center">
+          <div style={{
+            width: 44, height: 44, borderRadius: 12, margin: '0 auto 12px',
+            background: 'linear-gradient(135deg, #d6b25e 0%, #b08030 100%)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 18, fontWeight: 900, color: '#05050a',
+          }}>A</div>
+          <p className="shimmer-text" style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-0.04em' }}>A7x TecNologia</p>
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.30)', marginTop: 4 }}>Sistema Operacional Inteligente</p>
+        </div>
+
+        {/* Form card */}
+        <div
+          className="card-premium w-full slide-up"
+          style={{ maxWidth: 400, padding: '40px 36px', borderRadius: 20 }}
+        >
+          {/* Header */}
+          <div style={{ marginBottom: 32 }}>
+            <h2 style={{
+              fontSize: 22, fontWeight: 800, letterSpacing: '-0.03em',
+              color: '#fff', margin: '0 0 6px',
+            }}>
+              Bem-vindo de volta
+            </h2>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', margin: 0 }}>
+              Acesse sua área de trabalho
+            </p>
           </div>
-        ))}
-      </div>
 
-      {/* Footer */}
-      <p className="text-center text-[10px] text-white/20 mt-8 relative z-10">
-        A7x TecNologia · Sistema Operacional Inteligente
-      </p>
+          <LoginForm searchParams={searchParams} />
+
+          {/* Link para landing */}
+          <div style={{ marginTop: 24, textAlign: 'center' }}>
+            <Link
+              href="/home"
+              style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', textDecoration: 'none' }}
+            >
+              Conhecer o sistema →
+            </Link>
+          </div>
+        </div>
+
+        {/* Trust signals */}
+        <div style={{
+          display: 'flex', gap: 20, marginTop: 28, flexWrap: 'wrap', justifyContent: 'center',
+        }}>
+          {['100% seguro', 'Dados criptografados', 'Acesso por perfil'].map(t => (
+            <span key={t} style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              fontSize: 11, color: 'rgba(255,255,255,0.22)',
+            }}>
+              <span style={{ color: '#34d399', fontSize: 9 }}>✓</span> {t}
+            </span>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
@@ -61,51 +166,80 @@ async function LoginForm({
   const params = await searchParams
 
   return (
-    <form action={login} className="space-y-5">
+    <form action={login} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       {params?.error && (
-        <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-400">
+        <div style={{
+          borderRadius: 10, padding: '12px 16px',
+          background: 'rgba(248,113,113,0.08)',
+          border: '1px solid rgba(248,113,113,0.22)',
+          fontSize: 13, color: '#fca5a5',
+        }}>
           {params.error}
         </div>
       )}
       {params?.message && (
-        <div className="rounded-lg bg-blue-500/10 border border-blue-500/20 p-3 text-sm text-blue-400">
+        <div style={{
+          borderRadius: 10, padding: '12px 16px',
+          background: 'rgba(96,165,250,0.08)',
+          border: '1px solid rgba(96,165,250,0.22)',
+          fontSize: 13, color: '#93c5fd',
+        }}>
           {params.message}
         </div>
       )}
 
-      <div className="space-y-1.5">
-        <label htmlFor="email" className="text-xs font-medium text-white/60 uppercase tracking-wide">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <label style={{
+          fontSize: 11, fontWeight: 600, letterSpacing: '0.08em',
+          textTransform: 'uppercase', color: 'rgba(255,255,255,0.40)',
+        }}>
           Email
         </label>
-        <Input
+        <input
           id="email"
           name="email"
           type="email"
           placeholder="seu@email.com"
           required
           autoComplete="email"
-          className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-[#d6b25e]/50 focus:ring-[#d6b25e]/20"
+          className="input-premium"
+          style={{
+            padding: '12px 16px', borderRadius: 10,
+            fontSize: 14, width: '100%', boxSizing: 'border-box',
+          }}
         />
       </div>
 
-      <div className="space-y-1.5">
-        <label htmlFor="password" className="text-xs font-medium text-white/60 uppercase tracking-wide">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <label style={{
+          fontSize: 11, fontWeight: 600, letterSpacing: '0.08em',
+          textTransform: 'uppercase', color: 'rgba(255,255,255,0.40)',
+        }}>
           Senha
         </label>
-        <Input
+        <input
           id="password"
           name="password"
           type="password"
           placeholder="••••••••"
           required
           autoComplete="current-password"
-          className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-[#d6b25e]/50 focus:ring-[#d6b25e]/20"
+          className="input-premium"
+          style={{
+            padding: '12px 16px', borderRadius: 10,
+            fontSize: 14, width: '100%', boxSizing: 'border-box',
+          }}
         />
       </div>
 
       <button
         type="submit"
-        className="btn-gold w-full rounded-lg py-2.5 text-sm font-semibold mt-2"
+        className="btn-gold"
+        style={{
+          width: '100%', padding: '13px 0', borderRadius: 10,
+          fontSize: 14, fontWeight: 700, marginTop: 4,
+          border: 'none', cursor: 'pointer',
+        }}
       >
         Entrar no Sistema
       </button>

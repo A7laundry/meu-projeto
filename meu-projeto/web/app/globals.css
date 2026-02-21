@@ -436,6 +436,147 @@ body {
   .diff-expert { color: #f87171; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); }
 }
 
+/* ── Design System Premium — DNA do Landing ──────────────── */
+
+@keyframes shimmer-gold {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+@keyframes float-y {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes ping-glow {
+  0%        { transform: scale(1); opacity: 0.8; }
+  75%, 100% { transform: scale(2.4); opacity: 0; }
+}
+@keyframes slide-up-fade {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@layer utilities {
+  /* Dot grid — usável em qualquer layout */
+  .dot-grid-bg {
+    background-image: radial-gradient(circle, rgba(255,255,255,0.042) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  /* Texto com shimmer dourado animado */
+  .shimmer-text {
+    background: linear-gradient(
+      90deg,
+      #b08030 0%, #d6b25e 20%, #f5e09f 40%,
+      #d6b25e 60%, #b08030 80%, #d6b25e 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer-gold 3.5s linear infinite;
+  }
+
+  /* Float suave — dashboard mockup, cards hero */
+  .float-anim {
+    animation: float-y 5s ease-in-out infinite;
+  }
+
+  /* Entrada suave de baixo para cima */
+  .slide-up {
+    animation: slide-up-fade 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  /* Spotlight gold fixo no topo */
+  .spotlight-gold::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 900px; height: 480px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(214,178,94,0.09) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+@layer components {
+  /* Card premium com borda gradiente — versão refinada do glass */
+  .card-premium {
+    background: rgba(8, 8, 14, 0.82);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(214, 178, 94, 0.16);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.05),
+      0 24px 64px rgba(0,0,0,0.55);
+    transition: border-color 0.25s, box-shadow 0.25s;
+  }
+  .card-premium:hover {
+    border-color: rgba(214,178,94,0.28);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.07),
+      0 32px 80px rgba(0,0,0,0.65),
+      0 0 0 1px rgba(214,178,94,0.06);
+  }
+
+  /* Input premium dark */
+  .input-premium {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.09);
+    color: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .input-premium::placeholder { color: rgba(255,255,255,0.22); }
+  .input-premium:focus {
+    border-color: rgba(214,178,94,0.55);
+    box-shadow: 0 0 0 3px rgba(214,178,94,0.10);
+  }
+
+  /* Botão gold tamanho normal (para dentro do sistema) */
+  .btn-gold-md {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 10px 24px; border-radius: 10px;
+    background: linear-gradient(135deg, #d6b25e 0%, #f0d080 100%);
+    color: #05050a; font-weight: 700; font-size: 14px;
+    border: none; cursor: pointer;
+    box-shadow: 0 4px 20px rgba(214,178,94,0.20);
+    transition: all 0.2s;
+  }
+  .btn-gold-md:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 28px rgba(214,178,94,0.30);
+  }
+
+  /* Pill badge de status ao vivo */
+  .badge-live {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 100px;
+    background: rgba(16, 185, 129, 0.10);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    font-size: 11px; color: #34d399;
+    font-weight: 500;
+  }
+  .badge-live::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 0 0 rgba(16,185,129,0.5);
+    animation: ping-glow 2s ease-out infinite;
+  }
+}
+
+/* Atualiza bg-obsidian com dot grid */
+.bg-obsidian {
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.032) 1px, transparent 1px),
+    radial-gradient(1200px 800px at 15% 10%, rgba(214,178,94,0.08), transparent 55%),
+    radial-gradient(1000px 700px at 85% 20%, rgba(185,138,44,0.06), transparent 55%),
+    linear-gradient(180deg, #050507 0%, #07070a 40%, #050507 100%);
+  background-size: 28px 28px, auto, auto, auto;
+  background-color: var(--obsidian);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

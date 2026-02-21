@@ -51,8 +51,9 @@ export function DirectorSidebar({ units }: DirectorSidebarProps) {
       className="flex-shrink-0 flex flex-col overflow-y-auto overflow-x-hidden scrollbar-dark transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
       style={{
         width: mounted && collapsed ? 60 : 224,
-        background: 'linear-gradient(180deg, #060609 0%, #07070a 100%)',
-        borderRight: '1px solid rgba(214,178,94,0.10)',
+        background: 'linear-gradient(180deg, #060609 0%, #07070a 60%, #060609 100%)',
+        borderRight: '1px solid rgba(214,178,94,0.08)',
+        boxShadow: '1px 0 0 rgba(255,255,255,0.02)',
       }}
     >
       {/* Logo + toggle */}
@@ -198,7 +199,9 @@ export function DirectorSidebar({ units }: DirectorSidebarProps) {
           </a>
         )}
         {!collapsed && (
-          <p className="text-[10px] text-white/12 px-3 mt-2">v1.0 · A7x OS</p>
+          <div className="px-3 mt-2 flex items-center gap-2">
+            <span className="badge-live">Ao vivo</span>
+          </div>
         )}
       </div>
     </aside>
