@@ -12,6 +12,7 @@ const ROLE_LABELS: Record<string, string> = {
   customer: 'Cliente',
   sdr: 'SDR',
   closer: 'Closer',
+  copywriter: 'Redator',
 }
 
 interface AppHeaderProps {

@@ -2,3 +2,4 @@
 export type * from './auth'
 export type * from './unit'
 export type * from './order'
+export type * from './copywriter'

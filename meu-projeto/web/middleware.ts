@@ -27,6 +27,7 @@ const PROTECTED_ROUTES: Record<string, UserRole[]> = {
   '/client': ['store', 'customer'],
   '/tv': ['director', 'unit_manager'],
   '/commercial': ['director', 'unit_manager', 'sdr', 'closer'],
+  '/copywriter': ['director', 'unit_manager', 'copywriter'],
 }
 
 function getRequiredRoles(pathname: string): UserRole[] | null {

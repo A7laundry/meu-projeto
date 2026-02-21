@@ -7,6 +7,7 @@ export type UserRole =
   | 'customer'
   | 'sdr'
   | 'closer'
+  | 'copywriter'
 
 export type Sector =
   | 'sorting'

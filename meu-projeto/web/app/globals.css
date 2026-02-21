@@ -232,6 +232,41 @@ body {
     color: rgba(214,178,94,0.5);
   }
 
+  /* Section title com linha decorativa */
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    white-space: nowrap;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(214,178,94,0.18) 0%, transparent 100%);
+  }
+
+  /* Badge de count inline */
+  .count-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 0;
+    text-transform: none;
+    font-variant-numeric: tabular-nums;
+  }
+
   /* Indicador lateral para nav ativo */
   .nav-indicator {
     position: relative;
@@ -351,6 +386,54 @@ body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* ── Gamificação — Copywriter Portal ──────────────────────── */
+@keyframes xp-fill {
+  from { width: 0%; }
+}
+@keyframes level-up {
+  0%   { transform: scale(1); filter: brightness(1); }
+  50%  { transform: scale(1.15); filter: brightness(1.4) drop-shadow(0 0 20px rgba(214,178,94,0.8)); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+@keyframes badge-unlock {
+  0%   { opacity: 0; transform: scale(0.3) rotate(-15deg); }
+  50%  { opacity: 1; transform: scale(1.1) rotate(3deg); filter: brightness(1.5); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); filter: brightness(1); }
+}
+
+@layer utilities {
+  .animate-xp-fill { animation: xp-fill 1s cubic-bezier(0.16,1,0.3,1) both; }
+  .animate-level-up { animation: level-up 0.8s cubic-bezier(0.16,1,0.3,1); }
+  .animate-badge-unlock { animation: badge-unlock 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+}
+
+@layer components {
+  .xp-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.06);
+    overflow: hidden;
+    position: relative;
+  }
+  .xp-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--gold) 0%, #e8c96a 60%, var(--gold2) 100%);
+    box-shadow: 0 0 12px rgba(214,178,94,0.5);
+    transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .badge-common  { border: 1px solid rgba(255,255,255,0.15); }
+  .badge-rare    { border: 1px solid rgba(96,165,250,0.45); box-shadow: 0 0 12px rgba(96,165,250,0.25); }
+  .badge-epic    { border: 1px solid rgba(192,132,252,0.5); box-shadow: 0 0 16px rgba(192,132,252,0.3); }
+  .badge-legendary { border: 1px solid rgba(214,178,94,0.55); box-shadow: 0 0 20px rgba(214,178,94,0.4); }
+
+  .diff-easy   { color: #34d399; background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.3); }
+  .diff-medium { color: #fbbf24; background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.3); }
+  .diff-hard   { color: #fb923c; background: rgba(251,146,60,0.1); border: 1px solid rgba(251,146,60,0.3); }
+  .diff-expert { color: #f87171; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); }
 }
 
 @layer base {
