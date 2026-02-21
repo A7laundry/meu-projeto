@@ -5,6 +5,15 @@ import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { ClientStats, CrmNote } from '@/types/crm'
 
+export interface ClientOrder {
+  id: string
+  order_number: string
+  status: string
+  created_at: string
+  estimated_total: number
+  items_count: number
+}
+
 type ActionResult<T = void> =
   | { success: true; data: T }
   | { success: false; error: string }
@@ -89,4 +98,49 @@ export async function getClientStats(
   }
 
   return { totalOrders, totalSpent, avgTicket, firstOrderAt, lastOrderAt, annualLtv }
+}
+
+export async function listClientOrders(
+  clientId: string,
+  unitId: string,
+  limit = 20,
+): Promise<ClientOrder[]> {
+  const supabase = createAdminClient()
+
+  const [ordersRes, pricesRes] = await Promise.all([
+    supabase
+      .from('orders')
+      .select('id, order_number, status, created_at, items:order_items(piece_type, quantity)')
+      .eq('client_id', clientId)
+      .eq('unit_id', unitId)
+      .order('created_at', { ascending: false })
+      .limit(limit),
+    supabase
+      .from('price_table')
+      .select('piece_type, price')
+      .eq('unit_id', unitId)
+      .eq('active', true),
+  ])
+
+  const priceMap = new Map<string, number>()
+  for (const p of pricesRes.data ?? []) {
+    // preço genérico da família (item_name = '' tem priority)
+    if (!priceMap.has(p.piece_type)) priceMap.set(p.piece_type, Number(p.price))
+  }
+
+  return (ordersRes.data ?? []).map((order) => {
+    const items = (order.items as { piece_type: string; quantity: number }[] | null) ?? []
+    const estimated_total = items.reduce(
+      (sum, item) => sum + (priceMap.get(item.piece_type) ?? 0) * item.quantity,
+      0,
+    )
+    return {
+      id: order.id,
+      order_number: order.order_number,
+      status: order.status,
+      created_at: order.created_at,
+      estimated_total,
+      items_count: items.reduce((s, i) => s + i.quantity, 0),
+    }
+  })
 }

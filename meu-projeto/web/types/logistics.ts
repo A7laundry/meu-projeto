@@ -22,6 +22,8 @@ export interface Client {
   document: string | null
   phone: string | null
   email: string | null
+  birthday: string | null           // formato ISO 'YYYY-MM-DD'
+  acquisition_channel: string | null // instagram | google | referral | whatsapp | facebook | other
   address_street: string | null
   address_number: string | null
   address_complement: string | null

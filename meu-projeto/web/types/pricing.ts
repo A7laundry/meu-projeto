@@ -20,6 +20,8 @@ export interface PriceTableEntry {
   id: string
   unit_id: string
   piece_type: PieceType
+  item_name: string       // '' = preço genérico da família; 'Camisa Social M/L' = item específico
+  fabric_type: string | null // tecido/material (opcional)
   price: number
   unit_label: PriceUnit
   active: boolean

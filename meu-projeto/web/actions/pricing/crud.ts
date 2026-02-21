@@ -11,6 +11,8 @@ type ActionResult<T = void> =
 
 const priceSchema = z.object({
   piece_type: z.string().min(1),
+  item_name: z.string().default(''),
+  fabric_type: z.string().optional(),
   price: z.coerce.number().min(0, 'Preço deve ser maior ou igual a zero'),
   unit_label: z.enum(['peça', 'kg', 'par']),
 })
@@ -32,6 +34,8 @@ export async function upsertPrice(
 ): Promise<ActionResult<PriceTableEntry>> {
   const raw = {
     piece_type: formData.get('piece_type') as string,
+    item_name: (formData.get('item_name') as string) ?? '',
+    fabric_type: (formData.get('fabric_type') as string) || undefined,
     price: formData.get('price') as string,
     unit_label: formData.get('unit_label') as string,
   }
@@ -46,7 +50,7 @@ export async function upsertPrice(
     .from('price_table')
     .upsert(
       { ...parsed.data, unit_id: unitId },
-      { onConflict: 'unit_id,piece_type' },
+      { onConflict: 'unit_id,piece_type,item_name' },
     )
     .select()
     .single()

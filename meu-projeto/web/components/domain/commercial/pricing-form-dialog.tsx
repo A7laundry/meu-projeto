@@ -80,7 +80,7 @@ export function PricingFormDialog({ unitId, entry, trigger }: PricingFormDialogP
       </DialogTrigger>
 
       <DialogContent
-        className="max-w-sm"
+        className="max-w-md"
         style={{
           background: '#0d0d14',
           border: '1px solid rgba(214,178,94,0.15)',
@@ -93,12 +93,12 @@ export function PricingFormDialog({ unitId, entry, trigger }: PricingFormDialogP
         </DialogHeader>
 
         <form ref={formRef} onSubmit={handleSubmit} className="space-y-4 mt-2">
-          {/* Tipo de peça */}
+          {/* Família / Tipo de peça */}
           <div className="space-y-1.5">
-            <Label className="text-white/50 text-xs uppercase tracking-wider">Tipo de peça *</Label>
+            <Label className="text-white/50 text-xs uppercase tracking-wider">Família *</Label>
             <Select value={pieceType} onValueChange={setPieceType}>
               <SelectTrigger className="h-11">
-                <SelectValue placeholder="Selecionar tipo..." />
+                <SelectValue placeholder="Selecionar família..." />
               </SelectTrigger>
               <SelectContent>
                 {PIECE_TYPES.map((p) => (
@@ -112,6 +112,38 @@ export function PricingFormDialog({ unitId, entry, trigger }: PricingFormDialogP
               </SelectContent>
             </Select>
           </div>
+
+          {/* Item específico e tecido (visíveis após selecionar família) */}
+          {pieceType && (
+            <div className="space-y-3 p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+              <p className="text-xs text-white/40 uppercase tracking-wider font-semibold">
+                Detalhes do item (opcional)
+              </p>
+
+              <div className="space-y-1.5">
+                <Label className="text-white/50 text-xs">Nome do item</Label>
+                <Input
+                  name="item_name"
+                  defaultValue={entry?.item_name ?? ''}
+                  placeholder={`Ex: Camisa Social M/L, Calça Jeans, Tênis Nike...`}
+                  className="h-10 text-sm"
+                />
+                <p className="text-[11px] text-white/30">
+                  Deixe em branco para preço genérico da família
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-white/50 text-xs">Tecido / Material</Label>
+                <Input
+                  name="fabric_type"
+                  defaultValue={entry?.fabric_type ?? ''}
+                  placeholder="Ex: Algodão, Sarja, Linho, Sintético..."
+                  className="h-10 text-sm"
+                />
+              </div>
+            </div>
+          )}
 
           {/* Preço + Unidade */}
           <div className="grid grid-cols-2 gap-3">
@@ -158,7 +190,7 @@ export function PricingFormDialog({ unitId, entry, trigger }: PricingFormDialogP
               <div>
                 <p className="text-xs text-white/40">{selectedPiece?.label}</p>
                 <p className="text-sm font-semibold text-white/80">
-                  será cobrado{' '}
+                  cobrado{' '}
                   <span style={{ color: '#d6b25e' }}>
                     {UNIT_LABELS.find(u => u.value === unitLabel)?.label}
                   </span>

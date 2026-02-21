@@ -41,7 +41,12 @@ interface PricingListProps {
 export function PricingList({ unitId, entries }: PricingListProps) {
   const sorted = [...entries].sort((a, b) => {
     const order = ['clothing', 'costume', 'sneaker', 'rug', 'curtain', 'industrial', 'other']
-    return order.indexOf(a.piece_type) - order.indexOf(b.piece_type)
+    const typeDiff = order.indexOf(a.piece_type) - order.indexOf(b.piece_type)
+    if (typeDiff !== 0) return typeDiff
+    // Itens genéricos (item_name='') primeiro, depois específicos em ordem alfabética
+    if (!a.item_name && b.item_name) return -1
+    if (a.item_name && !b.item_name) return 1
+    return a.item_name.localeCompare(b.item_name)
   })
 
   return (
@@ -49,7 +54,7 @@ export function PricingList({ unitId, entries }: PricingListProps) {
       {/* Header com botão */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-white/35">
-          {entries.length} tipo{entries.length !== 1 ? 's' : ''} de peça configurado{entries.length !== 1 ? 's' : ''}
+          {entries.length} item{entries.length !== 1 ? 'ns' : ''} na tabela de preços
         </p>
         <PricingFormDialog unitId={unitId} />
       </div>
@@ -78,7 +83,7 @@ export function PricingList({ unitId, entries }: PricingListProps) {
       {entries.length > 0 && (
         <p className="text-xs text-white/25 text-center pt-2">
           Os preços são usados para calcular o valor estimado das comandas.
-          Você pode definir preços especiais por cliente em cada cadastro de cliente.
+          Itens específicos (com nome) aparecem na seleção ao criar comandas.
         </p>
       )}
     </div>
@@ -87,15 +92,18 @@ export function PricingList({ unitId, entries }: PricingListProps) {
 
 function PriceCard({ entry, unitId }: { entry: PriceTableEntry; unitId: string }) {
   const icon = PIECE_ICONS[entry.piece_type] ?? '📦'
-  const label = PIECE_LABELS[entry.piece_type] ?? entry.piece_type
+  const familyLabel = PIECE_LABELS[entry.piece_type] ?? entry.piece_type
   const unitLabel = UNIT_LABELS[entry.unit_label] ?? entry.unit_label
+  const isSpecific = Boolean(entry.item_name)
 
   return (
     <div
       className="rounded-xl p-4 flex items-start gap-3 group transition-all"
       style={{
         background: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.07)',
+        border: isSpecific
+          ? '1px solid rgba(214,178,94,0.12)'
+          : '1px solid rgba(255,255,255,0.07)',
       }}
     >
       {/* Ícone */}
@@ -111,10 +119,28 @@ function PriceCard({ entry, unitId }: { entry: PriceTableEntry; unitId: string }
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-white/80 leading-tight">{label}</p>
-        <p className="text-[11px] text-white/35 mt-0.5">{unitLabel}</p>
+        {/* Nome específico ou família */}
+        {isSpecific ? (
+          <>
+            <p className="text-sm font-semibold text-white/90 leading-tight truncate">
+              {entry.item_name}
+            </p>
+            <p className="text-[11px] text-white/35 mt-0.5">
+              {familyLabel}
+              {entry.fabric_type && ` · ${entry.fabric_type}`}
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="text-sm font-semibold text-white/80 leading-tight">{familyLabel}</p>
+            <p className="text-[11px] text-white/35 mt-0.5">Preço genérico · {unitLabel}</p>
+          </>
+        )}
         <p className="text-xl font-bold mt-1.5 tabular-nums" style={{ color: '#d6b25e' }}>
           {fmtBRL(entry.price)}
+          {isSpecific && (
+            <span className="text-xs font-normal text-white/35 ml-1">{unitLabel}</span>
+          )}
         </p>
       </div>
 
@@ -124,7 +150,7 @@ function PriceCard({ entry, unitId }: { entry: PriceTableEntry; unitId: string }
         entry={entry}
         trigger={
           <button
-            className="opacity-0 group-hover:opacity-100 transition-opacity text-xs px-2 py-1 rounded-lg"
+            className="opacity-0 group-hover:opacity-100 transition-opacity text-xs px-2 py-1 rounded-lg flex-shrink-0"
             style={{
               background: 'rgba(255,255,255,0.06)',
               color: 'rgba(255,255,255,0.45)',

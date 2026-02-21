@@ -584,4 +584,16 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+  /* Fix: inputs ficam invisíveis (texto preto em fundo escuro) em dark mode */
+  .dark input,
+  .dark textarea {
+    color: oklch(0.985 0 0);
+    caret-color: oklch(0.985 0 0);
+    -webkit-text-fill-color: oklch(0.985 0 0);
+  }
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    -webkit-text-fill-color: oklch(0.708 0 0);
+    color: oklch(0.708 0 0);
+  }
 }
