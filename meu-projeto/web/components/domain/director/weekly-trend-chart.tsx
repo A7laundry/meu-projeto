@@ -13,6 +13,7 @@ import type { DailyTrend } from '@/actions/director/trends'
 
 interface Props {
   data: DailyTrend[]
+  height?: number
 }
 
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) {
@@ -33,22 +34,22 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
   )
 }
 
-export function WeeklyTrendChart({ data }: Props) {
+export function WeeklyTrendChart({ data, height = 140 }: Props) {
   const hasData = data.some((d) => d.orders > 0)
   const maxOrders = Math.max(...data.map((d) => d.orders), 1)
 
   return (
-    <div className="card-dark rounded-xl p-5">
+    <div className="card-dark rounded-xl p-5 h-full flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <h3 className="section-header">Tendência — Últimos 7 dias</h3>
         <span className="text-xs text-white/25 num-stat">{data.reduce((s, d) => s + d.orders, 0).toLocaleString('pt-BR')} total</span>
       </div>
       {!hasData ? (
-        <div className="flex items-center justify-center h-[140px] text-white/20 text-sm italic">
+        <div className="flex items-center justify-center flex-1 text-white/20 text-sm italic" style={{ minHeight: height }}>
           Sem dados no período
         </div>
       ) : (
-        <ResponsiveContainer width="100%" height={140}>
+        <ResponsiveContainer width="100%" height={height}>
           <AreaChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -24 }}>
             <defs>
               <linearGradient id="goldGradient" x1="0" y1="0" x2="0" y2="1">

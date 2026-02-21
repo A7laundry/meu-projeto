@@ -1,11 +1,5 @@
 import Link from 'next/link'
-import {
-  ClipboardList,
-  Package,
-  Activity,
-  Clock,
-  AlertTriangle,
-} from 'lucide-react'
+import { AlertTriangle } from 'lucide-react'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getProductionKpis } from '@/lib/queries/production-kpis'
 import { getNetworkFinancial, getNetworkSlaAlerts, getNetworkManifests } from '@/actions/director/consolidated'
@@ -13,13 +7,13 @@ import { getAdvancedKpis } from '@/actions/director/kpis-advanced'
 import { getNpsScoreByUnit } from '@/actions/director/nps'
 import { getWeeklyTrend } from '@/actions/director/trends'
 import { evaluateKpiAlerts } from '@/lib/kpi-alerts'
-import { KpiCard } from '@/components/domain/kpi/kpi-card'
-import { ProductionChart } from '@/components/domain/kpi/production-chart'
 import { FinancialNetworkSummary } from '@/components/domain/director/financial-network-summary'
 import { KpiAdvancedGrid } from '@/components/domain/director/kpi-advanced-grid'
 import { NpsSummary } from '@/components/domain/director/nps-summary'
 import { ExecutiveAlerts } from '@/components/domain/director/executive-alerts'
 import { WeeklyTrendChart } from '@/components/domain/director/weekly-trend-chart'
+import { BigGauge } from '@/components/domain/director/big-gauge'
+import { UnitComparisonChart } from '@/components/domain/director/unit-comparison-chart'
 import { LiveIndicator } from '@/components/ui/live-indicator'
 import type { Unit } from '@/types/unit'
 import type { OrderStatus } from '@/types/order'
@@ -68,26 +62,45 @@ export default async function DirectorDashboardPage() {
       getWeeklyTrend(unitIds),
     ])
 
-  const totalOrders    = allKpis.reduce((s, u) => s + u.kpis.dailyVolume.total_orders, 0)
-  const totalPieces    = allKpis.reduce((s, u) => s + u.kpis.dailyVolume.total_items, 0)
-  const totalInQueue   = allKpis.reduce((s, u) => s + u.kpis.queueByStatus.reduce((qs, q) => qs + q.count, 0), 0)
-  const totalLate      = allKpis.reduce((s, u) => s + u.kpis.onTimeVsLate.late, 0)
+  // ── Métricas consolidadas ─────────────────────────────
+  const totalOrders   = allKpis.reduce((s, u) => s + u.kpis.dailyVolume.total_orders, 0)
+  const totalLate     = allKpis.reduce((s, u) => s + u.kpis.onTimeVsLate.late, 0)
+  const totalOnTime   = allKpis.reduce((s, u) => s + u.kpis.onTimeVsLate.on_time, 0)
+  const totalInQueue  = allKpis.reduce((s, u) => s + u.kpis.queueByStatus.reduce((qs, q) => qs + q.count, 0), 0)
   const totalSlaAlerts = slaAlerts.reduce((s, u) => s + u.alertCount, 0)
   const executiveAlerts = evaluateKpiAlerts({ advancedKpis, slaAlerts, manifestSummaries, npsScores })
+
+  // KPIs de gauge
+  const networkOnTimePct = totalOrders > 0
+    ? Math.round((totalOnTime / totalOrders) * 100)
+    : 100
+  const slaHealthPct = totalSlaAlerts === 0
+    ? 100
+    : Math.max(0, Math.round(100 - (totalSlaAlerts / Math.max(totalOrders, 1)) * 100))
+  const onTimeColor  = networkOnTimePct >= 90 ? '#10b981' : networkOnTimePct >= 70 ? '#f59e0b' : '#f87171'
+  const slaColor     = slaHealthPct >= 90 ? '#10b981' : slaHealthPct >= 70 ? '#f59e0b' : '#f87171'
+
+  // Dados do comparativo por unidade
+  const comparisonData = allKpis.map(({ unit, kpis }) => ({
+    name: unit.name,
+    onTime:  kpis.onTimeVsLate.on_time,
+    inQueue: kpis.queueByStatus.reduce((s, q) => s + q.count, 0),
+    late:    kpis.onTimeVsLate.late,
+  }))
 
   const timestamp = new Date().toLocaleDateString('pt-BR', {
     day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
   })
 
   return (
-    <div className="p-6 space-y-10">
+    <div className="p-6 space-y-8">
 
-      {/* ── Header ─────────────────────────────────────── */}
+      {/* ── Header ───────────────────────────────────────── */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Dashboard do Diretor</h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Dashboard Executivo</h1>
           <p className="text-sm text-white/40 mt-1">
-            Consolidado de <span className="text-white/60 font-medium">{unitList.length}</span> unidade{unitList.length !== 1 ? 's' : ''}
+            <span className="text-white/60 font-medium">{unitList.length}</span> unidade{unitList.length !== 1 ? 's' : ''} ativas
             <span className="mx-2 text-white/20">·</span>
             <span className="num-stat text-white/30 text-xs">{timestamp}</span>
           </p>
@@ -103,44 +116,85 @@ export default async function DirectorDashboardPage() {
       {/* ── Alertas Executivos ─────────────────────────── */}
       <ExecutiveAlerts alerts={executiveAlerts} />
 
-      {/* ── Produção — KPIs com ícone ─────────────────── */}
-      <section className="space-y-4">
-        <h2 className="section-title">
-          Produção — Hoje
-          <span className="count-badge">{totalOrders} comandas</span>
-        </h2>
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-          <KpiCard
-            title="Comandas hoje (rede)" value={totalOrders} highlight stagger={1}
-            icon={ClipboardList} iconColor="#d6b25e" iconBg="rgba(214,178,94,0.12)"
-          />
-          <KpiCard
-            title="Peças processadas" value={totalPieces} unit="pçs" stagger={2}
-            icon={Package} iconColor="#60a5fa" iconBg="rgba(96,165,250,0.10)"
-          />
-          <KpiCard
-            title="Em processo agora" value={totalInQueue} stagger={3}
-            icon={Activity} iconColor="#a78bfa" iconBg="rgba(167,139,250,0.10)"
-          />
-          <KpiCard
-            title="Atrasadas" value={totalLate} subtitle="Todas as unidades"
-            alert={totalLate > 0} stagger={4}
-            icon={Clock}
-            iconColor={totalLate > 0 ? '#f87171' : '#94a3b8'}
-            iconBg={totalLate > 0 ? 'rgba(248,113,113,0.10)' : 'rgba(148,163,184,0.08)'}
-          />
-          <KpiCard
-            title="Alertas SLA" value={totalSlaAlerts} subtitle="Em excesso agora"
-            alert={totalSlaAlerts > 0} stagger={5}
-            icon={AlertTriangle}
-            iconColor={totalSlaAlerts > 0 ? '#f87171' : '#94a3b8'}
-            iconBg={totalSlaAlerts > 0 ? 'rgba(248,113,113,0.10)' : 'rgba(148,163,184,0.08)'}
-          />
+      {/* ── HERO: Gauges + Trend ──────────────────────── */}
+      <section>
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+
+          {/* Gauges — 2 cols */}
+          <div className="lg:col-span-2 grid grid-cols-2 gap-5">
+            {/* Gauge 1 — No prazo (rede) */}
+            <div
+              className="card-dark rounded-xl p-5 flex flex-col items-center justify-center animate-fade-up stagger-1"
+              style={{ minHeight: 220 }}
+            >
+              <BigGauge
+                percent={networkOnTimePct}
+                centerValue={`${networkOnTimePct}%`}
+                centerSub="no prazo"
+                label="Pontualidade"
+                sublabel="Toda a rede"
+                color={onTimeColor}
+                size={150}
+              />
+            </div>
+
+            {/* Gauge 2 — SLA health */}
+            <div
+              className="card-dark rounded-xl p-5 flex flex-col items-center justify-center animate-fade-up stagger-2"
+              style={{ minHeight: 220 }}
+            >
+              <BigGauge
+                percent={slaHealthPct}
+                centerValue={totalSlaAlerts === 0 ? 'OK' : String(totalSlaAlerts)}
+                centerSub={totalSlaAlerts === 0 ? 'sem alertas' : `alerta${totalSlaAlerts !== 1 ? 's' : ''}`}
+                label="Saúde SLA"
+                sublabel="Excedidos agora"
+                color={slaColor}
+                size={150}
+              />
+            </div>
+
+            {/* Stats adicionais */}
+            <div className="col-span-2 grid grid-cols-2 gap-3">
+              <div className="card-stat rounded-xl px-4 py-3 animate-fade-up stagger-3">
+                <p className="text-xs text-white/35 mb-1">Comandas hoje</p>
+                <p className="text-2xl font-bold num-stat text-white">{totalOrders.toLocaleString('pt-BR')}</p>
+                <p className="text-xs text-white/25 mt-0.5">criadas na rede</p>
+              </div>
+              <div className="card-stat rounded-xl px-4 py-3 animate-fade-up stagger-4">
+                <p className="text-xs text-white/35 mb-1">Em processo</p>
+                <p className="text-2xl font-bold num-stat" style={{ color: '#a78bfa' }}>{totalInQueue.toLocaleString('pt-BR')}</p>
+                <p className="text-xs text-white/25 mt-0.5">todos os setores</p>
+              </div>
+              <div className={`col-span-2 rounded-xl px-4 py-3 animate-fade-up stagger-5 ${totalLate > 0 ? 'card-alert' : 'card-stat'}`}>
+                <p className="text-xs text-white/35 mb-1">Atrasadas</p>
+                <div className="flex items-baseline gap-2">
+                  <p className={`text-2xl font-bold num-stat ${totalLate > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+                    {totalLate > 0 ? totalLate.toLocaleString('pt-BR') : '✓ Zero'}
+                  </p>
+                  {totalLate > 0 && (
+                    <AlertTriangle size={14} className="text-red-400/70" />
+                  )}
+                </div>
+                <p className="text-xs text-white/25 mt-0.5">todas as unidades</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Trend chart — 3 cols, taller */}
+          <div className="lg:col-span-3 animate-fade-up stagger-2">
+            <WeeklyTrendChart data={weeklyTrend} height={340} />
+          </div>
         </div>
       </section>
 
-      {/* ── Tendência Semanal ──────────────────────────── */}
-      <WeeklyTrendChart data={weeklyTrend} />
+      {/* ── Comparativo por Unidade ───────────────────── */}
+      <section className="animate-fade-up stagger-3">
+        <UnitComparisonChart
+          data={comparisonData}
+          height={Math.max(160, comparisonData.length * 52)}
+        />
+      </section>
 
       {/* ── KPIs Avançados ────────────────────────────── */}
       <section className="space-y-4">
@@ -171,13 +225,13 @@ export default async function DirectorDashboardPage() {
         <FinancialNetworkSummary financial={networkFinancial} />
       </section>
 
-      {/* ── Unidades ──────────────────────────────────── */}
+      {/* ── Unidades — Detalhe ───────────────────────── */}
       <section className="space-y-4">
         <h2 className="section-title">
           Unidades
           <span className="count-badge">{unitList.length} ativas</span>
         </h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {allKpis.map(({ unit, kpis }, idx) => {
             const inQueue   = kpis.queueByStatus.reduce((s, q) => s + q.count, 0)
             const unitSla   = slaAlerts.find((u) => u.unitId === unit.id)?.alertCount ?? 0
@@ -190,10 +244,9 @@ export default async function DirectorDashboardPage() {
             return (
               <div
                 key={unit.id}
-                className={`rounded-xl p-5 space-y-4 animate-fade-up ${unitSla > 0 ? 'card-alert' : 'card-dark'}`}
-                style={{ animationDelay: `${idx * 0.07}s` }}
+                className={`rounded-xl p-5 space-y-3 animate-fade-up ${unitSla > 0 ? 'card-alert' : 'card-dark'}`}
+                style={{ animationDelay: `${idx * 0.06}s` }}
               >
-                {/* Header da unidade */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <div className={`w-2 h-2 rounded-full ${unitSla > 0 ? 'bg-red-400 animate-pulse' : 'bg-emerald-500'}`} />
@@ -214,47 +267,50 @@ export default async function DirectorDashboardPage() {
                   </div>
                 </div>
 
-                {/* Mini KPIs em linha */}
-                <div className="grid grid-cols-4 gap-3">
-                  <KpiCard title="Comandas" value={kpis.dailyVolume.total_orders} />
-                  <KpiCard title="Em fila" value={inQueue} />
-                  <KpiCard title="Atrasadas" value={kpis.onTimeVsLate.late} alert={kpis.onTimeVsLate.late > 0} />
-                  <KpiCard
-                    title="Romaneios"
-                    value={unitManifest ? `${unitManifest.completedManifests}/${unitManifest.totalManifests}` : '—'}
-                  />
+                {/* Stats inline */}
+                <div className="grid grid-cols-4 gap-2 text-center">
+                  {[
+                    { label: 'Comandas', value: kpis.dailyVolume.total_orders, color: 'text-white' },
+                    { label: 'Em fila', value: inQueue, color: 'text-violet-400' },
+                    { label: 'Atrasadas', value: kpis.onTimeVsLate.late, color: kpis.onTimeVsLate.late > 0 ? 'text-red-400' : 'text-white/40' },
+                    { label: 'Romaneios', value: unitManifest ? `${unitManifest.completedManifests}/${unitManifest.totalManifests}` : '—', color: 'text-white/60' },
+                  ].map((s) => (
+                    <div key={s.label} className="rounded-lg bg-white/03 py-2 px-1">
+                      <p className={`text-base font-bold num-stat ${s.color}`}>{typeof s.value === 'number' ? s.value.toLocaleString('pt-BR') : s.value}</p>
+                      <p className="text-[10px] text-white/30 mt-0.5">{s.label}</p>
+                    </div>
+                  ))}
                 </div>
 
-                {/* Pipeline de status (pills coloridas) */}
+                {/* Pipeline pills */}
                 {activeStatuses.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 pt-1 border-t border-white/05">
+                  <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/05">
                     {activeStatuses.map((q) => {
                       const color = STATUS_COLOR[q.status] ?? '#94a3b8'
                       const label = STATUS_LABEL_SHORT[q.status] ?? q.status
                       return (
                         <span
                           key={q.status}
-                          className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full"
-                          style={{ background: `${color}12`, border: `1px solid ${color}25`, color }}
+                          className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full"
+                          style={{ background: `${color}12`, border: `1px solid ${color}22`, color }}
                         >
                           <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: color }} />
                           {label} <span className="num-stat font-semibold">{q.count}</span>
                         </span>
                       )
                     })}
-                    <span className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full ml-auto"
+                    <span
+                      className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ml-auto num-stat font-semibold"
                       style={{
                         background: onTimePct >= 90 ? 'rgba(52,211,153,0.10)' : 'rgba(251,146,60,0.10)',
-                        border: `1px solid ${onTimePct >= 90 ? 'rgba(52,211,153,0.25)' : 'rgba(251,146,60,0.25)'}`,
+                        border: `1px solid ${onTimePct >= 90 ? 'rgba(52,211,153,0.20)' : 'rgba(251,146,60,0.20)'}`,
                         color: onTimePct >= 90 ? '#34d399' : '#fb923c',
                       }}
                     >
-                      <span className="num-stat font-semibold">{onTimePct}%</span> prazo
+                      {onTimePct}% prazo
                     </span>
                   </div>
                 )}
-
-                <ProductionChart data={kpis.queueByStatus} />
               </div>
             )
           })}
