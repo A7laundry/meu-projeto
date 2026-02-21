@@ -5,8 +5,8 @@ export default async function DriverLayout({ children }: { children: React.React
   const user = await getUser()
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
-      <AppHeader user={user} title="A7x TecNologia - OS." subtitle="Motorista" />
+    <div className="min-h-screen flex flex-col bg-obsidian text-white">
+      <AppHeader user={user} title="A7x TecNologia - OS." subtitle="Motorista" dark />
       <main className="flex-1 overflow-auto px-4 py-6 max-w-lg mx-auto w-full">
         {children}
       </main>

@@ -28,26 +28,26 @@ export function DriverStopCard({ stop, unitId, index }: DriverStopCardProps) {
         stop.status === 'visited'
           ? 'bg-green-50 border-green-300'
           : stop.status === 'skipped'
-            ? 'bg-gray-50 border-gray-200 opacity-60'
-            : 'bg-white border-gray-200 shadow-sm'
+            ? 'bg-[rgba(255,255,255,0.03)] border-white/08 opacity-60'
+            : 'bg-[rgba(255,255,255,0.04)] border-white/08 shadow-sm'
       }`}
     >
       <div className="flex items-start gap-3">
-        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
+        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-[#d6b25e]">
           {index + 1}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="font-semibold text-gray-900 leading-tight">
+          <p className="font-semibold text-white leading-tight">
             {stop.client_name ?? 'Cliente'}
           </p>
           {stop.client_address && (
-            <p className="text-sm text-gray-500 mt-0.5">{stop.client_address}</p>
+            <p className="text-sm text-white/40 mt-0.5">{stop.client_address}</p>
           )}
         </div>
         {isDone && (
           <span
             className={`text-sm font-medium shrink-0 ${
-              stop.status === 'visited' ? 'text-green-600' : 'text-gray-400'
+              stop.status === 'visited' ? 'text-green-600' : 'text-white/35'
             }`}
           >
             {stop.status === 'visited' ? '✓' : '—'}

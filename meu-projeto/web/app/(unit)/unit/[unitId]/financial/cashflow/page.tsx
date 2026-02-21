@@ -39,15 +39,15 @@ export default async function CashflowPage({
   return (
     <div className="p-8 max-w-4xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
-        <Button asChild variant="ghost" size="sm" className="text-gray-500">
+        <Button asChild variant="ghost" size="sm" className="text-white/40">
           <Link href={`/unit/${unitId}/financial`}>← Financeiro</Link>
         </Button>
       </div>
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Fluxo de Caixa</h1>
-          <p className="text-sm text-gray-500 mt-1 capitalize">{monthLabel}</p>
+          <h1 className="text-2xl font-bold text-white">Fluxo de Caixa</h1>
+          <p className="text-sm text-white/40 mt-1 capitalize">{monthLabel}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button asChild variant="outline" size="sm">
@@ -65,7 +65,7 @@ export default async function CashflowPage({
       </div>
 
       <section>
-        <h2 className="text-lg font-semibold text-gray-800 mb-3">Entradas vs. Saídas</h2>
+        <h2 className="text-lg font-semibold text-white/90 mb-3">Entradas vs. Saídas</h2>
         <CashflowTable
           weeks={cashflow.weeks}
           totalInflows={cashflow.totalInflows}
@@ -77,7 +77,7 @@ export default async function CashflowPage({
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-gray-800 mb-3">DRE Simplificado</h2>
+        <h2 className="text-lg font-semibold text-white/90 mb-3">DRE Simplificado</h2>
         <DreTable rows={dreRows} />
       </section>
     </div>

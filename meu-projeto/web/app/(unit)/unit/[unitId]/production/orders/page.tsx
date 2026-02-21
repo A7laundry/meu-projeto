@@ -19,8 +19,8 @@ export default async function OrdersPage({
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Comandas</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{orders.length} comanda(s)</p>
+          <h1 className="text-2xl font-bold text-white">Comandas</h1>
+          <p className="text-sm text-white/40 mt-0.5">{orders.length} comanda(s)</p>
         </div>
         <Button asChild>
           <Link href={`/unit/${unitId}/production/orders/new`}>+ Nova Comanda</Link>

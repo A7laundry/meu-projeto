@@ -5,8 +5,8 @@ export default async function ClientLayout({ children }: { children: React.React
   const user = await getUser()
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <AppHeader user={user} title="A7x TecNologia - OS." subtitle="Portal do Cliente" />
+    <div className="min-h-screen flex flex-col bg-obsidian text-white">
+      <AppHeader user={user} title="A7x TecNologia - OS." subtitle="Portal do Cliente" dark />
       <main className="flex-1 overflow-auto">
         {children}
       </main>

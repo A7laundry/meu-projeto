@@ -29,8 +29,8 @@ export default async function ManifestsPage({
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Romaneio Diário</h1>
-        <p className="text-sm text-gray-500 mt-1 capitalize">{todayLabel}</p>
+        <h1 className="text-2xl font-bold text-white">Romaneio Diário</h1>
+        <p className="text-sm text-white/40 mt-1 capitalize">{todayLabel}</p>
       </div>
 
       <ManifestList

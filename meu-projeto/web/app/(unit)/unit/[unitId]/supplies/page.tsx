@@ -22,7 +22,7 @@ export default async function SuppliesPage({
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Insumos Químicos</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-white/40 mt-1">
             {activeCount} produto(s) ativo(s)
             {lowStockCount > 0 && (
               <span className="ml-2 text-red-600 font-medium">

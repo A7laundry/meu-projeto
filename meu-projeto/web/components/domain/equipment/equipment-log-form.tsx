@@ -45,8 +45,8 @@ export function EquipmentLogForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-4 bg-gray-50 rounded-xl border">
-      <h3 className="font-semibold text-sm text-gray-700">Registrar no Diário</h3>
+    <form onSubmit={handleSubmit} className="space-y-4 p-4 bg-[rgba(255,255,255,0.03)] rounded-xl border">
+      <h3 className="font-semibold text-sm text-white/75">Registrar no Diário</h3>
 
       {error && <p className="text-sm text-red-600 bg-red-50 rounded p-2">{error}</p>}
 

@@ -35,7 +35,7 @@ export default async function StaffPage({
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Funcionários</h1>
-          <p className="text-sm text-gray-500 mt-1">{active} ativos · {staff.length} total</p>
+          <p className="text-sm text-white/40 mt-1">{active} ativos · {staff.length} total</p>
         </div>
         <StaffInviteDialog unitId={unitId} />
       </div>

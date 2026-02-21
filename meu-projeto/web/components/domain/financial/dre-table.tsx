@@ -30,16 +30,16 @@ export function DreTable({ rows }: DreTableProps) {
           {rows.map((row, idx) => (
             <TableRow
               key={idx}
-              className={row.isTotal ? 'bg-gray-50 font-semibold border-t-2' : ''}
+              className={row.isTotal ? 'bg-[rgba(255,255,255,0.03)] font-semibold border-t-2' : ''}
             >
-              <TableCell className={row.isTotal ? 'font-semibold' : 'text-gray-700'}>
+              <TableCell className={row.isTotal ? 'font-semibold' : 'text-white/75'}>
                 {row.label}
               </TableCell>
               <TableCell
                 className={`text-right ${
                   row.isTotal
                     ? row.isPositive
-                      ? 'font-bold text-blue-700'
+                      ? 'font-bold text-[#d6b25e]'
                       : 'font-bold text-red-700'
                     : row.isPositive
                       ? 'text-green-700'

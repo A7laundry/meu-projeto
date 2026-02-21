@@ -13,8 +13,8 @@ import {
 import { ROUTE_SHIFT_LABELS as SHIFT_LABELS } from '@/types/logistics'
 
 const STATUS_COLORS: Record<ManifestStatus, string> = {
-  pending: 'bg-gray-100 text-gray-700',
-  in_progress: 'bg-blue-100 text-blue-700',
+  pending: 'bg-[rgba(255,255,255,0.05)] text-white/75',
+  in_progress: 'bg-blue-100 text-[#d6b25e]',
   completed: 'bg-green-100 text-green-700',
 }
 
@@ -44,12 +44,12 @@ export function ManifestCard({ manifest, unitId }: ManifestCardProps) {
   const progress = stops.length > 0 ? Math.round((visitedCount / stops.length) * 100) : 0
 
   return (
-    <div className="rounded-lg border bg-white p-4 space-y-3 print:border-gray-400 print:shadow-none">
+    <div className="rounded-lg border bg-[rgba(255,255,255,0.04)] p-4 space-y-3 print:border-gray-400 print:shadow-none">
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
         <div>
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="font-semibold text-gray-900">{manifest.route_name}</h3>
+            <h3 className="font-semibold text-white">{manifest.route_name}</h3>
             <span
               className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLORS[manifest.status]}`}
             >
@@ -59,7 +59,7 @@ export function ManifestCard({ manifest, unitId }: ManifestCardProps) {
               {SHIFT_LABELS[manifest.route_shift as keyof typeof SHIFT_LABELS] ?? manifest.route_shift}
             </Badge>
           </div>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="text-sm text-white/40 mt-0.5">
             {manifest.driver_name ? `Motorista: ${manifest.driver_name}` : 'Sem motorista'}
             {stops.length > 0 && ` · ${visitedCount}/${stops.length} paradas (${progress}%)`}
           </p>
@@ -94,7 +94,7 @@ export function ManifestCard({ manifest, unitId }: ManifestCardProps) {
 
       {/* Paradas */}
       {stops.length === 0 && (
-        <p className="text-sm text-gray-400">Nenhuma parada nesta rota.</p>
+        <p className="text-sm text-white/35">Nenhuma parada nesta rota.</p>
       )}
       <div className="space-y-1.5">
         {stops.map((stop, idx) => (
@@ -104,18 +104,18 @@ export function ManifestCard({ manifest, unitId }: ManifestCardProps) {
               stop.status === 'visited'
                 ? 'bg-green-50 border border-green-200'
                 : stop.status === 'skipped'
-                  ? 'bg-gray-50 border border-gray-200 opacity-60'
-                  : 'bg-white border border-gray-100'
+                  ? 'bg-[rgba(255,255,255,0.03)] border border-white/08 opacity-60'
+                  : 'bg-[rgba(255,255,255,0.04)] border border-white/06'
             }`}
           >
             <div className="flex items-center gap-2 min-w-0">
-              <span className="font-mono text-xs text-gray-400 shrink-0">{idx + 1}.</span>
+              <span className="font-mono text-xs text-white/35 shrink-0">{idx + 1}.</span>
               <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-800 truncate">
+                <p className="text-sm font-medium text-white/90 truncate">
                   {stop.client_name ?? stop.client_id}
                 </p>
                 {stop.client_address && (
-                  <p className="text-xs text-gray-500 truncate">{stop.client_address}</p>
+                  <p className="text-xs text-white/40 truncate">{stop.client_address}</p>
                 )}
               </div>
             </div>
@@ -136,7 +136,7 @@ export function ManifestCard({ manifest, unitId }: ManifestCardProps) {
                     size="sm"
                     disabled={isPending}
                     onClick={() => handleStopStatus(stop.id, 'skipped')}
-                    className="text-gray-400 hover:text-gray-600 h-7 px-2 text-xs"
+                    className="text-white/35 hover:text-white/55 h-7 px-2 text-xs"
                   >
                     Pular
                   </Button>
@@ -145,7 +145,7 @@ export function ManifestCard({ manifest, unitId }: ManifestCardProps) {
               {stop.status !== 'pending' && (
                 <span
                   className={`text-xs font-medium ${
-                    stop.status === 'visited' ? 'text-green-600' : 'text-gray-400'
+                    stop.status === 'visited' ? 'text-green-600' : 'text-white/35'
                   }`}
                 >
                   {stop.status === 'visited' ? '✓ Visitado' : '— Pulado'}

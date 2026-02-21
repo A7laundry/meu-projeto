@@ -10,7 +10,7 @@ export default async function ProductionPage({
 
   return (
     <div className="p-6 space-y-4">
-      <h1 className="text-2xl font-bold text-gray-900">Produção</h1>
+      <h1 className="text-2xl font-bold text-white">Produção</h1>
       <div className="flex flex-wrap gap-3">
         <Button asChild>
           <Link href={`/unit/${unitId}/production/orders`}>Ver Comandas</Link>

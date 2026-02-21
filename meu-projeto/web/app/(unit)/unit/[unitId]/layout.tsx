@@ -20,6 +20,7 @@ export default async function UnitLayout({
         title="A7x TecNologia - OS."
         subtitle={unit?.name ?? 'Unidade'}
         logoHref="/director/dashboard"
+        dark
       />
       <div className="flex flex-1">
         <UnitSidebar unitId={unitId} />

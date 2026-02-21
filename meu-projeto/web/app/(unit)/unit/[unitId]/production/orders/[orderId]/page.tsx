@@ -47,11 +47,11 @@ export default async function OrderDetailPage({
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-2xl font-bold font-mono text-gray-900">{order.order_number}</h1>
+            <h1 className="text-2xl font-bold font-mono text-white">{order.order_number}</h1>
             <Badge>{STATUS_LABEL[order.status]}</Badge>
           </div>
-          <p className="text-gray-600">{order.client_name}</p>
-          <p className="text-sm text-gray-400 mt-0.5">
+          <p className="text-white/55">{order.client_name}</p>
+          <p className="text-sm text-white/35 mt-0.5">
             Promessa: {format(new Date(order.promised_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
           </p>
         </div>
@@ -69,29 +69,29 @@ export default async function OrderDetailPage({
 
       {/* Observações */}
       {order.notes && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-          <p className="text-sm text-amber-800 font-medium">Observação</p>
-          <p className="text-sm text-amber-700 mt-0.5">{order.notes}</p>
+        <div className="rounded-lg p-3" style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.22)' }}>
+          <p className="text-sm font-medium" style={{ color: '#fbbf24' }}>Observação</p>
+          <p className="text-sm text-white/60 mt-0.5">{order.notes}</p>
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Itens */}
         <section>
-          <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
+          <h2 className="text-sm font-semibold text-white/75 uppercase tracking-wide mb-3">
             Itens — {totalPieces} peças no total
           </h2>
           <div className="space-y-2">
             {order.items?.map((item) => (
-              <div key={item.id} className="flex items-center justify-between rounded-md border border-gray-100 bg-white px-3 py-2 text-sm">
-                <span className="text-gray-800">
+              <div key={item.id} className="flex items-center justify-between rounded-md px-3 py-2 text-sm" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                <span className="text-white/90">
                   {item.piece_type === 'other' ? (item.piece_type_label ?? 'Outro') : PIECE_LABEL[item.piece_type]}
                 </span>
                 <div className="flex items-center gap-4">
                   {item.notes && (
-                    <span className="text-xs text-gray-400">{item.notes}</span>
+                    <span className="text-xs text-white/35">{item.notes}</span>
                   )}
-                  <span className="font-semibold text-gray-900">{item.quantity}×</span>
+                  <span className="font-semibold text-white">{item.quantity}×</span>
                 </div>
               </div>
             ))}
@@ -100,7 +100,7 @@ export default async function OrderDetailPage({
 
         {/* Timeline */}
         <section>
-          <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
+          <h2 className="text-sm font-semibold text-white/75 uppercase tracking-wide mb-3">
             Histórico de eventos
           </h2>
           <OrderTimeline events={order.events ?? []} />

@@ -42,19 +42,19 @@ export default async function EquipmentDetailPage({
   return (
     <div className="p-8 max-w-3xl mx-auto space-y-6">
       {/* Breadcrumb */}
-      <div className="text-sm text-gray-500">
+      <div className="text-sm text-white/40">
         <Link href={`/unit/${unitId}/equipment`} className="hover:underline">
           Equipamentos
         </Link>
         <span className="mx-2">›</span>
-        <span className="text-gray-800">{equipment.name}</span>
+        <span className="text-white/90">{equipment.name}</span>
       </div>
 
       {/* Header do equipamento */}
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold">{equipment.name}</h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-white/40 text-sm mt-1">
             {EQUIPMENT_TYPE_LABELS[equipment.type as keyof typeof EQUIPMENT_TYPE_LABELS]}
             {equipment.brand ? ` · ${equipment.brand}` : ''}
             {equipment.model ? ` ${equipment.model}` : ''}
@@ -68,13 +68,13 @@ export default async function EquipmentDetailPage({
 
       {/* Contador de ciclos */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="rounded-xl border bg-white p-4">
-          <p className="text-sm text-gray-500">Total de ciclos</p>
-          <p className="text-3xl font-bold text-gray-900 mt-1">{totalCycles.toLocaleString('pt-BR')}</p>
+        <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <p className="text-sm text-white/40">Total de ciclos</p>
+          <p className="text-3xl font-bold text-white mt-1">{totalCycles.toLocaleString('pt-BR')}</p>
         </div>
-        <div className="rounded-xl border bg-white p-4">
-          <p className="text-sm text-gray-500">Registros no diário</p>
-          <p className="text-3xl font-bold text-gray-900 mt-1">{logs.length}</p>
+        <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <p className="text-sm text-white/40">Registros no diário</p>
+          <p className="text-3xl font-bold text-white mt-1">{logs.length}</p>
         </div>
       </div>
 
@@ -87,7 +87,7 @@ export default async function EquipmentDetailPage({
 
       {/* Histórico */}
       <div>
-        <h2 className="text-base font-semibold text-gray-700 mb-3">Histórico de registros</h2>
+        <h2 className="text-base font-semibold text-white/75 mb-3">Histórico de registros</h2>
         <EquipmentLogList logs={logs} />
       </div>
     </div>

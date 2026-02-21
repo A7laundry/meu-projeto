@@ -70,7 +70,7 @@ export function CashflowTable({ weeks, totalInflows, totalOutflows, net, year, m
                 </TableCell>
               </TableRow>
             ))}
-            <TableRow className="bg-gray-50 font-semibold">
+            <TableRow className="bg-[rgba(255,255,255,0.03)] font-semibold">
               <TableCell>Total do mês</TableCell>
               <TableCell className="text-right text-green-800">{fmt(totalInflows)}</TableCell>
               <TableCell className="text-right text-red-800">{fmt(totalOutflows)}</TableCell>

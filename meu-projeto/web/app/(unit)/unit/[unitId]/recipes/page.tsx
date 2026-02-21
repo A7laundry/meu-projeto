@@ -19,7 +19,7 @@ export default async function RecipesPage({
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Receitas de Lavagem</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-white/40 mt-1">
             {activeCount} receita(s) ativa(s) de {recipes.length} cadastrada(s)
           </p>
         </div>

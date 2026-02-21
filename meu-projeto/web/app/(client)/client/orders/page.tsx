@@ -10,14 +10,14 @@ const PROCESS_STEPS: {
   description: string
   icon: string
 }[] = [
-  { status: 'received',  label: 'Recebida',           description: 'Suas peças chegaram à unidade', icon: '📥' },
-  { status: 'sorting',   label: 'Triagem',             description: 'Separando por tipo de tecido e cor', icon: '🔍' },
-  { status: 'washing',   label: 'Lavagem',             description: 'Na máquina com fórmula especial para seu tipo de peça', icon: '🫧' },
-  { status: 'drying',    label: 'Secagem',             description: 'Secagem controlada para não danificar o tecido', icon: '💨' },
-  { status: 'ironing',   label: 'Passadoria',          description: 'Passando e dobrando suas peças', icon: '🌡️' },
-  { status: 'ready',     label: 'Pronta para retirada',description: 'Suas peças estão prontas! Aguardando coleta ou entrega', icon: '✅' },
-  { status: 'shipped',   label: 'Saiu para entrega',   description: 'O entregador está a caminho com suas peças', icon: '🚚' },
-  { status: 'delivered', label: 'Entregue',            description: 'Peças entregues com sucesso. Obrigado pela preferência!', icon: '🏠' },
+  { status: 'received',  label: 'Recebida',             description: 'Suas peças chegaram à unidade', icon: '📥' },
+  { status: 'sorting',   label: 'Triagem',               description: 'Separando por tipo de tecido e cor', icon: '🔍' },
+  { status: 'washing',   label: 'Lavagem',               description: 'Na máquina com fórmula especial', icon: '🫧' },
+  { status: 'drying',    label: 'Secagem',               description: 'Secagem controlada para preservar o tecido', icon: '💨' },
+  { status: 'ironing',   label: 'Passadoria',            description: 'Passando e dobrando suas peças', icon: '🌡️' },
+  { status: 'ready',     label: 'Pronta',                description: 'Suas peças estão prontas!', icon: '✅' },
+  { status: 'shipped',   label: 'Em entrega',            description: 'O entregador está a caminho', icon: '🚚' },
+  { status: 'delivered', label: 'Entregue',              description: 'Entregue com sucesso!', icon: '🏠' },
 ]
 
 const STATUS_INDEX: Record<OrderStatus, number> = Object.fromEntries(
@@ -43,8 +43,8 @@ export default async function ClientOrdersPage() {
   const user = await getUser()
   if (!user?.unit_id) {
     return (
-      <div className="p-8 text-center text-gray-500">
-        Unidade não encontrada. Entre em contato com o suporte.
+      <div className="p-8 text-center">
+        <p className="text-white/40 text-sm">Unidade não encontrada. Entre em contato com o suporte.</p>
       </div>
     )
   }
@@ -52,29 +52,37 @@ export default async function ClientOrdersPage() {
   const orders = await getClientOrders(user.unit_id)
   const active = orders.filter((o) => o.status !== 'delivered')
   const history = orders.filter((o) => o.status === 'delivered')
+  const firstName = user.full_name.split(' ')[0]
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-6 space-y-8">
+    <div className="max-w-xl mx-auto px-4 py-6 space-y-6">
       {/* Saudação */}
-      <div>
-        <h1 className="text-xl font-bold text-gray-900">Olá, {user.full_name.split(' ')[0]} 👋</h1>
-        <p className="text-sm text-gray-500 mt-0.5">
+      <div className="pt-2">
+        <p className="text-[11px] uppercase tracking-widest text-[#d6b25e]/45 font-semibold mb-1">Portal do Cliente</p>
+        <h1 className="text-2xl font-bold text-white tracking-tight">Olá, {firstName}</h1>
+        <p className="text-sm text-white/40 mt-1">
           {active.length > 0
-            ? `Você tem ${active.length} comanda${active.length > 1 ? 's' : ''} em andamento`
+            ? `${active.length} comanda${active.length > 1 ? 's' : ''} em andamento`
             : 'Nenhuma comanda em andamento no momento'}
         </p>
       </div>
 
-      {/* Comandas ativas com timeline */}
+      {/* Comandas ativas */}
       {active.map((order) => (
         <OrderTracker key={order.id} order={order} />
       ))}
 
       {active.length === 0 && (
-        <div className="rounded-2xl bg-gray-50 border border-gray-200 p-8 text-center">
+        <div
+          className="rounded-2xl p-8 text-center"
+          style={{
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.06)',
+          }}
+        >
           <p className="text-4xl mb-3">🧺</p>
-          <p className="text-gray-700 font-medium">Nenhuma peça em processo</p>
-          <p className="text-sm text-gray-400 mt-1">
+          <p className="text-white/75 font-medium">Nenhuma peça em processo</p>
+          <p className="text-sm text-white/30 mt-1">
             Traga suas peças à unidade e acompanhe o processo aqui em tempo real.
           </p>
         </div>
@@ -83,9 +91,9 @@ export default async function ClientOrdersPage() {
       {/* Histórico */}
       {history.length > 0 && (
         <section>
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
+          <p className="text-[10px] uppercase tracking-widest text-[#d6b25e]/35 font-semibold mb-3">
             Histórico
-          </h2>
+          </p>
           <div className="space-y-2">
             {history.slice(0, 5).map((order) => (
               <HistoryCard key={order.id} order={order} />
@@ -102,18 +110,15 @@ export default async function ClientOrdersPage() {
 function OrderTracker({ order }: { order: Order }) {
   const currentIdx = STATUS_INDEX[order.status as OrderStatus] ?? 0
   const totalPieces = order.items?.reduce((s, i) => s + i.quantity, 0) ?? 0
+  const progress = Math.round(((currentIdx + 1) / PROCESS_STEPS.length) * 100)
   const promised = order.promised_at
-    ? new Date(order.promised_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    ? new Date(order.promised_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
     : null
 
-  // Mapeia eventos para timestamps por status
   const eventTimestamps: Partial<Record<string, string>> = {}
   ;(order.events ?? []).forEach((ev: OrderEvent) => {
-    if (!eventTimestamps[ev.sector]) {
-      eventTimestamps[ev.sector] = ev.occurred_at
-    }
+    if (!eventTimestamps[ev.sector]) eventTimestamps[ev.sector] = ev.occurred_at
   })
-  // Recebida = data de criação
   eventTimestamps['received'] = order.created_at
 
   const currentStep = PROCESS_STEPS[currentIdx]
@@ -121,59 +126,75 @@ function OrderTracker({ order }: { order: Order }) {
   const isReady = order.status === 'ready'
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+    <div
+      className="rounded-2xl overflow-hidden"
+      style={{
+        background: 'linear-gradient(160deg, rgba(214,178,94,0.05) 0%, rgba(5,5,8,0.95) 100%)',
+        border: '1px solid rgba(214,178,94,0.12)',
+        boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
+      }}
+    >
       {/* Header da comanda */}
-      <div className={[
-        'px-5 py-4 flex items-start justify-between',
-        isDelivered ? 'bg-emerald-50' : isReady ? 'bg-green-50' : 'bg-white',
-      ].join(' ')}>
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-2xl">{currentStep.icon}</span>
-            <div>
-              <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">
-                Comanda # {order.order_number}
-              </p>
-              <p className="font-bold text-gray-900">{currentStep.label}</p>
-            </div>
+      <div
+        className="px-5 py-4 flex items-start justify-between"
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+      >
+        <div className="flex items-center gap-3">
+          <div
+            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-xl"
+            style={{ background: isDelivered ? 'rgba(52,211,153,0.12)' : isReady ? 'rgba(52,211,153,0.10)' : 'rgba(214,178,94,0.10)', border: `1px solid ${isDelivered || isReady ? 'rgba(52,211,153,0.25)' : 'rgba(214,178,94,0.20)'}` }}
+          >
+            {currentStep.icon}
           </div>
-          <p className="text-sm text-gray-500 mt-1">{currentStep.description}</p>
+          <div>
+            <p className="text-[10px] uppercase tracking-widest text-white/30 font-semibold">
+              Comanda #{order.order_number}
+            </p>
+            <p className="font-bold text-white leading-tight">{currentStep.label}</p>
+            <p className="text-xs text-white/45 mt-0.5">{currentStep.description}</p>
+          </div>
         </div>
         {totalPieces > 0 && (
-          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full ml-2 flex-shrink-0">
+          <span
+            className="text-xs px-2 py-1 rounded-lg flex-shrink-0"
+            style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.50)', border: '1px solid rgba(255,255,255,0.08)' }}
+          >
             {totalPieces} peça{totalPieces > 1 ? 's' : ''}
           </span>
         )}
       </div>
 
-      {/* Barra visual de progresso */}
-      <div className="px-5 py-3 bg-gray-50 border-y border-gray-100">
-        <div className="flex items-center gap-1">
+      {/* Barra de progresso */}
+      <div className="px-5 py-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-[10px] text-white/30 uppercase tracking-wider">Progresso</span>
+          <span className="text-xs font-bold" style={{ color: '#d6b25e' }}>{progress}%</span>
+        </div>
+        <div className="flex gap-0.5">
           {PROCESS_STEPS.map((step, i) => (
-            <div key={step.status} className="flex items-center flex-1 last:flex-none">
-              <div
-                title={step.label}
-                className={[
-                  'h-2 flex-1 rounded-full transition-all',
-                  i < currentIdx
-                    ? 'bg-emerald-500'
-                    : i === currentIdx
-                      ? 'bg-blue-500'
-                      : 'bg-gray-200',
-                ].join(' ')}
-              />
-            </div>
+            <div
+              key={step.status}
+              title={step.label}
+              className="flex-1 h-1.5 rounded-full transition-all"
+              style={{
+                background: i < currentIdx
+                  ? 'rgba(52,211,153,0.7)'
+                  : i === currentIdx
+                    ? '#d6b25e'
+                    : 'rgba(255,255,255,0.07)',
+              }}
+            />
           ))}
         </div>
         <div className="flex justify-between mt-1">
-          <span className="text-[10px] text-gray-400">Entrada</span>
-          <span className="text-[10px] text-gray-400">Entrega</span>
+          <span className="text-[9px] text-white/20">Entrada</span>
+          <span className="text-[9px] text-white/20">Entrega</span>
         </div>
       </div>
 
-      {/* Timeline de etapas */}
+      {/* Timeline */}
       <div className="px-5 py-4 space-y-3">
-        {PROCESS_STEPS.slice(0, currentIdx + 2 > PROCESS_STEPS.length ? PROCESS_STEPS.length : currentIdx + 2).map((step, i) => {
+        {PROCESS_STEPS.slice(0, Math.min(currentIdx + 2, PROCESS_STEPS.length)).map((step, i) => {
           const done = i < currentIdx
           const current = i === currentIdx
           const ts = eventTimestamps[i === 0 ? 'received' : step.status]
@@ -183,23 +204,35 @@ function OrderTracker({ order }: { order: Order }) {
 
           return (
             <div key={step.status} className="flex items-start gap-3">
-              <div className={[
-                'w-6 h-6 rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5',
-                done ? 'bg-emerald-500 text-white' : current ? 'bg-blue-500 text-white ring-4 ring-blue-100' : 'bg-gray-100 text-gray-300',
-              ].join(' ')}>
+              <div
+                className="w-6 h-6 rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5 font-bold"
+                style={{
+                  background: done
+                    ? 'rgba(52,211,153,0.20)'
+                    : current
+                      ? 'rgba(214,178,94,0.18)'
+                      : 'rgba(255,255,255,0.04)',
+                  border: done
+                    ? '1px solid rgba(52,211,153,0.35)'
+                    : current
+                      ? '1.5px solid rgba(214,178,94,0.50)'
+                      : '1px solid rgba(255,255,255,0.08)',
+                  color: done ? '#34d399' : current ? '#d6b25e' : 'rgba(255,255,255,0.20)',
+                }}
+              >
                 {done ? '✓' : current ? '●' : '○'}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <p className={['text-sm font-medium', done || current ? 'text-gray-900' : 'text-gray-300'].join(' ')}>
+                  <p className="text-sm font-medium" style={{ color: done || current ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.20)' }}>
                     {step.label}
                   </p>
                   {formattedTs && (
-                    <span className="text-[10px] text-gray-400 ml-2">{formattedTs}</span>
+                    <span className="text-[10px] text-white/25 ml-2">{formattedTs}</span>
                   )}
                 </div>
                 {current && (
-                  <p className="text-xs text-blue-600 mt-0.5">{step.description}</p>
+                  <p className="text-xs mt-0.5" style={{ color: 'rgba(214,178,94,0.65)' }}>{step.description}</p>
                 )}
               </div>
             </div>
@@ -207,11 +240,14 @@ function OrderTracker({ order }: { order: Order }) {
         })}
       </div>
 
-      {/* Rodapé com entrega prometida */}
+      {/* Rodapé entrega prometida */}
       {promised && !isDelivered && (
-        <div className="px-5 py-3 border-t border-gray-100 bg-gray-50">
-          <p className="text-xs text-gray-500">
-            📅 Entrega prometida: <span className="font-semibold text-gray-700">{promised}</span>
+        <div
+          className="px-5 py-3"
+          style={{ borderTop: '1px solid rgba(255,255,255,0.04)', background: 'rgba(214,178,94,0.04)' }}
+        >
+          <p className="text-xs text-white/35">
+            Entrega prevista: <span className="font-semibold text-white/65">{promised}</span>
           </p>
         </div>
       )}
@@ -229,18 +265,27 @@ function HistoryCard({ order }: { order: Order }) {
     : null
 
   return (
-    <div className="flex items-center justify-between rounded-xl bg-gray-50 border border-gray-100 px-4 py-3">
+    <div
+      className="flex items-center justify-between rounded-xl px-4 py-3"
+      style={{
+        background: 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(255,255,255,0.06)',
+      }}
+    >
       <div className="flex items-center gap-3">
-        <span className="text-lg">🏠</span>
+        <span className="text-base">🏠</span>
         <div>
-          <p className="text-sm font-medium text-gray-700">Comanda # {order.order_number}</p>
-          <p className="text-xs text-gray-400">
+          <p className="text-sm font-medium text-white/70">Comanda #{order.order_number}</p>
+          <p className="text-xs text-white/30">
             {totalPieces} peça{totalPieces > 1 ? 's' : ''}
-            {formatted ? ` · Entregue em ${formatted}` : ''}
+            {formatted ? ` · Entregue ${formatted}` : ''}
           </p>
         </div>
       </div>
-      <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium">
+      <span
+        className="text-[11px] px-2 py-0.5 rounded-full font-medium"
+        style={{ background: 'rgba(52,211,153,0.12)', color: '#34d399', border: '1px solid rgba(52,211,153,0.25)' }}
+      >
         Entregue
       </span>
     </div>

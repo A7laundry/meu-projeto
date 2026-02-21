@@ -46,8 +46,8 @@ export function SlaAlertList({ alerts, unitId, operatorId }: SlaAlertListProps) 
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <span className="text-5xl mb-4">✅</span>
-        <h2 className="text-lg font-semibold text-gray-700">Nenhum alerta de SLA</h2>
-        <p className="text-sm text-gray-400 mt-1">Todas as comandas estão dentro do prazo.</p>
+        <h2 className="text-lg font-semibold text-white/75">Nenhum alerta de SLA</h2>
+        <p className="text-sm text-white/35 mt-1">Todas as comandas estão dentro do prazo.</p>
       </div>
     )
   }
@@ -63,22 +63,22 @@ export function SlaAlertList({ alerts, unitId, operatorId }: SlaAlertListProps) 
             <div className="flex items-center gap-2 flex-wrap">
               <Link
                 href={`/unit/${unitId}/production/orders/${alert.orderId}`}
-                className="font-mono font-bold text-lg text-gray-900 hover:underline"
+                className="font-mono font-bold text-lg text-white hover:underline"
               >
                 {alert.orderNumber}
               </Link>
               <Badge variant="destructive">{SECTOR_LABELS[alert.status] ?? alert.status}</Badge>
             </div>
-            <p className="text-gray-700 mt-0.5">{alert.clientName}</p>
+            <p className="text-white/75 mt-0.5">{alert.clientName}</p>
             <div className="flex items-center gap-3 mt-2 text-sm">
               <span className="text-red-700 font-semibold">
                 {formatDuration(alert.minutesInSector)} no setor
               </span>
-              <span className="text-gray-400">·</span>
-              <span className="text-gray-500">
+              <span className="text-white/35">·</span>
+              <span className="text-white/40">
                 SLA: {formatDuration(alert.slaMinutes)}
               </span>
-              <span className="text-gray-400">·</span>
+              <span className="text-white/35">·</span>
               <span className="text-red-600 font-medium">
                 +{formatDuration(alert.excessMinutes)} de atraso
               </span>

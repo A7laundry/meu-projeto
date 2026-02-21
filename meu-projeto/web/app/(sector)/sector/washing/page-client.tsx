@@ -32,7 +32,16 @@ export function SectorPageClient({
   return (
     <div className="h-screen flex flex-col overflow-hidden relative">
       {showSuccess && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white px-6 py-3 rounded-full text-sm font-medium shadow-lg">
+        <div
+          className="absolute top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-full text-sm font-bold shadow-lg slide-up"
+          style={{
+            background: 'rgba(52,211,153,0.18)',
+            border: '1px solid rgba(52,211,153,0.40)',
+            color: '#34d399',
+            backdropFilter: 'blur(12px)',
+            boxShadow: '0 0 20px rgba(52,211,153,0.20)',
+          }}
+        >
           ✓ Concluído com sucesso!
         </div>
       )}

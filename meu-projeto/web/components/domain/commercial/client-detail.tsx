@@ -32,13 +32,13 @@ export function ClientDetail({ unitId, client, stats, notes }: ClientDetailProps
   return (
     <div className="space-y-6">
       {/* Info do cliente */}
-      <div className="rounded-lg border bg-white p-5 space-y-3">
+      <div className="rounded-lg border bg-[rgba(255,255,255,0.04)] p-5 space-y-3">
         <div className="flex items-center gap-2">
           <h2 className="text-lg font-semibold">{client.name}</h2>
           <Badge variant="outline">{CLIENT_TYPE_LABELS[client.type]}</Badge>
           {!client.active && <Badge variant="secondary">Inativo</Badge>}
         </div>
-        <div className="grid grid-cols-2 gap-2 text-sm text-gray-600">
+        <div className="grid grid-cols-2 gap-2 text-sm text-white/55">
           {client.document && <p>Doc: {client.document}</p>}
           {client.phone && <p>Tel: {client.phone}</p>}
           {client.email && <p>Email: {client.email}</p>}
@@ -53,9 +53,9 @@ export function ClientDetail({ unitId, client, stats, notes }: ClientDetailProps
           { label: 'Total gasto', value: formatCurrency(stats.totalSpent) },
           { label: 'Ticket médio', value: formatCurrency(stats.avgTicket) },
         ].map((s) => (
-          <div key={s.label} className="rounded-lg border bg-white p-4 text-center">
-            <p className="text-2xl font-bold text-gray-900">{s.value}</p>
-            <p className="text-xs text-gray-500 mt-1">{s.label}</p>
+          <div key={s.label} className="rounded-lg border bg-[rgba(255,255,255,0.04)] p-4 text-center">
+            <p className="text-2xl font-bold text-white">{s.value}</p>
+            <p className="text-xs text-white/40 mt-1">{s.label}</p>
           </div>
         ))}
       </div>
@@ -89,17 +89,17 @@ export function ClientDetail({ unitId, client, stats, notes }: ClientDetailProps
       )}
 
       {/* Notas de atendimento */}
-      <div className="rounded-lg border bg-white p-5 space-y-4">
-        <h3 className="font-semibold text-gray-900">Notas de Atendimento</h3>
+      <div className="rounded-lg border bg-[rgba(255,255,255,0.04)] p-5 space-y-4">
+        <h3 className="font-semibold text-white">Notas de Atendimento</h3>
         <CrmNoteForm clientId={client.id} unitId={unitId} />
 
         <div className="space-y-3 mt-2">
           {notes.length === 0 && (
-            <p className="text-sm text-gray-400">Nenhuma nota registrada.</p>
+            <p className="text-sm text-white/35">Nenhuma nota registrada.</p>
           )}
           {notes.map((note) => (
-            <div key={note.id} className="rounded-md border bg-gray-50 p-3 space-y-1">
-              <div className="flex items-center justify-between text-xs text-gray-500">
+            <div key={note.id} className="rounded-md border bg-[rgba(255,255,255,0.03)] p-3 space-y-1">
+              <div className="flex items-center justify-between text-xs text-white/40">
                 <span className="font-medium">
                   {CRM_NOTE_CATEGORY_LABELS[note.category]}
                   {note.author_name && ` · ${note.author_name}`}
@@ -110,7 +110,7 @@ export function ClientDetail({ unitId, client, stats, notes }: ClientDetailProps
                   })}
                 </span>
               </div>
-              <p className="text-sm text-gray-700">{note.content}</p>
+              <p className="text-sm text-white/75">{note.content}</p>
             </div>
           ))}
         </div>

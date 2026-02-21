@@ -13,8 +13,8 @@ export default async function NewOrderPage({
   return (
     <div className="p-6 max-w-3xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Nova Comanda</h1>
-        <p className="text-sm text-gray-500 mt-0.5">Registre as peças recebidas do cliente</p>
+        <h1 className="text-2xl font-bold text-white">Nova Comanda</h1>
+        <p className="text-sm text-white/40 mt-0.5">Registre as peças recebidas do cliente</p>
       </div>
       <OrderForm unitId={unitId} unitSlug={unitSlug} />
     </div>

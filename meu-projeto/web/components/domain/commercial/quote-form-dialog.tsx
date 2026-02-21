@@ -120,7 +120,7 @@ export function QuoteFormDialog({ unitId, activeClients, priceTable }: QuoteForm
 
           {/* Adicionar item */}
           <div className="space-y-2 border rounded-lg p-3">
-            <p className="text-sm font-medium text-gray-700">Adicionar item</p>
+            <p className="text-sm font-medium text-white/75">Adicionar item</p>
             <div className="grid grid-cols-3 gap-2">
               <div className="col-span-1">
                 <Select value={newPieceType} onValueChange={handleSelectPieceType}>
@@ -173,7 +173,7 @@ export function QuoteFormDialog({ unitId, activeClients, priceTable }: QuoteForm
           {items.length > 0 && (
             <div className="space-y-1">
               {items.map((item, idx) => (
-                <div key={idx} className="flex items-center justify-between rounded bg-gray-50 px-3 py-2 text-sm">
+                <div key={idx} className="flex items-center justify-between rounded bg-[rgba(255,255,255,0.03)] px-3 py-2 text-sm">
                   <span>
                     {PIECE_TYPE_LABELS[item.piece_type as keyof typeof PIECE_TYPE_LABELS] ?? item.piece_type}
                     {' · '}

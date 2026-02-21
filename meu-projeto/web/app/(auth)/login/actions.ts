@@ -45,10 +45,10 @@ export async function login(formData: FormData) {
     .eq('id', data.user.id)
     .single()
 
-  // Se não existe profile ainda, manda para setup em vez de cair em /
+  // Se não existe profile ainda, volta ao login com mensagem de erro
   if (profileError || !profile) {
     revalidatePath('/', 'layout')
-    redirect('/profile/setup')
+    redirect('/login?error=Perfil não encontrado. Contate o administrador do sistema.')
   }
 
   revalidatePath('/', 'layout')

@@ -80,7 +80,7 @@ export function ManifestList({
 
       {/* Gerar romaneios pendentes */}
       {pendingRoutes.length > 0 && (
-        <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-4 space-y-2 print:hidden">
+        <div className="rounded-lg border border-dashed border-white/10 bg-[rgba(255,255,255,0.03)] p-4 space-y-2 print:hidden">
           <p className="text-sm font-medium text-gray-600">
             Rotas sem romaneio hoje:
           </p>

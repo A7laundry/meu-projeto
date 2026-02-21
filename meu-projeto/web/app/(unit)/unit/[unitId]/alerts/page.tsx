@@ -16,7 +16,7 @@ export default async function AlertsPage({
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-white">
           Alertas de SLA
           {alerts.length > 0 && (
             <span className="ml-3 inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100 text-red-700 text-sm font-bold">
@@ -24,7 +24,7 @@ export default async function AlertsPage({
             </span>
           )}
         </h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-white/40 mt-1">
           Comandas paradas além do tempo esperado por setor · atualiza a cada 60s
         </p>
       </div>

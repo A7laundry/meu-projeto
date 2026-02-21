@@ -17,7 +17,7 @@ interface EquipmentLogListProps {
 export function EquipmentLogList({ logs }: EquipmentLogListProps) {
   if (logs.length === 0) {
     return (
-      <p className="text-sm text-gray-400 text-center py-8">
+      <p className="text-sm text-white/35 text-center py-8">
         Nenhum registro no diário de bordo.
       </p>
     )
@@ -26,21 +26,21 @@ export function EquipmentLogList({ logs }: EquipmentLogListProps) {
   return (
     <div className="space-y-2">
       {logs.map((log) => (
-        <div key={log.id} className="flex gap-4 items-start p-3 rounded-lg border bg-white">
+        <div key={log.id} className="flex gap-4 items-start p-3 rounded-lg border bg-[rgba(255,255,255,0.04)]">
           <div className="flex-shrink-0 pt-0.5">
             <Badge variant={LOG_TYPE_VARIANT[log.log_type]}>
               {EQUIPMENT_LOG_TYPE_LABELS[log.log_type]}
             </Badge>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center gap-2 text-sm text-white/40">
               <span>{format(new Date(log.occurred_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</span>
               {log.operator_name && <span>· {log.operator_name}</span>}
               {log.cycles != null && (
-                <span className="text-blue-600 font-medium">{log.cycles} ciclo(s)</span>
+                <span className="text-[#60a5fa] font-medium">{log.cycles} ciclo(s)</span>
               )}
             </div>
-            {log.notes && <p className="text-sm text-gray-700 mt-0.5">{log.notes}</p>}
+            {log.notes && <p className="text-sm text-white/75 mt-0.5">{log.notes}</p>}
           </div>
         </div>
       ))}

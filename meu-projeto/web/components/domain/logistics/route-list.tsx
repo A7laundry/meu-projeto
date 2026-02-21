@@ -64,7 +64,7 @@ export function RouteList({ unitId, initialRoutes, activeClients }: RouteListPro
       </div>
 
       {initialRoutes.length === 0 && (
-        <p className="text-center text-gray-400 py-12">Nenhuma rota cadastrada.</p>
+        <p className="text-center text-white/35 py-12">Nenhuma rota cadastrada.</p>
       )}
 
       {initialRoutes.map((route) => {
@@ -76,14 +76,14 @@ export function RouteList({ unitId, initialRoutes, activeClients }: RouteListPro
         return (
           <div
             key={route.id}
-            className={`rounded-lg border bg-white p-4 space-y-3 ${
+            className={`rounded-lg border bg-[rgba(255,255,255,0.04)] p-4 space-y-3 ${
               !route.active ? 'opacity-50' : ''
             }`}
           >
             <div className="flex items-start justify-between gap-2">
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-semibold text-gray-900">{route.name}</h3>
+                  <h3 className="font-semibold text-white">{route.name}</h3>
                   <Badge variant="outline">
                     {ROUTE_SHIFT_LABELS[route.shift]}
                   </Badge>
@@ -91,7 +91,7 @@ export function RouteList({ unitId, initialRoutes, activeClients }: RouteListPro
                     {route.active ? 'Ativa' : 'Inativa'}
                   </Badge>
                 </div>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-white/40 mt-1">
                   {weekdaysLabel(route.weekdays)}
                   {route.driver_name && ` · Motorista: ${route.driver_name}`}
                 </p>
@@ -119,19 +119,19 @@ export function RouteList({ unitId, initialRoutes, activeClients }: RouteListPro
 
             {/* Paradas */}
             <div className="space-y-1">
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+              <p className="text-xs font-medium text-white/40 uppercase tracking-wide">
                 Paradas ({(route.stops ?? []).length})
               </p>
               {(route.stops ?? []).length === 0 && (
-                <p className="text-sm text-gray-400">Nenhuma parada adicionada.</p>
+                <p className="text-sm text-white/35">Nenhuma parada adicionada.</p>
               )}
               {(route.stops ?? []).map((stop, idx) => (
                 <div
                   key={stop.id}
-                  className="flex items-center justify-between rounded bg-gray-50 px-3 py-1.5"
+                  className="flex items-center justify-between rounded bg-[rgba(255,255,255,0.03)] px-3 py-1.5"
                 >
-                  <span className="text-sm text-gray-700">
-                    <span className="font-mono text-gray-400 mr-2">{idx + 1}.</span>
+                  <span className="text-sm text-white/75">
+                    <span className="font-mono text-white/35 mr-2">{idx + 1}.</span>
                     {stop.client_name ?? stop.client_id}
                   </span>
                   <Button

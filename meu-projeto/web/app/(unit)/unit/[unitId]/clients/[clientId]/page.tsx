@@ -25,7 +25,7 @@ export default async function ClientDetailPage({
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <div className="mb-4">
-        <Button asChild variant="ghost" size="sm" className="text-gray-500">
+        <Button asChild variant="ghost" size="sm" className="text-white/40">
           <Link href={`/unit/${unitId}/clients`}>← Voltar</Link>
         </Button>
       </div>

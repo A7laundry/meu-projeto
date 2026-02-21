@@ -22,8 +22,8 @@ export default async function QuotesPage({
     <div className="p-8 max-w-5xl mx-auto">
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Orçamentos</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-white">Orçamentos</h1>
+          <p className="text-sm text-white/40 mt-1">
             Crie e acompanhe orçamentos para clientes
           </p>
         </div>

@@ -124,7 +124,7 @@ export function RouteFormDialog({ unitId, route, trigger }: RouteFormDialogProps
                   className={`px-3 py-1 rounded-full text-sm border transition-colors ${
                     weekdays.includes(idx)
                       ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-gray-600 border-gray-300 hover:border-blue-400'
+                      : 'bg-[rgba(255,255,255,0.04)] text-gray-600 border-white/10 hover:border-blue-400'
                   }`}
                 >
                   {label}

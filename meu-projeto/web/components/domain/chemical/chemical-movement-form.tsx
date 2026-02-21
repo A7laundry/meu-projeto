@@ -34,7 +34,7 @@ export function ChemicalMovementForm({ product, unitId, onSuccess }: ChemicalMov
   const unit = MEASURE_UNIT_LABELS[product.measure_unit]
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3 p-3 bg-gray-50 rounded-lg border">
+    <form onSubmit={handleSubmit} className="space-y-3 p-3 bg-[rgba(255,255,255,0.03)] rounded-lg border">
       <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
         Registrar movimentação — {product.name}
       </p>

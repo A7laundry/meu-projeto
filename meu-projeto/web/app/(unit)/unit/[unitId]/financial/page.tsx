@@ -39,8 +39,8 @@ export default async function FinancialPage({
     <div className="p-8 max-w-6xl mx-auto space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Financeiro</h1>
-          <p className="text-sm text-gray-500 mt-1">Contas a receber e a pagar da unidade</p>
+          <h1 className="text-2xl font-bold text-white">Financeiro</h1>
+          <p className="text-sm text-white/40 mt-1">Contas a receber e a pagar da unidade</p>
         </div>
         <Button asChild variant="outline" size="sm">
           <Link href={`/unit/${unitId}/financial/cashflow`}>📈 Fluxo de Caixa / DRE</Link>
@@ -51,12 +51,12 @@ export default async function FinancialPage({
 
       <div className="space-y-6">
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-3">Contas a Receber</h2>
+          <h2 className="text-lg font-semibold text-white/90 mb-3">Contas a Receber</h2>
           <ReceivableList unitId={unitId} receivables={receivables} />
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-3">Contas a Pagar</h2>
+          <h2 className="text-lg font-semibold text-white/90 mb-3">Contas a Pagar</h2>
           <PayableList unitId={unitId} payables={payables} />
         </section>
       </div>

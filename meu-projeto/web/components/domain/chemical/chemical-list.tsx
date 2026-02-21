@@ -20,7 +20,7 @@ export function ChemicalList({ unitId, products }: ChemicalListProps) {
 
   if (products.length === 0) {
     return (
-      <p className="text-center text-gray-400 py-16">
+      <p className="text-center text-white/35 py-16">
         Nenhum produto cadastrado. Adicione o primeiro insumo.
       </p>
     )
@@ -36,12 +36,12 @@ export function ChemicalList({ unitId, products }: ChemicalListProps) {
         return (
           <div
             key={p.id}
-            className={`rounded-xl border bg-white p-4 space-y-3 ${belowMin ? 'border-red-300' : ''}`}
+            className={`rounded-xl border bg-[rgba(255,255,255,0.04)] p-4 space-y-3 ${belowMin ? 'border-red-300' : ''}`}
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-semibold text-gray-900">{p.name}</span>
+                  <span className="font-semibold text-white">{p.name}</span>
                   <Badge variant="secondary">{CHEMICAL_CATEGORY_LABELS[p.category]}</Badge>
                   {!p.active && <Badge variant="destructive">Inativo</Badge>}
                   {belowMin && (
@@ -50,7 +50,7 @@ export function ChemicalList({ unitId, products }: ChemicalListProps) {
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-gray-500 mt-0.5">
+                <p className="text-sm text-white/40 mt-0.5">
                   {p.supplier ? `Fornecedor: ${p.supplier} · ` : ''}
                   {p.cost_per_unit != null
                     ? `R$ ${p.cost_per_unit.toFixed(4)}/${unit}`
@@ -60,13 +60,13 @@ export function ChemicalList({ unitId, products }: ChemicalListProps) {
 
               <div className="text-right flex-shrink-0">
                 <p
-                  className={`text-2xl font-bold tabular-nums ${belowMin ? 'text-red-600' : 'text-gray-900'}`}
+                  className={`text-2xl font-bold tabular-nums ${belowMin ? 'text-red-600' : 'text-white'}`}
                 >
                   {(p.current_stock ?? 0).toLocaleString('pt-BR', { maximumFractionDigits: 2 })}
                 </p>
-                <p className="text-xs text-gray-400">{unit}</p>
+                <p className="text-xs text-white/35">{unit}</p>
                 {p.minimum_stock > 0 && (
-                  <p className="text-xs text-gray-400">Mín: {p.minimum_stock} {unit}</p>
+                  <p className="text-xs text-white/35">Mín: {p.minimum_stock} {unit}</p>
                 )}
               </div>
             </div>
@@ -74,11 +74,11 @@ export function ChemicalList({ unitId, products }: ChemicalListProps) {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setExpanded(isExpanded ? null : p.id)}
-                className="text-xs text-blue-600 hover:underline"
+                className="text-xs text-[#60a5fa] hover:underline"
               >
                 {isExpanded ? 'Fechar movimentação' : 'Registrar entrada/saída'}
               </button>
-              <span className="text-gray-300">·</span>
+              <span className="text-white/60">·</span>
               <ChemicalFormDialog unitId={unitId} mode="edit" product={p} />
             </div>
 

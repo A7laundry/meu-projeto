@@ -133,7 +133,7 @@ export function ClientFormDialog({ unitId, client, trigger }: ClientFormDialogPr
           </div>
 
           <div className="space-y-2">
-            <p className="text-sm font-medium text-gray-700">Endereço</p>
+            <p className="text-sm font-medium text-white/75">Endereço</p>
             <div className="grid grid-cols-3 gap-3">
               <div className="col-span-2 space-y-1">
                 <Label htmlFor="address_street">Rua / Avenida</Label>

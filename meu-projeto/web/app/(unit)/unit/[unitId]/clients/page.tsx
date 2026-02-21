@@ -14,8 +14,9 @@ export default async function ClientsPage({
   return (
     <div className="p-8 max-w-6xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Clientes</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-[11px] uppercase tracking-widest text-[#d6b25e]/40 font-semibold mb-1">Unidade</p>
+        <h1 className="text-2xl font-bold text-white tracking-tight">Clientes</h1>
+        <p className="text-sm text-white/40 mt-1">
           Cadastro de clientes B2B e pessoas físicas da unidade
         </p>
       </div>

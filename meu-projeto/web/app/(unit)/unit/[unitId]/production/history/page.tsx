@@ -14,8 +14,8 @@ export default async function ProductionHistoryPage({
   return (
     <div className="p-8 max-w-6xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Histórico de Produção</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-bold text-white">Histórico de Produção</h1>
+        <p className="text-sm text-white/40 mt-1">
           Todas as comandas · busca, filtros e exportação
         </p>
       </div>

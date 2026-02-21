@@ -107,9 +107,9 @@ export function OrderHistoryTable({
   return (
     <div className="space-y-4">
       {/* Filtros */}
-      <div className="flex flex-wrap items-end gap-3 p-4 bg-gray-50 rounded-xl border">
+      <div className="flex flex-wrap items-end gap-3 p-4 bg-[rgba(255,255,255,0.03)] rounded-xl border">
         <div className="flex-1 min-w-48">
-          <label className="text-xs text-gray-500 mb-1 block">Buscar</label>
+          <label className="text-xs text-white/40 mb-1 block">Buscar</label>
           <Input
             placeholder="Nº comanda ou cliente..."
             value={search}
@@ -118,7 +118,7 @@ export function OrderHistoryTable({
           />
         </div>
         <div className="w-36">
-          <label className="text-xs text-gray-500 mb-1 block">Status</label>
+          <label className="text-xs text-white/40 mb-1 block">Status</label>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
@@ -131,7 +131,7 @@ export function OrderHistoryTable({
           </select>
         </div>
         <div>
-          <label className="text-xs text-gray-500 mb-1 block">De</label>
+          <label className="text-xs text-white/40 mb-1 block">De</label>
           <Input
             type="date"
             value={dateFrom}
@@ -140,7 +140,7 @@ export function OrderHistoryTable({
           />
         </div>
         <div>
-          <label className="text-xs text-gray-500 mb-1 block">Até</label>
+          <label className="text-xs text-white/40 mb-1 block">Até</label>
           <Input
             type="date"
             value={dateTo}
@@ -157,27 +157,27 @@ export function OrderHistoryTable({
       </div>
 
       {/* Contagem */}
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-white/40">
         {isPending ? 'Carregando...' : `${total} comanda(s) encontrada(s)`}
       </p>
 
       {/* Tabela */}
-      <div className="rounded-xl border bg-white overflow-hidden">
+      <div className="rounded-xl border bg-[rgba(255,255,255,0.04)] overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-[rgba(255,255,255,0.03)] border-b">
             <tr>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Comanda</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Cliente</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
-              <th className="text-right px-4 py-3 font-medium text-gray-600">Peças</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Criado em</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Promessa</th>
+              <th className="text-left px-4 py-3 font-medium text-white/55">Comanda</th>
+              <th className="text-left px-4 py-3 font-medium text-white/55">Cliente</th>
+              <th className="text-left px-4 py-3 font-medium text-white/55">Status</th>
+              <th className="text-right px-4 py-3 font-medium text-white/55">Peças</th>
+              <th className="text-left px-4 py-3 font-medium text-white/55">Criado em</th>
+              <th className="text-left px-4 py-3 font-medium text-white/55">Promessa</th>
             </tr>
           </thead>
           <tbody className="divide-y">
             {orders.length === 0 && (
               <tr>
-                <td colSpan={6} className="text-center text-gray-400 py-12">
+                <td colSpan={6} className="text-center text-white/35 py-12">
                   Nenhuma comanda encontrada.
                 </td>
               </tr>
@@ -185,26 +185,26 @@ export function OrderHistoryTable({
             {orders.map((o) => {
               const pieces = o.items?.reduce((s, i) => s + i.quantity, 0) ?? 0
               return (
-                <tr key={o.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={o.id} className="hover:bg-[rgba(255,255,255,0.03)] transition-colors">
                   <td className="px-4 py-3">
                     <Link
                       href={`/unit/${unitId}/production/orders/${o.id}`}
-                      className="font-mono font-bold text-blue-600 hover:underline"
+                      className="font-mono font-bold text-[#60a5fa] hover:underline"
                     >
                       {o.order_number}
                     </Link>
                   </td>
-                  <td className="px-4 py-3 text-gray-700">{o.client_name}</td>
+                  <td className="px-4 py-3 text-white/75">{o.client_name}</td>
                   <td className="px-4 py-3">
                     <Badge variant={STATUS_VARIANT[o.status] ?? 'secondary'}>
                       {STATUS_LABELS[o.status]}
                     </Badge>
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">{pieces}</td>
-                  <td className="px-4 py-3 text-gray-500">
+                  <td className="px-4 py-3 text-white/40">
                     {format(new Date(o.created_at), 'dd/MM/yy HH:mm', { locale: ptBR })}
                   </td>
-                  <td className="px-4 py-3 text-gray-500">
+                  <td className="px-4 py-3 text-white/40">
                     {format(new Date(o.promised_at), 'dd/MM/yy HH:mm', { locale: ptBR })}
                   </td>
                 </tr>
@@ -225,7 +225,7 @@ export function OrderHistoryTable({
           >
             ← Anterior
           </Button>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-white/40">
             Página {page} de {totalPages}
           </span>
           <Button

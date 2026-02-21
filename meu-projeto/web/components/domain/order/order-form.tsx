@@ -92,7 +92,7 @@ export function OrderForm({ unitId, unitSlug }: OrderFormProps) {
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Dados do cliente */}
       <section className="space-y-4">
-        <h2 className="text-base font-semibold text-gray-800 border-b pb-2">Dados do Cliente</h2>
+        <h2 className="text-base font-semibold text-white/90 border-b pb-2">Dados do Cliente</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <Label htmlFor="client_name">Nome do cliente *</Label>
@@ -130,7 +130,7 @@ export function OrderForm({ unitId, unitSlug }: OrderFormProps) {
       {/* Itens da comanda */}
       <section className="space-y-4">
         <div className="flex items-center justify-between border-b pb-2">
-          <h2 className="text-base font-semibold text-gray-800">
+          <h2 className="text-base font-semibold text-white/90">
             Itens da Comanda ({items.length})
           </h2>
           <Button type="button" variant="outline" size="sm" onClick={addItem}>
@@ -140,9 +140,9 @@ export function OrderForm({ unitId, unitSlug }: OrderFormProps) {
 
         <div className="space-y-4">
           {items.map((item, index) => (
-            <div key={index} className="rounded-lg border border-gray-200 p-4 space-y-3 bg-gray-50">
+            <div key={index} className="rounded-lg border border-white/08 p-4 space-y-3 bg-[rgba(255,255,255,0.03)]">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-600">Item {index + 1}</span>
+                <span className="text-sm font-medium text-white/55">Item {index + 1}</span>
                 {items.length > 1 && (
                   <button
                     type="button"

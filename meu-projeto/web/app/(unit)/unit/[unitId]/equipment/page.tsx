@@ -35,7 +35,7 @@ export default async function EquipmentPage({
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Equipamentos</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-white/40 mt-1">
             {byType.washer} lavadoras · {byType.dryer} secadoras · {byType.iron} passadeiras
           </p>
         </div>
@@ -74,11 +74,11 @@ export default async function EquipmentPage({
                   </Link>
                 </TableCell>
                 <TableCell>{EQUIPMENT_TYPE_LABELS[eq.type]}</TableCell>
-                <TableCell className="text-gray-500">
+                <TableCell className="text-white/40">
                   {[eq.brand, eq.model].filter(Boolean).join(' · ') || '—'}
                 </TableCell>
                 <TableCell>{eq.capacity_kg ? `${eq.capacity_kg} kg` : '—'}</TableCell>
-                <TableCell className="font-mono text-xs text-gray-500">
+                <TableCell className="font-mono text-xs text-white/40">
                   {eq.serial_number ?? '—'}
                 </TableCell>
                 <TableCell>

@@ -14,8 +14,8 @@ export default async function PricingPage({
   return (
     <div className="p-8 max-w-3xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Tabela de Preços</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-bold text-white">Tabela de Preços</h1>
+        <p className="text-sm text-white/40 mt-1">
           Preços base por tipo de peça para cálculo de orçamentos
         </p>
       </div>
