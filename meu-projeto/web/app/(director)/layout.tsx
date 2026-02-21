@@ -1,6 +1,6 @@
 import { getUser } from '@/lib/auth/get-user'
 import { AppHeader } from '@/components/layout/app-header'
-import { DirectorSidebar } from '@/components/layout/director-sidebar'
+import { DirectorNav } from '@/components/layout/director-nav'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 async function getAllActiveUnits(): Promise<{ id: string; name: string }[]> {
@@ -29,7 +29,7 @@ export default async function DirectorLayout({
         dark
       />
       <div className="flex flex-1 overflow-hidden">
-        <DirectorSidebar units={units} />
+        <DirectorNav units={units} />
         <main className="flex-1 overflow-auto scrollbar-dark">{children}</main>
       </div>
     </div>
