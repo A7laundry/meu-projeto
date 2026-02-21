@@ -95,6 +95,22 @@ body {
   .animate-slide-right { animation: slide-in-right 0.4s cubic-bezier(0.16,1,0.3,1) both; }
 }
 
+/* ── Tipografia numérica ─────────────────────────────────── */
+@layer utilities {
+  .num-stat {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1, 'ss01' 1;
+    letter-spacing: -0.03em;
+  }
+  /* Stagger delays para entrada em cascata */
+  .stagger-1 { animation-delay: 0.04s; }
+  .stagger-2 { animation-delay: 0.08s; }
+  .stagger-3 { animation-delay: 0.12s; }
+  .stagger-4 { animation-delay: 0.16s; }
+  .stagger-5 { animation-delay: 0.20s; }
+  .stagger-6 { animation-delay: 0.24s; }
+}
+
 @layer components {
   .gold-text {
     background: linear-gradient(90deg, var(--gold) 0%, #fff2c0 30%, var(--gold2) 70%, var(--gold) 100%);
@@ -185,6 +201,28 @@ body {
     box-shadow: 0 0 28px rgba(214,178,94,0.10), 0 0 72px rgba(214,178,94,0.04);
   }
 
+  /* Hover lift nos cards */
+  .card-dark, .card-stat, .card-gold, .card-alert, .card-warn {
+    transition: transform 0.22s cubic-bezier(0.16,1,0.3,1), box-shadow 0.22s ease;
+    cursor: default;
+  }
+  .card-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.07);
+  }
+  .card-dark:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 36px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.06);
+  }
+  .card-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 48px rgba(214,178,94,0.18), 0 0 0 1px rgba(214,178,94,0.30);
+  }
+  .card-alert:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(239,68,68,0.18), 0 0 0 1px rgba(239,68,68,0.28);
+  }
+
   /* Seção header padrão */
   .section-header {
     font-size: 0.65rem;
@@ -192,6 +230,23 @@ body {
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: rgba(214,178,94,0.5);
+  }
+
+  /* Indicador lateral para nav ativo */
+  .nav-indicator {
+    position: relative;
+  }
+  .nav-indicator::before {
+    content: '';
+    position: absolute;
+    left: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 60%;
+    border-radius: 0 2px 2px 0;
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold2) 100%);
+    box-shadow: 0 0 8px rgba(214,178,94,0.6);
   }
 
   .btn-gold {

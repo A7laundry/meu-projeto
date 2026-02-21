@@ -7,75 +7,48 @@ export default function LoginPage({
   searchParams: Promise<{ error?: string; message?: string }>
 }) {
   return (
-    <div className="min-h-screen flex bg-[#07070a]">
-      {/* Painel esquerdo — branding */}
-      <div className="hidden lg:flex flex-col justify-between w-1/2 p-12 relative overflow-hidden">
-        {/* Background glow */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#d6b25e]/5 via-transparent to-transparent pointer-events-none" />
-        <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#d6b25e]/5 blur-3xl pointer-events-none" />
-
-        {/* Logo */}
-        <div>
-          <span className="text-3xl font-black tracking-tight gold-text">A7x</span>
-          <span className="ml-2 text-sm text-[#d6b25e]/50 font-medium">TecNologia</span>
-        </div>
-
-        {/* Headline */}
-        <div>
-          <h1 className="text-4xl font-black text-white leading-tight mb-4">
-            Sistema Operacional<br />
-            <span className="gold-text">Inteligente</span>
-          </h1>
-          <p className="text-white/40 text-base leading-relaxed max-w-sm">
-            Controle total da sua operação de lavanderia industrial.
-            Do chão de fábrica ao painel executivo.
-          </p>
-
-          <div className="mt-10 space-y-3">
-            {[
-              { icon: '◈', label: 'Dashboard executivo em tempo real' },
-              { icon: '⊞', label: 'Gestão multi-unidade centralizada' },
-              { icon: '◎', label: 'NPS e satisfação dos clientes' },
-              { icon: '⊟', label: 'Relatórios financeiros completos' },
-            ].map(({ icon, label }) => (
-              <div key={label} className="flex items-center gap-3 text-sm text-white/50">
-                <span className="text-[#d6b25e]/60">{icon}</span>
-                {label}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Footer */}
-        <p className="text-[10px] text-white/20 tracking-widest uppercase">
-          A7x TecNologia — OS. · v1.0
-        </p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#07070a] px-6 py-12 relative">
+      {/* Ambient glow */}
+      <div className="pointer-events-none fixed inset-0">
+        <div className="absolute top-[-20%] left-[30%] w-[500px] h-[500px] rounded-full bg-[#d6b25e]/4 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[20%] w-[400px] h-[400px] rounded-full bg-[#d6b25e]/3 blur-[100px]" />
       </div>
 
-      {/* Painel direito — formulário */}
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full max-w-sm">
-          {/* Mobile logo */}
-          <div className="text-center mb-8 lg:hidden">
-            <span className="text-2xl font-black gold-text">A7x</span>
-            <p className="text-xs text-white/40 mt-1">TecNologia - OS.</p>
-          </div>
-
-          {/* Card */}
-          <div className="glass rounded-2xl p-8 border border-[#d6b25e]/20">
-            <div className="mb-6">
-              <h2 className="text-xl font-bold text-white">Bem-vindo</h2>
-              <p className="text-sm text-white/40 mt-1">Acesse sua área de trabalho</p>
-            </div>
-
-            <LoginForm searchParams={searchParams} />
-          </div>
-
-          <p className="text-center text-xs text-white/20 mt-6">
-            A7x TecNologia · Sistema Operacional Inteligente
-          </p>
-        </div>
+      {/* Logo */}
+      <div className="text-center mb-8 relative z-10">
+        <span className="text-3xl font-black tracking-tight gold-text">A7x</span>
+        <p className="text-xs text-[#d6b25e]/50 font-medium mt-1">TecNologia - OS.</p>
       </div>
+
+      {/* Card */}
+      <div className="glass rounded-2xl p-8 w-full max-w-sm border border-[#d6b25e]/20 relative z-10">
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-white">Bem-vindo</h2>
+          <p className="text-sm text-white/40 mt-1">Acesse sua area de trabalho</p>
+        </div>
+
+        <LoginForm searchParams={searchParams} />
+      </div>
+
+      {/* Features grid */}
+      <div className="grid grid-cols-2 gap-4 mt-8 max-w-sm w-full relative z-10">
+        {[
+          { icon: '◈', label: 'Dashboard em tempo real' },
+          { icon: '⊞', label: 'Gestao multi-unidade' },
+          { icon: '◎', label: 'NPS e satisfacao' },
+          { icon: '⊟', label: 'Relatorios completos' },
+        ].map(({ icon, label }) => (
+          <div key={label} className="flex items-center gap-2 text-xs text-white/30">
+            <span className="text-[#d6b25e]/40">{icon}</span>
+            {label}
+          </div>
+        ))}
+      </div>
+
+      {/* Footer */}
+      <p className="text-center text-[10px] text-white/20 mt-8 relative z-10">
+        A7x TecNologia · Sistema Operacional Inteligente
+      </p>
     </div>
   )
 }
