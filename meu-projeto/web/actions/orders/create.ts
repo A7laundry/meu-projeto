@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
 import type { ActionResult } from '@/actions/staff/invite'
@@ -36,7 +35,7 @@ async function generateOrderNumber(
   unitId: string,
   unitSlug: string
 ): Promise<string> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const year = new Date().getFullYear()
 
   const { count } = await supabase
@@ -63,7 +62,7 @@ export async function createOrder(
     return { success: false, error: parsed.error.issues[0].message }
   }
 
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data: { user } } = await supabase.auth.getUser()
   const admin = createAdminClient()
 
@@ -127,7 +126,7 @@ export async function updateOrderStatus(
   notes?: string
 ): Promise<ActionResult> {
   const admin = createAdminClient()
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   const { error } = await admin
@@ -157,7 +156,7 @@ export async function updateOrderStatus(
 // ──────────────────────────────────────────────────────────────
 
 export async function searchClients(unitId: string, query: string) {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data } = await supabase
     .from('clients')
     .select('id, name, document, phone')

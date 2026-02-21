@@ -1,7 +1,6 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
-import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import type { ActionResult } from '@/actions/staff/invite'
 
@@ -18,7 +17,7 @@ export async function completeSorting(
   notes?: string
 ): Promise<ActionResult> {
   const admin = createAdminClient()
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   // Atualizar status da comanda

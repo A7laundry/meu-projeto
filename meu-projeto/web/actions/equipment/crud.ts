@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
 import type { Equipment, EquipmentStatus } from '@/types/equipment'
@@ -21,7 +20,7 @@ const equipmentSchema = z.object({
 })
 
 export async function listEquipment(unitId: string): Promise<Equipment[]> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('equipment')
     .select('*')

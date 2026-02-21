@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
 import type { ChemicalProduct } from '@/types/chemical'
@@ -23,7 +22,7 @@ const productSchema = z.object({
 })
 
 export async function listChemicalProducts(unitId: string): Promise<ChemicalProduct[]> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data: products, error } = await supabase
     .from('chemical_products')
     .select('*')

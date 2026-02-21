@@ -1,7 +1,6 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
-import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import type { ActionResult } from '@/actions/staff/invite'
 import type { OrderStatus } from '@/types/order'
@@ -34,7 +33,7 @@ export interface SectorCompletionData {
 
 export async function completeSector(data: SectorCompletionData): Promise<ActionResult> {
   const admin = createAdminClient()
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   const transition = SECTOR_TRANSITIONS[data.sectorKey]

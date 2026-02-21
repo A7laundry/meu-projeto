@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
 import type { ChemicalMovement } from '@/types/chemical'
@@ -21,7 +20,7 @@ export async function listMovements(
   productId: string,
   limit = 30
 ): Promise<ChemicalMovement[]> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('chemical_movements')
     .select('*')

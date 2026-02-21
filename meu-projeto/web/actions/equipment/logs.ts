@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
 import type { EquipmentLog } from '@/types/equipment-log'
@@ -20,7 +19,7 @@ const logSchema = z.object({
 })
 
 export async function listEquipmentLogs(equipmentId: string): Promise<EquipmentLog[]> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('equipment_logs')
     .select('*')
@@ -33,7 +32,7 @@ export async function listEquipmentLogs(equipmentId: string): Promise<EquipmentL
 }
 
 export async function getTotalCycles(equipmentId: string): Promise<number> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data } = await supabase
     .from('equipment_logs')
     .select('cycles')

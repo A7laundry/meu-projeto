@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { Order } from '@/types/order'
 
 export type OrderFilters = {
@@ -14,7 +14,7 @@ export async function listOrders(
   unitId: string,
   filters?: OrderFilters
 ): Promise<Order[]> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   let query = supabase
     .from('orders')
@@ -46,7 +46,7 @@ export async function listOrders(
 }
 
 export async function getOrder(orderId: string): Promise<Order | null> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const { data, error } = await supabase
     .from('orders')

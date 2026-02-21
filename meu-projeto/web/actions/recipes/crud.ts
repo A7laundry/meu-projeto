@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
 import type { Recipe, PieceType } from '@/types/recipe'
@@ -22,7 +21,7 @@ const recipeSchema = z.object({
 })
 
 export async function listRecipes(unitId: string, pieceType?: PieceType): Promise<Recipe[]> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   let query = supabase
     .from('recipes')
     .select('*')
@@ -41,7 +40,7 @@ export async function listRecipes(unitId: string, pieceType?: PieceType): Promis
 }
 
 export async function listActiveRecipes(unitId: string, pieceType: PieceType): Promise<Recipe[]> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('recipes')
     .select('id, name, piece_type, duration_minutes, temperature_celsius')

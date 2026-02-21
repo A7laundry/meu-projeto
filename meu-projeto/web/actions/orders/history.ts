@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { Order } from '@/types/order'
 
 export interface HistoryFilters {
@@ -24,7 +24,7 @@ export async function getOrderHistory(
   unitId: string,
   filters: HistoryFilters = {}
 ): Promise<HistoryResult> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const page = Math.max(1, filters.page ?? 1)
   const offset = (page - 1) * PAGE_SIZE
 
@@ -71,7 +71,7 @@ export async function getOrderHistory(
 }
 
 export async function getOrderWithEvents(orderId: string): Promise<Order | null> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data } = await supabase
     .from('orders')
     .select('*, items:order_items(*), events:order_events(*)')
