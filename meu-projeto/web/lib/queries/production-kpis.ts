@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { OrderStatus } from '@/types/order'
 
 export interface SectorKpi {
@@ -26,7 +26,7 @@ export interface ProductionKpis {
 }
 
 export async function getProductionKpis(unitId: string): Promise<ProductionKpis> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const today = new Date().toISOString().split('T')[0]
 

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { OrderStatus } from '@/types/order'
 
 const SLA_MINUTES: Partial<Record<OrderStatus, number>> = {
@@ -21,7 +21,7 @@ export interface SlaAlert {
 }
 
 export async function getSlaAlerts(unitId: string): Promise<SlaAlert[]> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const sectors = Object.keys(SLA_MINUTES) as OrderStatus[]
 

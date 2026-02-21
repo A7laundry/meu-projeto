@@ -35,6 +35,7 @@ const U_GERENTE   = 'a0000000-0000-0000-0000-000000000001'
 const U_OPERADOR  = 'a0000000-0000-0000-0000-000000000002'
 const U_MOTORISTA = 'a0000000-0000-0000-0000-000000000003'
 const U_LOJA      = 'a0000000-0000-0000-0000-000000000004'
+const U_DIRECTOR  = 'a0000000-0000-0000-0000-000000000005'
 
 async function step(label, fn) {
   process.stdout.write(`  ${label}... `)
@@ -83,6 +84,7 @@ await step('Unidade Norte', () =>
 
 // 2. USUÁRIOS AUTH
 console.log('\n2. Usuários Auth')
+await step('dennisarruda25@gmail.com (director)', () => upsertUser(U_DIRECTOR,  'dennisarruda25@gmail.com', 'A7l@vanderia25', 'Dennis Arruda'))
 await step('gerente@synkra.test  (unit_manager)', () => upsertUser(U_GERENTE,   'gerente@synkra.test',   'Synkra@123', 'Carlos Gerente'))
 await step('operador@synkra.test (operator)',     () => upsertUser(U_OPERADOR,  'operador@synkra.test',  'Synkra@123', 'Ana Operadora'))
 await step('motorista@synkra.test (driver)',      () => upsertUser(U_MOTORISTA, 'motorista@synkra.test', 'Synkra@123', 'João Motorista'))
@@ -92,6 +94,7 @@ await step('loja@synkra.test (store)',            () => upsertUser(U_LOJA,      
 console.log('\n3. Profiles')
 await step('Todos os profiles', () =>
   supabase.from('profiles').upsert([
+    { id: U_DIRECTOR,  full_name: 'Dennis Arruda',      role: 'director',     unit_id: null,        sector: null,      active: true },
     { id: U_GERENTE,   full_name: 'Carlos Gerente',     role: 'unit_manager', unit_id: UNIT_CENTRO, sector: null,      active: true },
     { id: U_OPERADOR,  full_name: 'Ana Operadora',      role: 'operator',     unit_id: UNIT_CENTRO, sector: 'washing', active: true },
     { id: U_MOTORISTA, full_name: 'João Motorista',     role: 'driver',       unit_id: UNIT_CENTRO, sector: null,      active: true },
