@@ -1,4 +1,4 @@
-import { ClipboardList, Package, Activity, DollarSign, TrendingDown } from 'lucide-react'
+import { ClipboardList, Package, Activity, DollarSign, TrendingDown, TrendingUp } from 'lucide-react'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getProductionKpis } from '@/lib/queries/production-kpis'
 import { KpiCard } from '@/components/domain/kpi/kpi-card'
@@ -7,6 +7,37 @@ import { SectorQueueChart } from '@/components/domain/kpi/sector-queue-chart'
 import { RingGauge } from '@/components/ui/ring-gauge'
 
 export const revalidate = 60
+
+async function getDailyRevenue(unitId: string): Promise<number> {
+  const supabase = createAdminClient()
+  const today = new Date().toISOString().split('T')[0]
+
+  const [ordersRes, pricesRes] = await Promise.all([
+    supabase
+      .from('orders')
+      .select('items:order_items(piece_type, quantity)')
+      .eq('unit_id', unitId)
+      .gte('created_at', `${today}T00:00:00`),
+    supabase
+      .from('price_table')
+      .select('piece_type, price')
+      .eq('unit_id', unitId)
+      .eq('active', true),
+  ])
+
+  const priceMap = new Map<string, number>()
+  for (const p of pricesRes.data ?? []) {
+    priceMap.set(p.piece_type, Number(p.price))
+  }
+
+  let total = 0
+  for (const order of ordersRes.data ?? []) {
+    for (const item of (order.items as { piece_type: string; quantity: number }[] | null) ?? []) {
+      total += (priceMap.get(item.piece_type) ?? 0) * item.quantity
+    }
+  }
+  return total
+}
 
 async function getDailyChemicalCost(unitId: string): Promise<{
   totalCost: number
@@ -44,9 +75,10 @@ export default async function UnitDashboardPage({
   params: Promise<{ unitId: string }>
 }) {
   const { unitId } = await params
-  const [kpis, chemical] = await Promise.all([
+  const [kpis, chemical, dailyRevenue] = await Promise.all([
     getProductionKpis(unitId),
     getDailyChemicalCost(unitId),
+    getDailyRevenue(unitId),
   ])
 
   const { dailyVolume, queueByStatus, piecesPerSectorLastHour, onTimeVsLate } = kpis
@@ -73,25 +105,31 @@ export default async function UnitDashboardPage({
       {/* ── KPIs principais ───────────────────────────── */}
       <section className="space-y-4">
         <h2 className="section-title">Produção — Hoje</h2>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+          <KpiCard
+            title="Faturamento estimado" highlight stagger={1}
+            value={dailyRevenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+            subtitle="Comandas de hoje"
+            icon={TrendingUp} iconColor="#34d399" iconBg="rgba(52,211,153,0.12)"
+          />
           <KpiCard
             title="Comandas do dia" value={dailyVolume.total_orders}
-            subtitle="Criadas hoje" highlight stagger={1}
+            subtitle="Criadas hoje" stagger={2}
             icon={ClipboardList} iconColor="#d6b25e" iconBg="rgba(214,178,94,0.12)"
           />
           <KpiCard
             title="Peças processadas" value={dailyVolume.total_items}
-            unit="pçs" subtitle="Total de itens" stagger={2}
+            unit="pçs" subtitle="Total de itens" stagger={3}
             icon={Package} iconColor="#60a5fa" iconBg="rgba(96,165,250,0.10)"
           />
           <KpiCard
             title="Na fila agora" value={totalInQueue}
-            subtitle="Todos os setores" stagger={3}
+            subtitle="Todos os setores" stagger={4}
             icon={Activity} iconColor="#a78bfa" iconBg="rgba(167,139,250,0.10)"
           />
 
           {/* Ring gauge — No prazo */}
-          <div className="card-stat rounded-xl p-5 flex flex-col items-center justify-center gap-2 animate-fade-up stagger-4">
+          <div className="card-stat rounded-xl p-5 flex flex-col items-center justify-center gap-2 animate-fade-up stagger-5">
             <RingGauge
               percent={onTimePercent}
               size={80}
