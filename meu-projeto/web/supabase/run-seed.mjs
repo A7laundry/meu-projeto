@@ -63,7 +63,7 @@ async function upsertUser(id, email, password, name) {
 }
 
 // ─── MAIN ────────────────────────────────────────────────────
-console.log('\n🌱 Synkra Laundry OS — Seed de Teste\n')
+console.log('\n🌱 A7x TecNologia OS — Seed de Teste\n')
 
 // 1. UNIDADES
 console.log('1. Unidades')

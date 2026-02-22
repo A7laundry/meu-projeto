@@ -1,6 +1,6 @@
-# Synkra Laundry OS
+# A7x TecNologia - OS.
 
-ERP vertical para redes de lavanderias industriais — rastreio de produção em tempo real, gestão de KPIs, logística e financeiro integrados.
+Sistema Operacional Inteligente para redes de lavanderias industriais — rastreio de produção em tempo real, gestão de KPIs, logística e financeiro integrados.
 
 ## Stack
 
@@ -81,9 +81,11 @@ hooks/              # React hooks customizados
 | `driver` | Módulo logística | Mobile |
 | `store` | Portal cliente B2B | Web + Mobile |
 | `customer` | Portal cliente PF | Web + Mobile |
+| `sdr` | Módulo comercial (prospecção) | Desktop |
+| `closer` | Módulo comercial (fechamento) | Desktop |
 
 ## Documentação
 
-- PRD: `../../docs/prd/synkra-laundry-os-prd.md`
-- Arquitetura: `../../docs/architecture/synkra-laundry-os-architecture.md`
+- PRD: `../../docs/prd/`
+- Arquitetura: `../../docs/architecture/`
 - Histórias: `../../docs/stories/`
