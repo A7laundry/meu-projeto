@@ -36,6 +36,8 @@ const U_OPERADOR  = 'a0000000-0000-0000-0000-000000000002'
 const U_MOTORISTA = 'a0000000-0000-0000-0000-000000000003'
 const U_LOJA      = 'a0000000-0000-0000-0000-000000000004'
 const U_DIRECTOR  = '700f6008-1884-46bb-8ebe-9204d5459483'
+const U_SDR       = 'a0000000-0000-0000-0000-000000000006'
+const U_CLOSER    = 'a0000000-0000-0000-0000-000000000007'
 
 async function step(label, fn) {
   process.stdout.write(`  ${label}... `)
@@ -99,6 +101,8 @@ await step('gerente@a7x.test  (unit_manager)', () => upsertUser(U_GERENTE,   'ge
 await step('operador@a7x.test (operator)',     () => upsertUser(U_OPERADOR,  'operador@a7x.test',  'A7x@123', 'Ana Operadora'))
 await step('motorista@a7x.test (driver)',      () => upsertUser(U_MOTORISTA, 'motorista@a7x.test', 'A7x@123', 'João Motorista'))
 await step('loja@a7x.test (store)',            () => upsertUser(U_LOJA,      'loja@a7x.test',      'A7x@123', 'Boa Aparência Loja'))
+await step('sdr@a7x.test (sdr)',               () => upsertUser(U_SDR,       'sdr@a7x.test',       'A7x@123', 'Fernanda SDR'))
+await step('closer@a7x.test (closer)',         () => upsertUser(U_CLOSER,    'closer@a7x.test',    'A7x@123', 'Rafael Closer'))
 
 // 3. PROFILES
 console.log('\n3. Profiles')
@@ -109,6 +113,8 @@ await step('Todos os profiles', () =>
     { id: U_OPERADOR,  full_name: 'Ana Operadora',      role: 'operator',     unit_id: UNIT_CENTRO, sector: 'washing', active: true },
     { id: U_MOTORISTA, full_name: 'João Motorista',     role: 'driver',       unit_id: UNIT_CENTRO, sector: null,      active: true },
     { id: U_LOJA,      full_name: 'Boa Aparência Loja', role: 'store',        unit_id: UNIT_CENTRO, sector: null,      active: true },
+    { id: U_SDR,       full_name: 'Fernanda SDR',       role: 'sdr',          unit_id: null,        sector: null,      active: true },
+    { id: U_CLOSER,    full_name: 'Rafael Closer',      role: 'closer',       unit_id: null,        sector: null,      active: true },
   ], { onConflict: 'id' })
 )
 
@@ -298,6 +304,39 @@ await step('Notas de CRM', () =>
   ])
 )
 
+// 14. CRM COMERCIAL
+console.log('\n14. CRM Comercial')
+await step('Campanhas', () =>
+  supabase.from('campaigns').upsert([
+    { id: 'ca000000-0000-0000-0000-000000000001', unit_id: UNIT_CENTRO, name: 'Captação Instagram Fev/26', channel: 'instagram', objective: 'leads',    budget: 1500, spent: 890,  leads_generated: 23, conversions: 4, status: 'active',    starts_at: dateOffset(-20), ends_at: dateOffset(10) },
+    { id: 'ca000000-0000-0000-0000-000000000002', unit_id: UNIT_CENTRO, name: 'Google Ads — Hotéis SP',   channel: 'google',    objective: 'leads',    budget: 3000, spent: 3000, leads_generated: 41, conversions: 8, status: 'completed', starts_at: dateOffset(-60), ends_at: dateOffset(-30) },
+    { id: 'ca000000-0000-0000-0000-000000000003', unit_id: UNIT_CENTRO, name: 'Indicação de Parceiros',   channel: 'referral',  objective: 'retention',budget: 500,  spent: 200,  leads_generated: 9,  conversions: 6, status: 'active',    starts_at: dateOffset(-30), ends_at: dateOffset(30) },
+  ], { onConflict: 'id' })
+)
+await step('Leads no pipeline', () =>
+  supabase.from('leads').upsert([
+    { id: 'ld000000-0000-0000-0000-000000000001', unit_id: UNIT_CENTRO, name: 'Pousada do Sol',       company: 'Pousada do Sol Ltda',      email: 'contato@pousadadosol.com',   phone: '(11) 98100-1001', type: 'business', source: 'instagram', stage: 'prospect',  assigned_to: U_SDR,    estimated_monthly_value: 2500 },
+    { id: 'ld000000-0000-0000-0000-000000000002', unit_id: UNIT_CENTRO, name: 'Dr. Marcos Oliveira',  company: 'Clínica Dermato Center',   email: 'marcos@dermatocenter.com',   phone: '(11) 98200-2002', type: 'business', source: 'google',    stage: 'contacted', assigned_to: U_SDR,    estimated_monthly_value: 1800 },
+    { id: 'ld000000-0000-0000-0000-000000000003', unit_id: UNIT_CENTRO, name: 'Restaurante Sabor+',   company: 'Sabor+ Gastronomia ME',    email: 'chef@sabormais.com',         phone: '(11) 97300-3003', type: 'business', source: 'referral',  stage: 'qualified', assigned_to: U_SDR,    estimated_monthly_value: 3200, notes: 'Indicado pelo Hotel Grand Palace' },
+    { id: 'ld000000-0000-0000-0000-000000000004', unit_id: UNIT_CENTRO, name: 'Academia Power Fit',   company: 'Power Fit Academia Ltda',  email: 'dir@powerfit.com',           phone: '(11) 96400-4004', type: 'business', source: 'instagram', stage: 'proposal',  assigned_to: U_CLOSER, estimated_monthly_value: 4000 },
+    { id: 'ld000000-0000-0000-0000-000000000005', unit_id: UNIT_CENTRO, name: 'Hotel Metrópolis',     company: 'Metrópolis Hotéis SA',     email: 'compras@metropolis.com',     phone: '(11) 95500-5005', type: 'business', source: 'google',    stage: 'won',       assigned_to: U_CLOSER, estimated_monthly_value: 8500 },
+    { id: 'ld000000-0000-0000-0000-000000000006', unit_id: UNIT_CENTRO, name: 'Clínica Bem-Estar',    company: 'Bem-Estar Clínica ME',     email: 'admin@bemestarclinica.com',  phone: '(11) 94600-6006', type: 'business', source: 'cold_call', stage: 'lost',      assigned_to: U_CLOSER, estimated_monthly_value: 1200, lost_reason: 'Preço acima do orçamento disponível' },
+    { id: 'ld000000-0000-0000-0000-000000000007', unit_id: UNIT_CENTRO, name: 'Spa Dolce Vita',       company: 'Dolce Vita SPA Ltda',      email: 'gerencia@dolcevita.com',     phone: '(11) 93700-7007', type: 'business', source: 'form',      stage: 'contacted', assigned_to: U_SDR,    estimated_monthly_value: 2200 },
+    { id: 'ld000000-0000-0000-0000-000000000008', unit_id: UNIT_CENTRO, name: 'Hostel Urban Stay',    company: 'Urban Stay Hostel ME',     email: 'stay@urbanstay.com',         phone: '(11) 92800-8008', type: 'business', source: 'instagram', stage: 'prospect',  assigned_to: U_SDR,    estimated_monthly_value: 900 },
+  ], { onConflict: 'id' })
+)
+await step('Atividades dos leads', () =>
+  supabase.from('lead_activities').insert([
+    { lead_id: 'ld000000-0000-0000-0000-000000000002', user_id: U_SDR,    type: 'call',         description: 'Primeiro contato realizado. Cliente interessado, solicitou orçamento.' },
+    { lead_id: 'ld000000-0000-0000-0000-000000000002', user_id: U_SDR,    type: 'whatsapp',     description: 'Enviei tabela de preços por WhatsApp. Aguardando retorno.' },
+    { lead_id: 'ld000000-0000-0000-0000-000000000003', user_id: U_SDR,    type: 'note',         description: 'Lead quente — indicado pelo Hotel Grand Palace. Prioridade alta.' },
+    { lead_id: 'ld000000-0000-0000-0000-000000000003', user_id: U_SDR,    type: 'meeting',      description: 'Reunião presencial realizada. Apresentei o sistema de rastreamento em tempo real.' },
+    { lead_id: 'ld000000-0000-0000-0000-000000000004', user_id: U_CLOSER, type: 'proposal',     description: 'Proposta enviada: R$ 4.000/mês para 5kg/dia de uniformes e roupas de treino.' },
+    { lead_id: 'ld000000-0000-0000-0000-000000000005', user_id: U_CLOSER, type: 'stage_change', description: 'Lead convertido para Ganho. Contrato assinado! Início: 01/03/2026.' },
+    { lead_id: 'ld000000-0000-0000-0000-000000000006', user_id: U_CLOSER, type: 'stage_change', description: 'Perdido — Orçamento incompatível com nossa tabela de preços.' },
+  ])
+)
+
 console.log('\n✅ Seed concluído!\n')
 console.log('Logins de teste:')
 console.log('  Director:    dennisarruda25@gmail.com / A7l@vanderia25')
@@ -305,4 +344,6 @@ console.log('  Gerente:     gerente@a7x.test     / A7x@123')
 console.log('  Operador:    operador@a7x.test    / A7x@123')
 console.log('  Motorista:   motorista@a7x.test   / A7x@123')
 console.log('  Loja:        loja@a7x.test        / A7x@123')
+console.log('  SDR:         sdr@a7x.test         / A7x@123')
+console.log('  Closer:      closer@a7x.test      / A7x@123')
 console.log('\nAcesse: http://localhost:3000/login\n')
