@@ -14,6 +14,7 @@ import {
   PanelLeftOpen,
   Menu,
   X,
+  Users,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -23,6 +24,7 @@ const NAV_ITEMS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: '/director/reports',     label: 'Relatórios',       icon: FileBarChart },
   { href: '/director/nps',         label: 'NPS & Pesquisas',  icon: Star },
   { href: '/commercial/dashboard', label: 'Comercial',        icon: Briefcase },
+  { href: '/director/users',       label: 'Usuários',         icon: Users },
 ]
 
 const STORAGE_KEY = 'a7x-sidebar-collapsed'
