@@ -49,7 +49,6 @@ async function step(label, fn) {
 
 // ─── Helpers ─────────────────────────────────────────────────
 async function upsertUser(id, email, password, name) {
-  // Tenta criar — se já existe, ignora
   const { error } = await supabase.auth.admin.createUser({
     user_metadata: { full_name: name },
     email,
@@ -57,8 +56,19 @@ async function upsertUser(id, email, password, name) {
     email_confirm: true,
     id,
   })
-  if (error && !error.message.includes('already been registered') && !error.message.includes('already exists')) {
-    throw error
+  // Se o UUID já existe (email diferente), atualiza e-mail + senha
+  if (error) {
+    if (error.message.includes('already been registered') || error.message.includes('already exists')) {
+      return // mesmo e-mail, nada a fazer
+    }
+    // Tenta atualizar usuário existente com o mesmo UUID
+    const { error: updateError } = await supabase.auth.admin.updateUserById(id, {
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { full_name: name },
+    })
+    if (updateError) throw updateError
   }
 }
 
