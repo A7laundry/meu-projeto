@@ -85,10 +85,10 @@ await step('Unidade Norte', () =>
 // 2. USUÁRIOS AUTH
 console.log('\n2. Usuários Auth')
 await step('dennisarruda25@gmail.com (director)', () => upsertUser(U_DIRECTOR,  'dennisarruda25@gmail.com', 'A7l@vanderia25', 'Dennis Arruda'))
-await step('gerente@synkra.test  (unit_manager)', () => upsertUser(U_GERENTE,   'gerente@synkra.test',   'Synkra@123', 'Carlos Gerente'))
-await step('operador@synkra.test (operator)',     () => upsertUser(U_OPERADOR,  'operador@synkra.test',  'Synkra@123', 'Ana Operadora'))
-await step('motorista@synkra.test (driver)',      () => upsertUser(U_MOTORISTA, 'motorista@synkra.test', 'Synkra@123', 'João Motorista'))
-await step('loja@synkra.test (store)',            () => upsertUser(U_LOJA,      'loja@synkra.test',      'Synkra@123', 'Boa Aparência Loja'))
+await step('gerente@a7x.test  (unit_manager)', () => upsertUser(U_GERENTE,   'gerente@a7x.test',   'A7x@123', 'Carlos Gerente'))
+await step('operador@a7x.test (operator)',     () => upsertUser(U_OPERADOR,  'operador@a7x.test',  'A7x@123', 'Ana Operadora'))
+await step('motorista@a7x.test (driver)',      () => upsertUser(U_MOTORISTA, 'motorista@a7x.test', 'A7x@123', 'João Motorista'))
+await step('loja@a7x.test (store)',            () => upsertUser(U_LOJA,      'loja@a7x.test',      'A7x@123', 'Boa Aparência Loja'))
 
 // 3. PROFILES
 console.log('\n3. Profiles')
@@ -291,8 +291,8 @@ await step('Notas de CRM', () =>
 console.log('\n✅ Seed concluído!\n')
 console.log('Logins de teste:')
 console.log('  Director:    dennisarruda25@gmail.com / A7l@vanderia25')
-console.log('  Gerente:     gerente@synkra.test     / Synkra@123')
-console.log('  Operador:    operador@synkra.test    / Synkra@123')
-console.log('  Motorista:   motorista@synkra.test   / Synkra@123')
-console.log('  Loja:        loja@synkra.test        / Synkra@123')
+console.log('  Gerente:     gerente@a7x.test     / A7x@123')
+console.log('  Operador:    operador@a7x.test    / A7x@123')
+console.log('  Motorista:   motorista@a7x.test   / A7x@123')
+console.log('  Loja:        loja@a7x.test        / A7x@123')
 console.log('\nAcesse: http://localhost:3000/login\n')
