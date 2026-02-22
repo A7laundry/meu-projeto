@@ -2,16 +2,26 @@
 
 import { useState, useTransition } from 'react'
 import { useParams } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
 import { submitNpsResponse } from '@/actions/nps/respond'
 
 const SCORES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-function scoreColor(score: number): string {
-  if (score >= 9) return 'bg-green-500 hover:bg-green-600 text-white'
-  if (score >= 7) return 'bg-yellow-400 hover:bg-yellow-500 text-white'
-  return 'bg-red-400 hover:bg-red-500 text-white'
+function scoreStyle(score: number, selected: boolean): React.CSSProperties {
+  if (selected) {
+    if (score >= 9) return { background: 'rgba(52,211,153,0.80)', color: '#fff', border: '2px solid rgba(52,211,153,0.90)' }
+    if (score >= 7) return { background: 'rgba(251,191,36,0.75)', color: '#fff', border: '2px solid rgba(251,191,36,0.90)' }
+    return { background: 'rgba(248,113,113,0.70)', color: '#fff', border: '2px solid rgba(248,113,113,0.85)' }
+  }
+  if (score >= 9) return { background: 'rgba(52,211,153,0.08)', color: 'rgba(52,211,153,0.75)', border: '1px solid rgba(52,211,153,0.20)' }
+  if (score >= 7) return { background: 'rgba(251,191,36,0.08)', color: 'rgba(251,191,36,0.70)', border: '1px solid rgba(251,191,36,0.20)' }
+  return { background: 'rgba(248,113,113,0.07)', color: 'rgba(248,113,113,0.65)', border: '1px solid rgba(248,113,113,0.18)' }
+}
+
+const CARD: React.CSSProperties = {
+  background: 'rgba(255,255,255,0.03)',
+  border: '1px solid rgba(255,255,255,0.10)',
+  borderRadius: 20,
+  padding: '32px 28px',
 }
 
 export default function NpsSurveyPage() {
@@ -34,76 +44,94 @@ export default function NpsSurveyPage() {
       if (result.success) {
         setDone(true)
       } else {
-        setError(result.error)
+        setError(result.error ?? 'Erro ao enviar resposta')
       }
     })
   }
 
   if (done) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border p-8 max-w-md w-full text-center space-y-4">
-        <p className="text-3xl">🙏</p>
-        <h2 className="text-xl font-bold text-gray-800">Obrigado pelo seu feedback!</h2>
-        <p className="text-sm text-gray-500">Sua resposta foi registrada com sucesso.</p>
+      <div className="w-full max-w-md text-center space-y-4" style={CARD}>
+        <p className="text-4xl">🙏</p>
+        <h2 className="text-xl font-bold text-white">Obrigado pelo feedback!</h2>
+        <p className="text-sm" style={{ color: 'rgba(255,255,255,0.45)' }}>
+          Sua resposta foi registrada com sucesso.
+        </p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border p-8 max-w-md w-full space-y-6">
-      <div className="text-center space-y-1">
-        <h1 className="text-xl font-bold text-gray-800">Pesquisa de Satisfação</h1>
-        <p className="text-sm text-gray-500">
+    <div className="w-full max-w-md space-y-6" style={CARD}>
+      {/* Branding */}
+      <div className="text-center space-y-1.5">
+        <p className="text-[11px] font-semibold tracking-widest uppercase" style={{ color: '#d6b25e' }}>
+          A7x TecNologia
+        </p>
+        <h1 className="text-xl font-bold text-white">Pesquisa de Satisfação</h1>
+        <p className="text-sm" style={{ color: 'rgba(255,255,255,0.45)' }}>
           Em uma escala de 0 a 10, o quanto você recomendaria nossos serviços?
         </p>
       </div>
 
-      <div className="space-y-2">
-        <div className="flex gap-1 flex-wrap justify-center">
+      {/* Score buttons */}
+      <div className="space-y-3">
+        <div className="flex gap-1.5 flex-wrap justify-center">
           {SCORES.map((s) => (
             <button
               key={s}
               onClick={() => setSelected(s)}
-              className={`w-9 h-9 rounded-lg text-sm font-semibold transition-all ${
-                selected === s
-                  ? scoreColor(s) + ' ring-2 ring-offset-1 ring-current'
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-              }`}
+              className="w-9 h-9 rounded-lg text-sm font-bold transition-all"
+              style={scoreStyle(s, selected === s)}
             >
               {s}
             </button>
           ))}
         </div>
-        <div className="flex justify-between text-xs text-gray-400">
+        <div className="flex justify-between text-[11px]" style={{ color: 'rgba(255,255,255,0.30)' }}>
           <span>Não recomendaria</span>
           <span>Recomendaria muito</span>
         </div>
       </div>
 
+      {/* Comentário */}
       {selected !== null && (
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
-            Gostaria de deixar um comentário? (opcional)
+          <label className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            Comentário opcional
           </label>
-          <Textarea
+          <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="Conte-nos mais sobre sua experiência..."
             rows={3}
             maxLength={500}
+            className="input-premium w-full resize-none"
+            style={{ borderRadius: 10, padding: '10px 14px', fontSize: 14 }}
           />
         </div>
       )}
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="text-sm" style={{ color: 'rgba(248,113,113,0.80)' }}>{error}</p>
+      )}
 
-      <Button
+      <button
         onClick={handleSubmit}
         disabled={selected === null || isPending}
-        className="w-full"
+        className="w-full text-sm font-semibold py-3 rounded-xl transition-all"
+        style={{
+          background: selected !== null
+            ? 'linear-gradient(135deg, #d6b25e 0%, #f0d080 100%)'
+            : 'rgba(255,255,255,0.06)',
+          color: selected !== null ? '#05050a' : 'rgba(255,255,255,0.30)',
+          border: 'none',
+          cursor: selected !== null ? 'pointer' : 'not-allowed',
+          opacity: isPending ? 0.7 : 1,
+        }}
       >
-        {isPending ? 'Enviando...' : 'Enviar resposta'}
-      </Button>
+        {isPending ? 'Enviando...' : 'Enviar Resposta'}
+      </button>
     </div>
   )
 }
