@@ -19,6 +19,9 @@ function getRedirectPath(role: UserRole, unitId?: string | null, sector?: string
     case 'store':
     case 'customer':
       return '/client/orders'
+    case 'sdr':
+    case 'closer':
+      return '/commercial/dashboard'
     default:
       return '/profile/setup' // <- em vez de '/'
   }
