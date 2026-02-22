@@ -586,14 +586,15 @@ body {
   }
   /* Fix: inputs ficam invisíveis (texto preto em fundo escuro) em dark mode */
   .dark input,
-  .dark textarea {
-    color: oklch(0.985 0 0);
-    caret-color: oklch(0.985 0 0);
-    -webkit-text-fill-color: oklch(0.985 0 0);
+  .dark textarea,
+  .dark [data-slot="input"] {
+    color: #ffffff !important;
+    caret-color: #ffffff;
+    -webkit-text-fill-color: #ffffff !important;
   }
   .dark input::placeholder,
   .dark textarea::placeholder {
-    -webkit-text-fill-color: oklch(0.708 0 0);
-    color: oklch(0.708 0 0);
+    -webkit-text-fill-color: rgba(255,255,255,0.38) !important;
+    color: rgba(255,255,255,0.38) !important;
   }
 }

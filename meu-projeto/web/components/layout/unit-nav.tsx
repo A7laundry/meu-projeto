@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useTransition, useState } from 'react'
 import { Menu, X } from 'lucide-react'
 
 const NAV_ITEMS = [
@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { href: 'supplies',   label: 'Insumos',         icon: '◎' },
   { href: 'staff',      label: 'Funcionários',    icon: '◉' },
   { href: 'clients',    label: 'Clientes',        icon: '⊡' },
+  { href: 'campaigns',  label: 'Campanhas',       icon: '📣' },
   { href: 'routes',     label: 'Rotas',           icon: '⊕' },
   { href: 'manifests',  label: 'Romaneios',       icon: '⊘' },
   { href: 'pricing',    label: 'Preços',          icon: '◇' },
@@ -60,9 +61,10 @@ function NavList({ unitId, pathname, onLinkClick }: { unitId: string; pathname: 
 export function UnitNav({ unitId }: UnitNavProps) {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [, startTransition] = useTransition()
 
   useEffect(() => {
-    setMobileOpen(false)
+    startTransition(() => setMobileOpen(false))
   }, [pathname])
 
   return (

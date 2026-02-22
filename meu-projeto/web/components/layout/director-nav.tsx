@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useTransition, useState } from 'react'
 import {
   LayoutDashboard,
   Building2,
@@ -144,15 +144,18 @@ export function DirectorNav({ units }: DirectorNavProps) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [, startTransition] = useTransition()
 
   useEffect(() => {
-    setMounted(true)
-    setCollapsed(localStorage.getItem(STORAGE_KEY) === 'true')
+    startTransition(() => {
+      setMounted(true)
+      setCollapsed(localStorage.getItem(STORAGE_KEY) === 'true')
+    })
   }, [])
 
   // Fechar mobile nav quando pathname muda
   useEffect(() => {
-    setMobileOpen(false)
+    startTransition(() => setMobileOpen(false))
   }, [pathname])
 
   const toggle = () => {

@@ -62,7 +62,10 @@ export function ClientDetail({ unitId, client, stats, notes, orders }: ClientDet
     .join(', ')
 
   // Verifica se hoje é aniversário do cliente
-  const birthdayToday = client.birthday ? isToday(parseISO(client.birthday)) : false
+  let birthdayToday = false
+  try {
+    if (client.birthday) birthdayToday = isToday(parseISO(client.birthday))
+  } catch { /* data inválida — ignora */ }
 
   return (
     <div className="space-y-6">
@@ -104,7 +107,7 @@ export function ClientDetail({ unitId, client, stats, notes, orders }: ClientDet
           <div className="space-y-2">
             <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-xl font-bold text-white">{client.name}</h2>
-              <Badge variant="outline">{CLIENT_TYPE_LABELS[client.type]}</Badge>
+              <Badge variant="outline">{CLIENT_TYPE_LABELS[client.type as keyof typeof CLIENT_TYPE_LABELS] ?? 'Outro'}</Badge>
               {!client.active && <Badge variant="secondary">Inativo</Badge>}
             </div>
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-white/50">
@@ -112,11 +115,15 @@ export function ClientDetail({ unitId, client, stats, notes, orders }: ClientDet
               {client.phone && <span>📞 {client.phone}</span>}
               {client.email && <span>✉️ {client.email}</span>}
             </div>
-            {client.birthday && (
-              <p className="text-xs text-white/40">
-                🎂 Aniversário: {format(parseISO(client.birthday), "dd 'de' MMMM", { locale: ptBR })}
-              </p>
-            )}
+            {client.birthday && (() => {
+              try {
+                return (
+                  <p className="text-xs text-white/40">
+                    🎂 Aniversário: {format(parseISO(client.birthday!), "dd 'de' MMMM", { locale: ptBR })}
+                  </p>
+                )
+              } catch { return null }
+            })()}
             {client.acquisition_channel && (
               <p className="text-xs text-white/40">
                 {ACQUISITION_ICONS[client.acquisition_channel] ?? '📌'}{' '}

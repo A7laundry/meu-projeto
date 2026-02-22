@@ -204,7 +204,7 @@ export function OrderForm({ unitId, unitSlug, prices }: OrderFormProps) {
                   onMouseDown={() => setShowSuggestions(false)}
                   className="w-full text-left px-4 py-2.5 text-xs text-white/30 hover:text-white/50 transition-colors"
                 >
-                  Usar "{clientName}" sem vincular
+                  Usar &quot;{clientName}&quot; sem vincular
                 </button>
               </div>
             )}

@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { getDifficultyConfig } from '@/lib/gamification'
 import { DifficultyBadge } from '@/components/domain/copywriter/difficulty-badge'
 import type { Briefing } from '@/types/copywriter'
 
@@ -9,7 +8,6 @@ interface MissionCardProps {
 }
 
 export function MissionCard({ briefing, submissionsCount = 0 }: MissionCardProps) {
-  const diff = getDifficultyConfig(briefing.difficulty)
   const spotsLeft = briefing.max_writers - submissionsCount
   const hasDeadline = briefing.deadline && new Date(briefing.deadline) > new Date()
 

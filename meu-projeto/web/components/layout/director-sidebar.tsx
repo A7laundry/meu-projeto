@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useTransition, useState } from 'react'
 import {
   LayoutDashboard,
   Building2,
@@ -34,10 +34,13 @@ export function DirectorSidebar({ units }: DirectorSidebarProps) {
   const firstUnitId = units[0]?.id
   const [collapsed, setCollapsed] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [, startTransition] = useTransition()
 
   useEffect(() => {
-    setMounted(true)
-    setCollapsed(localStorage.getItem(STORAGE_KEY) === 'true')
+    startTransition(() => {
+      setMounted(true)
+      setCollapsed(localStorage.getItem(STORAGE_KEY) === 'true')
+    })
   }, [])
 
   const toggle = () => {
