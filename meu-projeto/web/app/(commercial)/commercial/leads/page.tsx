@@ -98,6 +98,8 @@ function StageColumn({ stage, leads }: { stage: LeadStage; leads: Lead[] }) {
             style={{
               background: 'rgba(255,255,255,0.03)',
               border: `1px solid rgba(255,255,255,0.07)`,
+              color: 'rgba(255,255,255,0.85)',
+              textDecoration: 'none',
             }}
           >
             <div className="flex items-start justify-between gap-2">
