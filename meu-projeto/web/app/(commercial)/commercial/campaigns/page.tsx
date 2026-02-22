@@ -5,101 +5,132 @@ export const revalidate = 0
 
 const CHANNEL_ICONS: Record<string, string> = {
   instagram: '📷',
-  google: '🔍',
-  whatsapp: '💬',
-  email: '✉️',
-  referral: '🤝',
-  offline: '📌',
+  google:    '🔍',
+  whatsapp:  '💬',
+  email:     '✉️',
+  referral:  '🤝',
+  offline:   '📌',
 }
 
-const STATUS_COLORS: Record<CampaignStatus, string> = {
-  active: 'bg-emerald-100 text-emerald-700',
-  paused: 'bg-yellow-100 text-yellow-700',
-  completed: 'bg-gray-100 text-gray-500',
-}
-
-const STATUS_LABELS: Record<CampaignStatus, string> = {
-  active: 'Ativa',
-  paused: 'Pausada',
-  completed: 'Encerrada',
+const STATUS_DARK: Record<CampaignStatus, { bg: string; color: string; label: string }> = {
+  active:    { bg: 'rgba(52,211,153,0.10)',  color: 'rgba(52,211,153,0.85)',  label: 'Ativa'     },
+  paused:    { bg: 'rgba(251,191,36,0.10)',  color: 'rgba(251,191,36,0.85)',  label: 'Pausada'   },
+  completed: { bg: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.40)', label: 'Encerrada' },
 }
 
 function CampaignCard({ campaign }: { campaign: Campaign }) {
+  const costPerLead       = campaign.leads_generated > 0 ? campaign.spent / campaign.leads_generated : null
+  const costPerConversion = campaign.conversions > 0 ? campaign.spent / campaign.conversions : null
   const roi = campaign.spent > 0 && campaign.conversions > 0
     ? (campaign.conversions * (campaign.budget / Math.max(campaign.leads_generated, 1))) / campaign.spent
     : null
-  const costPerLead = campaign.leads_generated > 0 ? campaign.spent / campaign.leads_generated : null
-  const costPerConversion = campaign.conversions > 0 ? campaign.spent / campaign.conversions : null
   const budgetUsed = campaign.budget > 0 ? Math.min((campaign.spent / campaign.budget) * 100, 100) : 0
+  const status = STATUS_DARK[campaign.status]
+
+  const barColor = budgetUsed >= 90
+    ? 'rgba(248,113,113,0.70)'
+    : budgetUsed >= 70
+      ? 'rgba(251,191,36,0.70)'
+      : 'rgba(52,211,153,0.65)'
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-4">
-      <div className="flex items-start justify-between">
-        <div className="flex items-center gap-2">
+    <div
+      className="rounded-2xl space-y-4"
+      style={{
+        background: 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(255,255,255,0.07)',
+        padding: '18px 20px',
+      }}
+    >
+      {/* Título + status */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
           <span className="text-2xl">{CHANNEL_ICONS[campaign.channel] ?? '📣'}</span>
           <div>
-            <p className="font-semibold text-gray-800">{campaign.name}</p>
-            <p className="text-xs text-gray-400 capitalize">{campaign.channel} · {campaign.objective}</p>
+            <p className="font-semibold text-white/85">{campaign.name}</p>
+            <p className="text-[11px] capitalize mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              {campaign.channel} · {campaign.objective}
+            </p>
           </div>
         </div>
-        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[campaign.status]}`}>
-          {STATUS_LABELS[campaign.status]}
+        <span
+          className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full flex-shrink-0"
+          style={{ background: status.bg, color: status.color }}
+        >
+          {status.label}
         </span>
       </div>
 
       {/* Barra de orçamento */}
       <div>
-        <div className="flex justify-between text-xs text-gray-500 mb-1">
-          <span>R$ {Number(campaign.spent).toFixed(2).replace('.', ',')} gasto</span>
-          <span>R$ {Number(campaign.budget).toFixed(2).replace('.', ',')} orçamento</span>
+        <div className="flex justify-between mb-1.5">
+          <span className="text-xs tabular-nums" style={{ color: 'rgba(255,255,255,0.40)' }}>
+            R$ {Number(campaign.spent).toFixed(2).replace('.', ',')} gasto
+          </span>
+          <span className="text-xs tabular-nums" style={{ color: 'rgba(255,255,255,0.30)' }}>
+            R$ {Number(campaign.budget).toFixed(2).replace('.', ',')} orçamento
+          </span>
         </div>
-        <div className="w-full bg-gray-100 rounded-full h-2">
+        <div className="rounded-full overflow-hidden" style={{ height: 5, background: 'rgba(255,255,255,0.06)' }}>
           <div
-            className={`h-2 rounded-full transition-all ${budgetUsed >= 90 ? 'bg-red-400' : budgetUsed >= 70 ? 'bg-yellow-400' : 'bg-emerald-500'}`}
-            style={{ width: `${budgetUsed}%` }}
+            className="h-full rounded-full transition-all"
+            style={{ width: `${budgetUsed}%`, background: barColor }}
           />
         </div>
       </div>
 
-      {/* Métricas */}
+      {/* Métricas principais */}
       <div className="grid grid-cols-3 gap-2 text-center">
-        <div className="bg-gray-50 rounded-lg p-2">
-          <p className="text-lg font-bold text-gray-800">{campaign.leads_generated}</p>
-          <p className="text-[10px] text-gray-400">Leads</p>
-        </div>
-        <div className="bg-gray-50 rounded-lg p-2">
-          <p className="text-lg font-bold text-gray-800">{campaign.conversions}</p>
-          <p className="text-[10px] text-gray-400">Conversões</p>
-        </div>
-        <div className="bg-gray-50 rounded-lg p-2">
-          <p className="text-lg font-bold text-gray-800">
-            {costPerLead ? `R$${costPerLead.toFixed(0)}` : '—'}
-          </p>
-          <p className="text-[10px] text-gray-400">Custo/Lead</p>
-        </div>
+        {[
+          { val: String(campaign.leads_generated), label: 'Leads' },
+          { val: String(campaign.conversions), label: 'Conversões' },
+          { val: costPerLead ? `R$${costPerLead.toFixed(0)}` : '—', label: 'Custo/Lead' },
+        ].map((m) => (
+          <div
+            key={m.label}
+            className="rounded-xl py-2.5"
+            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+          >
+            <p className="text-base font-bold tabular-nums text-white/80">{m.val}</p>
+            <p className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.28)' }}>{m.label}</p>
+          </div>
+        ))}
       </div>
 
+      {/* Métricas secundárias */}
       {(costPerConversion || roi) && (
         <div className="grid grid-cols-2 gap-2 text-center">
           {costPerConversion && (
-            <div className="bg-blue-50 rounded-lg p-2">
-              <p className="text-sm font-bold text-blue-700">R$ {costPerConversion.toFixed(2).replace('.', ',')}</p>
-              <p className="text-[10px] text-blue-400">Custo/Conversão</p>
+            <div
+              className="rounded-xl py-2"
+              style={{ background: 'rgba(96,165,250,0.06)', border: '1px solid rgba(96,165,250,0.12)' }}
+            >
+              <p className="text-sm font-bold tabular-nums" style={{ color: 'rgba(96,165,250,0.85)' }}>
+                R$ {costPerConversion.toFixed(2).replace('.', ',')}
+              </p>
+              <p className="text-[10px]" style={{ color: 'rgba(96,165,250,0.55)' }}>Custo/Conversão</p>
             </div>
           )}
           {roi && (
-            <div className="bg-emerald-50 rounded-lg p-2">
-              <p className="text-sm font-bold text-emerald-700">{roi.toFixed(1)}x</p>
-              <p className="text-[10px] text-emerald-400">ROI estimado</p>
+            <div
+              className="rounded-xl py-2"
+              style={{ background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.14)' }}
+            >
+              <p className="text-sm font-bold tabular-nums" style={{ color: 'rgba(52,211,153,0.90)' }}>
+                {roi.toFixed(1)}x
+              </p>
+              <p className="text-[10px]" style={{ color: 'rgba(52,211,153,0.50)' }}>ROI estimado</p>
             </div>
           )}
         </div>
       )}
 
       {/* Período */}
-      <p className="text-xs text-gray-400">
-        {new Date(campaign.starts_at).toLocaleDateString('pt-BR')}
-        {campaign.ends_at ? ` → ${new Date(campaign.ends_at).toLocaleDateString('pt-BR')}` : ' → em andamento'}
+      <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.28)' }}>
+        📅 {new Date(campaign.starts_at).toLocaleDateString('pt-BR')}
+        {campaign.ends_at
+          ? ` → ${new Date(campaign.ends_at).toLocaleDateString('pt-BR')}`
+          : ' → em andamento'}
       </p>
 
       {/* Toggle status */}
@@ -111,7 +142,12 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
         }}>
           <button
             type="submit"
-            className="w-full text-xs text-gray-500 hover:text-gray-700 border border-gray-200 hover:border-gray-300 rounded-lg py-1.5 transition-colors"
+            className="w-full text-xs py-2 rounded-xl transition-all"
+            style={{
+              border: '1px solid rgba(255,255,255,0.08)',
+              color: 'rgba(255,255,255,0.38)',
+              background: 'transparent',
+            }}
           >
             {campaign.status === 'active' ? 'Pausar campanha' : 'Reativar campanha'}
           </button>
@@ -124,39 +160,59 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
 export default async function CampaignsPage() {
   const campaigns = await listCampaigns()
 
-  const active = campaigns.filter(c => c.status === 'active')
-  const paused = campaigns.filter(c => c.status === 'paused')
+  const active    = campaigns.filter(c => c.status === 'active')
+  const paused    = campaigns.filter(c => c.status === 'paused')
   const completed = campaigns.filter(c => c.status === 'completed')
 
-  const totalLeads = campaigns.reduce((s, c) => s + c.leads_generated, 0)
+  const totalLeads       = campaigns.reduce((s, c) => s + c.leads_generated, 0)
   const totalConversions = campaigns.reduce((s, c) => s + c.conversions, 0)
-  const totalSpent = campaigns.reduce((s, c) => s + Number(c.spent ?? 0), 0)
+  const totalSpent       = campaigns.reduce((s, c) => s + Number(c.spent ?? 0), 0)
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+
+      {/* ── Header ─────────────────────────────────────── */}
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Campanhas</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            {active.length} ativas · {totalLeads} leads · {totalConversions} conversões · R$ {totalSpent.toFixed(2).replace('.', ',')} investido
+          <h1 className="text-2xl font-bold text-white tracking-tight">Campanhas</h1>
+          <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            {active.length} ativa{active.length !== 1 ? 's' : ''}
+            {' · '}{totalLeads} leads
+            {' · '}{totalConversions} conversões
+            {' · '}
+            <span style={{ color: '#d6b25e', fontWeight: 600 }}>
+              R$ {totalSpent.toFixed(2).replace('.', ',')} investido
+            </span>
           </p>
         </div>
 
+        {/* Form nova campanha */}
         <details className="relative">
-          <summary className="cursor-pointer inline-flex items-center gap-2 bg-[#07070a] hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors list-none">
+          <summary
+            className="cursor-pointer inline-flex items-center gap-2 text-sm font-semibold px-4 py-2.5 rounded-xl transition-all list-none"
+            style={{
+              background: 'linear-gradient(135deg, #d6b25e 0%, #f0d080 100%)',
+              color: '#05050a',
+              boxShadow: '0 4px 16px rgba(214,178,94,0.22)',
+            }}
+          >
             + Nova Campanha
           </summary>
-          <div className="absolute right-0 top-12 z-20 w-80 bg-white rounded-xl border border-gray-200 shadow-lg p-5">
-            <h3 className="font-semibold text-gray-800 mb-4 text-sm">Criar Campanha</h3>
+          <div
+            className="absolute right-0 top-12 z-20 w-80 rounded-xl shadow-2xl p-5"
+            style={{ background: '#0e0e14', border: '1px solid rgba(255,255,255,0.10)' }}
+          >
+            <h3 className="font-semibold text-white mb-4 text-sm">Criar Campanha</h3>
             <form action={createCampaign} className="space-y-3">
               <input
                 name="name"
                 required
                 placeholder="Nome da campanha *"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#d6b25e]"
+                className="input-premium w-full"
+                style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14 }}
               />
               <div className="grid grid-cols-2 gap-2">
-                <select name="channel" className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-[#d6b25e]">
+                <select name="channel" className="input-premium w-full" style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14 }}>
                   <option value="instagram">Instagram</option>
                   <option value="google">Google</option>
                   <option value="whatsapp">WhatsApp</option>
@@ -164,31 +220,39 @@ export default async function CampaignsPage() {
                   <option value="referral">Indicação</option>
                   <option value="offline">Offline</option>
                 </select>
-                <select name="objective" className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-[#d6b25e]">
+                <select name="objective" className="input-premium w-full" style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14 }}>
                   <option value="leads">Geração de Leads</option>
                   <option value="brand">Branding</option>
                   <option value="retention">Retenção</option>
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="text-xs text-gray-500">Orçamento (R$)</label>
+                <div className="space-y-1">
+                  <label className="text-[11px] font-medium" style={{ color: 'rgba(255,255,255,0.35)' }}>Orçamento (R$)</label>
                   <input name="budget" type="number" min="0" step="0.01" defaultValue="0"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#d6b25e]" />
+                    className="input-premium w-full" style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14 }} />
                 </div>
-                <div>
-                  <label className="text-xs text-gray-500">Início</label>
+                <div className="space-y-1">
+                  <label className="text-[11px] font-medium" style={{ color: 'rgba(255,255,255,0.35)' }}>Início</label>
                   <input name="starts_at" type="date" required
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#d6b25e]" />
+                    className="input-premium w-full" style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14, colorScheme: 'dark' }} />
                 </div>
               </div>
-              <div>
-                <label className="text-xs text-gray-500">Término (opcional)</label>
+              <div className="space-y-1">
+                <label className="text-[11px] font-medium" style={{ color: 'rgba(255,255,255,0.35)' }}>Término (opcional)</label>
                 <input name="ends_at" type="date"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#d6b25e]" />
+                  className="input-premium w-full" style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14, colorScheme: 'dark' }} />
               </div>
-              <button type="submit"
-                className="w-full bg-[#07070a] text-white text-sm font-medium py-2 rounded-lg hover:bg-gray-800 transition-colors">
+              <button
+                type="submit"
+                className="w-full text-sm font-semibold py-2.5 rounded-xl"
+                style={{
+                  background: 'linear-gradient(135deg, #d6b25e 0%, #f0d080 100%)',
+                  color: '#05050a',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
                 Criar
               </button>
             </form>
@@ -196,38 +260,53 @@ export default async function CampaignsPage() {
         </details>
       </div>
 
+      {/* ── Ativas ───────────────────────────────────────── */}
       {active.length > 0 && (
         <section>
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Ativas</h2>
+          <p className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: 'rgba(255,255,255,0.28)' }}>
+            Ativas
+          </p>
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
             {active.map(c => <CampaignCard key={c.id} campaign={c} />)}
           </div>
         </section>
       )}
 
+      {/* ── Pausadas ─────────────────────────────────────── */}
       {paused.length > 0 && (
         <section>
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Pausadas</h2>
+          <p className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: 'rgba(255,255,255,0.28)' }}>
+            Pausadas
+          </p>
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
             {paused.map(c => <CampaignCard key={c.id} campaign={c} />)}
           </div>
         </section>
       )}
 
+      {/* ── Encerradas ───────────────────────────────────── */}
       {completed.length > 0 && (
         <section>
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Encerradas</h2>
+          <p className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: 'rgba(255,255,255,0.28)' }}>
+            Encerradas
+          </p>
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
             {completed.map(c => <CampaignCard key={c.id} campaign={c} />)}
           </div>
         </section>
       )}
 
+      {/* ── Empty state ──────────────────────────────────── */}
       {campaigns.length === 0 && (
-        <div className="text-center py-20 text-gray-400">
+        <div
+          className="rounded-2xl py-20 text-center"
+          style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}
+        >
           <p className="text-4xl mb-3">📣</p>
-          <p className="text-lg font-medium">Nenhuma campanha ainda</p>
-          <p className="text-sm mt-1">Crie sua primeira campanha para começar a rastrear leads.</p>
+          <p className="text-lg font-medium text-white/60">Nenhuma campanha ainda</p>
+          <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.30)' }}>
+            Crie sua primeira campanha para começar a rastrear leads.
+          </p>
         </div>
       )}
     </div>
