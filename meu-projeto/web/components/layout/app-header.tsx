@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { logout } from '@/app/(auth)/login/actions'
 import { Separator } from '@/components/ui/separator'
+import { NotificationBell } from '@/components/layout/notification-bell'
 import type { UserProfile } from '@/types/auth'
 
 const ROLE_LABELS: Record<string, string> = {
@@ -22,6 +23,7 @@ interface AppHeaderProps {
   logoHref?: string
   children?: React.ReactNode
   dark?: boolean
+  notificationCount?: number
 }
 
 export function AppHeader({
@@ -31,6 +33,7 @@ export function AppHeader({
   logoHref = '/',
   children,
   dark = false,
+  notificationCount = 0,
 }: AppHeaderProps) {
   const roleLabel = user?.role ? ROLE_LABELS[user.role] ?? user.role : null
 
@@ -65,6 +68,7 @@ export function AppHeader({
           {children}
         </div>
         <div className="flex items-center gap-3">
+          <NotificationBell initialCount={notificationCount} />
           {user?.full_name && (
             <div className="flex items-center gap-2.5">
               <div className="hidden sm:block text-right">

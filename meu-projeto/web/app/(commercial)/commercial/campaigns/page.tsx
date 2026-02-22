@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { listCampaigns, createCampaign, updateCampaignStatus } from '@/actions/commercial/campaigns'
 import type { Campaign, CampaignStatus } from '@/actions/commercial/campaigns'
 
@@ -133,26 +134,40 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
           : ' → em andamento'}
       </p>
 
-      {/* Toggle status */}
-      {campaign.status !== 'completed' && (
-        <form action={async () => {
-          'use server'
-          const nextStatus: CampaignStatus = campaign.status === 'active' ? 'paused' : 'active'
-          await updateCampaignStatus(campaign.id, nextStatus)
-        }}>
-          <button
-            type="submit"
-            className="w-full text-xs py-2 rounded-xl transition-all"
-            style={{
-              border: '1px solid rgba(255,255,255,0.08)',
-              color: 'rgba(255,255,255,0.38)',
-              background: 'transparent',
-            }}
-          >
-            {campaign.status === 'active' ? 'Pausar campanha' : 'Reativar campanha'}
-          </button>
-        </form>
-      )}
+      {/* Ações */}
+      <div className="flex gap-2">
+        <Link
+          href={`/commercial/campaigns/${campaign.id}`}
+          className="flex-1 text-center text-xs py-2 rounded-xl transition-all"
+          style={{
+            border: '1px solid rgba(214,178,94,0.20)',
+            color: 'rgba(214,178,94,0.75)',
+            background: 'rgba(214,178,94,0.06)',
+            textDecoration: 'none',
+          }}
+        >
+          Ver detalhes →
+        </Link>
+        {campaign.status !== 'completed' && (
+          <form action={async () => {
+            'use server'
+            const nextStatus: CampaignStatus = campaign.status === 'active' ? 'paused' : 'active'
+            await updateCampaignStatus(campaign.id, nextStatus)
+          }} className="flex-1">
+            <button
+              type="submit"
+              className="w-full text-xs py-2 rounded-xl transition-all"
+              style={{
+                border: '1px solid rgba(255,255,255,0.08)',
+                color: 'rgba(255,255,255,0.38)',
+                background: 'transparent',
+              }}
+            >
+              {campaign.status === 'active' ? 'Pausar' : 'Reativar'}
+            </button>
+          </form>
+        )}
+      </div>
     </div>
   )
 }

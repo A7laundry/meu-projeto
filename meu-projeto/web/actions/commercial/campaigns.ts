@@ -24,6 +24,28 @@ export interface Campaign {
   created_at: string
 }
 
+export async function getCampaign(id: string): Promise<Campaign | null> {
+  const supabase = createAdminClient()
+  const { data } = await supabase.from('campaigns').select('*').eq('id', id).single()
+  return (data as Campaign) ?? null
+}
+
+export async function updateCampaign(id: string, formData: FormData) {
+  const supabase = createAdminClient()
+  await supabase.from('campaigns').update({
+    name:             formData.get('name') as string,
+    channel:          formData.get('channel') as CampaignChannel,
+    objective:        formData.get('objective') as string,
+    budget:           Number(formData.get('budget') ?? 0),
+    spent:            Number(formData.get('spent') ?? 0),
+    leads_generated:  Number(formData.get('leads_generated') ?? 0),
+    conversions:      Number(formData.get('conversions') ?? 0),
+    ends_at:          (formData.get('ends_at') as string) || null,
+  }).eq('id', id)
+  revalidatePath('/commercial/campaigns')
+  revalidatePath(`/commercial/campaigns/${id}`)
+}
+
 export async function listCampaigns(): Promise<Campaign[]> {
   const supabase = createAdminClient()
   const { data } = await supabase
