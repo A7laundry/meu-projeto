@@ -13,59 +13,125 @@ const STAGE_LABELS: Record<LeadStage, string> = {
   lost: 'Perdido',
 }
 
-const STAGE_COLORS: Record<LeadStage, string> = {
-  prospect: 'bg-gray-100 text-gray-600',
-  contacted: 'bg-blue-100 text-blue-700',
-  qualified: 'bg-purple-100 text-purple-700',
-  proposal: 'bg-yellow-100 text-yellow-800',
-  won: 'bg-emerald-100 text-emerald-700',
-  lost: 'bg-red-100 text-red-600',
+const STAGE_DARK: Record<LeadStage, { bg: string; text: string; border: string; headerBg: string }> = {
+  prospect:  {
+    bg: 'rgba(255,255,255,0.02)', text: 'rgba(255,255,255,0.40)',
+    border: 'rgba(255,255,255,0.07)', headerBg: 'rgba(255,255,255,0.04)',
+  },
+  contacted: {
+    bg: 'rgba(96,165,250,0.04)',  text: 'rgba(96,165,250,0.80)',
+    border: 'rgba(96,165,250,0.12)', headerBg: 'rgba(96,165,250,0.08)',
+  },
+  qualified: {
+    bg: 'rgba(167,139,250,0.04)', text: 'rgba(167,139,250,0.80)',
+    border: 'rgba(167,139,250,0.12)', headerBg: 'rgba(167,139,250,0.08)',
+  },
+  proposal:  {
+    bg: 'rgba(214,178,94,0.04)',  text: 'rgba(214,178,94,0.90)',
+    border: 'rgba(214,178,94,0.14)', headerBg: 'rgba(214,178,94,0.09)',
+  },
+  won:       {
+    bg: 'rgba(52,211,153,0.04)',  text: 'rgba(52,211,153,0.85)',
+    border: 'rgba(52,211,153,0.12)', headerBg: 'rgba(52,211,153,0.08)',
+  },
+  lost:      {
+    bg: 'rgba(248,113,113,0.04)', text: 'rgba(248,113,113,0.70)',
+    border: 'rgba(248,113,113,0.10)', headerBg: 'rgba(248,113,113,0.07)',
+  },
 }
 
-const STAGE_ORDER: LeadStage[] = ['prospect', 'contacted', 'qualified', 'proposal', 'won', 'lost']
+const SOURCE_ICONS: Record<string, string> = {
+  instagram: '📸',
+  google:    '🔍',
+  referral:  '🤝',
+  cold_call: '📞',
+  whatsapp:  '💬',
+  form:      '📋',
+  manual:    '✏️',
+}
 
 function StageColumn({ stage, leads }: { stage: LeadStage; leads: Lead[] }) {
-  const filtered = leads.filter(l => l.stage === stage)
+  const filtered  = leads.filter(l => l.stage === stage)
   const totalValue = filtered.reduce((s, l) => s + Number(l.estimated_monthly_value ?? 0), 0)
+  const theme     = STAGE_DARK[stage]
 
   return (
-    <div className="flex-shrink-0 w-72">
-      <div className="flex items-center justify-between mb-3">
-        <span className={`text-xs font-medium px-2 py-1 rounded-full ${STAGE_COLORS[stage]}`}>
+    <div className="flex-shrink-0 w-64 flex flex-col gap-2">
+      {/* Header da coluna */}
+      <div
+        className="flex items-center justify-between px-3 py-2.5 rounded-xl"
+        style={{ background: theme.headerBg, border: `1px solid ${theme.border}` }}
+      >
+        <span className="text-xs font-semibold" style={{ color: theme.text }}>
           {STAGE_LABELS[stage]}
         </span>
-        <span className="text-xs text-gray-400">
-          {filtered.length} {filtered.length !== 1 ? 'leads' : 'lead'}
-          {totalValue > 0 && ` · R$ ${(totalValue / 1000).toFixed(1)}k`}
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className="text-[11px] font-bold tabular-nums w-5 h-5 rounded-full flex items-center justify-center"
+            style={{ background: theme.bg, color: theme.text, border: `1px solid ${theme.border}` }}
+          >
+            {filtered.length}
+          </span>
+          {totalValue > 0 && (
+            <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.30)' }}>
+              R${(totalValue / 1000).toFixed(1)}k
+            </span>
+          )}
+        </div>
       </div>
 
-      <div className="space-y-2 min-h-[60px]">
+      {/* Cards */}
+      <div className="flex flex-col gap-2 min-h-[80px]">
+        {filtered.length === 0 && (
+          <div
+            className="rounded-xl px-3 py-6 text-center"
+            style={{ background: 'rgba(255,255,255,0.01)', border: `1px dashed rgba(255,255,255,0.06)` }}
+          >
+            <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.20)' }}>vazio</p>
+          </div>
+        )}
         {filtered.map((lead) => (
           <Link
             key={lead.id}
             href={`/commercial/leads/${lead.id}`}
-            className="block bg-white border border-gray-200 rounded-xl p-4 hover:border-[#d6b25e]/60 hover:shadow-sm transition-all group"
+            className="block rounded-xl p-3.5 transition-all duration-150 group hover:bg-white/[0.05] hover:border-white/[0.14]"
+            style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: `1px solid rgba(255,255,255,0.07)`,
+            }}
           >
             <div className="flex items-start justify-between gap-2">
-              <p className="font-medium text-gray-800 text-sm group-hover:text-[#b8921e] transition-colors truncate">
+              <p className="text-sm font-semibold truncate text-white/85 group-hover:text-white transition-colors">
                 {lead.name}
               </p>
               {lead.estimated_monthly_value > 0 && (
-                <span className="text-xs text-gray-500 flex-shrink-0">
-                  R$ {Number(lead.estimated_monthly_value).toFixed(0)}/mês
+                <span className="text-[11px] flex-shrink-0 tabular-nums" style={{ color: '#d6b25e', fontWeight: 600 }}>
+                  R${Number(lead.estimated_monthly_value).toFixed(0)}
                 </span>
               )}
             </div>
             {lead.company && (
-              <p className="text-xs text-gray-400 mt-0.5 truncate">{lead.company}</p>
+              <p className="text-[11px] mt-0.5 truncate" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                {lead.company}
+              </p>
             )}
-            <div className="flex items-center gap-2 mt-2">
-              <span className="text-[10px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">
-                {lead.source}
-              </span>
+            <div className="flex items-center gap-1.5 mt-2.5 flex-wrap">
+              {lead.source && (
+                <span
+                  className="text-[10px] px-1.5 py-0.5 rounded"
+                  style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    color: 'rgba(255,255,255,0.40)',
+                  }}
+                >
+                  {SOURCE_ICONS[lead.source] ?? '📌'} {lead.source}
+                </span>
+              )}
               {lead.phone && (
-                <span className="text-[10px] text-gray-400 truncate">{lead.phone}</span>
+                <span className="text-[10px] truncate" style={{ color: 'rgba(255,255,255,0.28)' }}>
+                  {lead.phone}
+                </span>
               )}
             </div>
           </Link>
@@ -77,49 +143,76 @@ function StageColumn({ stage, leads }: { stage: LeadStage; leads: Lead[] }) {
 
 export default async function LeadsPage() {
   const leads = await listLeads()
+  const totalValue = leads
+    .filter(l => !['won', 'lost'].includes(l.stage))
+    .reduce((s, l) => s + Number(l.estimated_monthly_value ?? 0), 0)
 
   return (
-    <div className="p-6 h-full flex flex-col">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-6 h-full flex flex-col gap-5">
+
+      {/* ── Header ─────────────────────────────────── */}
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Pipeline de Leads</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{leads.length} leads no total</p>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Pipeline de Leads</h1>
+          <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            {leads.length} lead{leads.length !== 1 ? 's' : ''} no total
+            {totalValue > 0 && (
+              <span style={{ color: '#d6b25e', marginLeft: 8, fontWeight: 600 }}>
+                · R${(totalValue / 1000).toFixed(1)}k em aberto
+              </span>
+            )}
+          </p>
         </div>
 
-        {/* Form de criação rápida */}
+        {/* Form de novo lead */}
         <details className="relative">
-          <summary className="cursor-pointer inline-flex items-center gap-2 bg-[#07070a] hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors list-none">
+          <summary
+            className="cursor-pointer inline-flex items-center gap-2 text-sm font-semibold px-4 py-2.5 rounded-xl transition-all list-none"
+            style={{
+              background: 'linear-gradient(135deg, #d6b25e 0%, #f0d080 100%)',
+              color: '#05050a',
+              boxShadow: '0 4px 16px rgba(214,178,94,0.25)',
+            }}
+          >
             + Novo Lead
           </summary>
-          <div className="absolute right-0 top-12 z-20 w-80 bg-white rounded-xl border border-gray-200 shadow-lg p-5">
-            <h3 className="font-semibold text-gray-800 mb-4 text-sm">Adicionar Lead</h3>
+          <div
+            className="absolute right-0 top-12 z-20 w-80 rounded-xl shadow-2xl p-5"
+            style={{ background: '#0e0e14', border: '1px solid rgba(255,255,255,0.10)' }}
+          >
+            <h3 className="font-semibold text-white mb-4 text-sm">Adicionar Lead</h3>
             <form action={createLead} className="space-y-3">
               <input
                 name="name"
                 required
                 placeholder="Nome do contato *"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#d6b25e]"
+                className="input-premium w-full"
+                style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14 }}
               />
               <input
                 name="company"
                 placeholder="Empresa"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#d6b25e]"
+                className="input-premium w-full"
+                style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14 }}
               />
               <input
                 name="phone"
                 placeholder="Telefone / WhatsApp"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#d6b25e]"
+                className="input-premium w-full"
+                style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14 }}
               />
               <input
                 name="email"
                 type="email"
                 placeholder="E-mail"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#d6b25e]"
+                className="input-premium w-full"
+                style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14 }}
               />
               <div className="grid grid-cols-2 gap-2">
                 <select
                   name="source"
-                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#d6b25e] bg-white"
+                  className="input-premium w-full"
+                  style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14 }}
                 >
                   <option value="manual">Manual</option>
                   <option value="instagram">Instagram</option>
@@ -131,15 +224,22 @@ export default async function LeadsPage() {
                 <input
                   name="estimated_monthly_value"
                   type="number"
-                  placeholder="R$/mês est."
+                  placeholder="R$/mês"
                   min="0"
                   step="0.01"
-                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#d6b25e]"
+                  className="input-premium w-full"
+                  style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14 }}
                 />
               </div>
               <button
                 type="submit"
-                className="w-full bg-[#07070a] text-white text-sm font-medium py-2 rounded-lg hover:bg-gray-800 transition-colors"
+                className="w-full text-sm font-semibold py-2.5 rounded-xl transition-all"
+                style={{
+                  background: 'linear-gradient(135deg, #d6b25e 0%, #f0d080 100%)',
+                  color: '#05050a',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
               >
                 Criar Lead
               </button>
@@ -148,9 +248,9 @@ export default async function LeadsPage() {
         </details>
       </div>
 
-      {/* Kanban */}
-      <div className="flex gap-4 overflow-x-auto pb-4 flex-1">
-        {STAGE_ORDER.map((stage) => (
+      {/* ── Kanban ─────────────────────────────────── */}
+      <div className="flex gap-4 overflow-x-auto pb-4 flex-1 items-start">
+        {(['prospect', 'contacted', 'qualified', 'proposal', 'won', 'lost'] as LeadStage[]).map((stage) => (
           <StageColumn key={stage} stage={stage} leads={leads} />
         ))}
       </div>

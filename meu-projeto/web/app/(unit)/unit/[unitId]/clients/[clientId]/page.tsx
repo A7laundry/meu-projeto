@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 import { listClients } from '@/actions/clients/crud'
 import { getClientStats, listClientNotes, listClientOrders } from '@/actions/crm/notes'
 import { ClientDetail } from '@/components/domain/commercial/client-detail'
@@ -24,11 +23,20 @@ export default async function ClientDetailPage({
   if (!client) notFound()
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <div className="mb-4">
-        <Button asChild variant="ghost" size="sm" className="text-white/40">
-          <Link href={`/unit/${unitId}/clients`}>← Voltar</Link>
-        </Button>
+    <div className="p-6 max-w-4xl mx-auto">
+      {/* Breadcrumb / Voltar */}
+      <div className="flex items-center gap-2 mb-6">
+        <Link
+          href={`/unit/${unitId}/clients`}
+          className="text-sm transition-colors"
+          style={{ color: 'rgba(255,255,255,0.35)' }}
+        >
+          Clientes
+        </Link>
+        <span style={{ color: 'rgba(255,255,255,0.20)' }}>/</span>
+        <span className="text-sm font-medium text-white/65 truncate max-w-xs">
+          {client.name}
+        </span>
       </div>
 
       <ClientDetail unitId={unitId} client={client} stats={stats} notes={notes} orders={orders} />

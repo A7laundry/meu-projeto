@@ -14,13 +14,21 @@ const STAGE_LABELS: Record<LeadStage, string> = {
 
 const STAGE_ORDER: LeadStage[] = ['prospect', 'contacted', 'qualified', 'proposal', 'won', 'lost']
 
-const STAGE_COLORS: Record<LeadStage, string> = {
-  prospect: 'bg-gray-200 text-gray-700',
-  contacted: 'bg-blue-100 text-blue-700',
-  qualified: 'bg-purple-100 text-purple-700',
-  proposal: 'bg-yellow-100 text-yellow-800',
-  won: 'bg-emerald-100 text-emerald-700',
-  lost: 'bg-red-100 text-red-700',
+const STAGE_DARK: Record<LeadStage, { bg: string; text: string; bar: string }> = {
+  prospect:  { bg: 'rgba(255,255,255,0.05)',  text: 'rgba(255,255,255,0.45)', bar: 'rgba(255,255,255,0.20)' },
+  contacted: { bg: 'rgba(96,165,250,0.10)',   text: 'rgba(96,165,250,0.80)',  bar: 'rgba(96,165,250,0.50)'  },
+  qualified: { bg: 'rgba(167,139,250,0.10)',  text: 'rgba(167,139,250,0.80)', bar: 'rgba(167,139,250,0.50)' },
+  proposal:  { bg: 'rgba(214,178,94,0.12)',   text: 'rgba(214,178,94,0.90)',  bar: 'rgba(214,178,94,0.60)'  },
+  won:       { bg: 'rgba(52,211,153,0.10)',   text: 'rgba(52,211,153,0.85)',  bar: 'rgba(52,211,153,0.55)'  },
+  lost:      { bg: 'rgba(248,113,113,0.08)',  text: 'rgba(248,113,113,0.70)', bar: 'rgba(248,113,113,0.45)' },
+}
+
+function fmtBRL(v: number) {
+  return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+}
+
+function fmtInt(v: number) {
+  return v.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 }
 
 async function getCommercialStats() {
@@ -32,13 +40,12 @@ async function getCommercialStats() {
 
   const { data: campaigns } = await supabase
     .from('campaigns')
-    .select('budget, spent, leads_generated, conversions, status')
+    .select('name, channel, budget, spent, leads_generated, conversions, status')
     .eq('status', 'active')
 
   const allLeads = leads ?? []
   const activeCampaigns = campaigns ?? []
 
-  // Agrupamento por estágio
   const byStage: Record<string, { count: number; value: number }> = {}
   for (const lead of allLeads) {
     if (!byStage[lead.stage]) byStage[lead.stage] = { count: 0, value: 0 }
@@ -46,12 +53,10 @@ async function getCommercialStats() {
     byStage[lead.stage].value += Number(lead.estimated_monthly_value ?? 0)
   }
 
-  // Leads criados nos últimos 30 dias
   const thirtyDaysAgo = new Date()
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
   const recentLeads = allLeads.filter(l => new Date(l.created_at) >= thirtyDaysAgo).length
 
-  // Pipeline total (ganhos em andamento)
   const pipelineValue = allLeads
     .filter(l => !['won', 'lost'].includes(l.stage))
     .reduce((s, l) => s + Number(l.estimated_monthly_value ?? 0), 0)
@@ -60,11 +65,11 @@ async function getCommercialStats() {
   const totalLeads = allLeads.filter(l => !['prospect'].includes(l.stage)).length
   const conversionRate = totalLeads > 0 ? Math.round((wonLeads / totalLeads) * 100) : 0
 
-  // Total gasto em campanhas ativas
   const totalBudget = activeCampaigns.reduce((s, c) => s + Number(c.budget ?? 0), 0)
-  const totalSpent = activeCampaigns.reduce((s, c) => s + Number(c.spent ?? 0), 0)
+  const totalSpent  = activeCampaigns.reduce((s, c) => s + Number(c.spent ?? 0), 0)
   const totalCampaignLeads = activeCampaigns.reduce((s, c) => s + (c.leads_generated ?? 0), 0)
   const costPerLead = totalCampaignLeads > 0 ? totalSpent / totalCampaignLeads : 0
+  const budgetPct   = totalBudget > 0 ? Math.min(Math.round((totalSpent / totalBudget) * 100), 100) : 0
 
   return {
     byStage,
@@ -73,78 +78,123 @@ async function getCommercialStats() {
     conversionRate,
     totalBudget,
     totalSpent,
+    budgetPct,
     costPerLead,
     wonLeads,
+    activeCampaigns,
+    totalLeads: allLeads.length,
   }
 }
+
+const CARD = {
+  background: 'rgba(255,255,255,0.03)',
+  border: '1px solid rgba(255,255,255,0.07)',
+  borderRadius: 16,
+  padding: '20px 22px',
+} as const
 
 export default async function CommercialDashboardPage() {
   const stats = await getCommercialStats()
 
+  const kpis = [
+    {
+      label: 'Pipeline ativo',
+      value: fmtBRL(stats.pipelineValue),
+      sub: `${stats.totalLeads} leads no total`,
+      accent: '#d6b25e',
+      icon: '💰',
+    },
+    {
+      label: 'Taxa de conversão',
+      value: `${stats.conversionRate}%`,
+      sub: `${stats.wonLeads} leads ganhos`,
+      accent: '#34d399',
+      icon: '✅',
+    },
+    {
+      label: 'Leads (30 dias)',
+      value: String(stats.recentLeads),
+      sub: 'Novos captados',
+      accent: '#60a5fa',
+      icon: '📊',
+    },
+    {
+      label: 'Custo / Lead',
+      value: stats.costPerLead > 0 ? fmtBRL(stats.costPerLead) : '—',
+      sub: 'Campanhas ativas',
+      accent: '#a78bfa',
+      icon: '🎯',
+    },
+  ]
+
+  const maxStageCount = Math.max(...STAGE_ORDER.map(s => stats.byStage[s]?.count ?? 0), 1)
+
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-8">
+
+      {/* ── Header ─────────────────────────────────────── */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard Comercial</h1>
-        <p className="text-sm text-gray-500 mt-0.5">Visão geral do pipeline e performance</p>
+        <h1 className="text-2xl font-bold text-white tracking-tight">Dashboard Comercial</h1>
+        <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          Visão geral do pipeline e performance
+        </p>
       </div>
 
-      {/* KPIs */}
+      {/* ── KPIs ──────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <p className="text-xs text-gray-500 uppercase tracking-wide">Pipeline (R$/mês)</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">
-            R$ {stats.pipelineValue.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
-          </p>
-          <p className="text-xs text-gray-400 mt-0.5">Leads em aberto</p>
-        </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <p className="text-xs text-gray-500 uppercase tracking-wide">Taxa de Conversão</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{stats.conversionRate}%</p>
-          <p className="text-xs text-gray-400 mt-0.5">{stats.wonLeads} ganhos</p>
-        </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <p className="text-xs text-gray-500 uppercase tracking-wide">Leads (30 dias)</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{stats.recentLeads}</p>
-          <p className="text-xs text-gray-400 mt-0.5">Novos leads captados</p>
-        </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <p className="text-xs text-gray-500 uppercase tracking-wide">Custo/Lead</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">
-            {stats.costPerLead > 0 ? `R$ ${stats.costPerLead.toFixed(2).replace('.', ',')}` : '—'}
-          </p>
-          <p className="text-xs text-gray-400 mt-0.5">Campanhas ativas</p>
-        </div>
+        {kpis.map((k) => (
+          <div key={k.label} style={CARD}>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-lg">{k.icon}</span>
+              <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.30)' }}>
+                {k.label}
+              </p>
+            </div>
+            <p className="text-2xl font-bold tabular-nums" style={{ color: k.accent }}>
+              {k.value}
+            </p>
+            <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.28)' }}>
+              {k.sub}
+            </p>
+          </div>
+        ))}
       </div>
 
-      {/* Funil de vendas */}
+      {/* ── Funil de vendas ──────────────────────────── */}
       <section>
-        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
+        <p className="text-[11px] font-semibold uppercase tracking-wider mb-4" style={{ color: 'rgba(255,255,255,0.30)' }}>
           Funil de Vendas
-        </h2>
-        <div className="rounded-xl border border-gray-200 bg-white p-6">
-          <div className="space-y-3">
+        </p>
+        <div style={CARD}>
+          <div className="space-y-4">
             {STAGE_ORDER.map((stage) => {
               const stageData = stats.byStage[stage] ?? { count: 0, value: 0 }
-              const maxCount = Math.max(...STAGE_ORDER.map(s => stats.byStage[s]?.count ?? 0), 1)
-              const widthPct = Math.max((stageData.count / maxCount) * 100, 4)
+              const widthPct  = Math.max((stageData.count / maxStageCount) * 100, stageData.count > 0 ? 4 : 0)
+              const theme     = STAGE_DARK[stage]
               return (
                 <div key={stage} className="flex items-center gap-4">
                   <div className="w-28 flex-shrink-0">
-                    <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${STAGE_COLORS[stage]}`}>
+                    <span
+                      className="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full"
+                      style={{ background: theme.bg, color: theme.text }}
+                    >
                       {STAGE_LABELS[stage]}
                     </span>
                   </div>
-                  <div className="flex-1 bg-gray-100 rounded-full h-5 overflow-hidden">
+                  <div
+                    className="flex-1 rounded-full overflow-hidden"
+                    style={{ height: 6, background: 'rgba(255,255,255,0.05)' }}
+                  >
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-[#d6b25e]/80 to-[#d6b25e] transition-all"
-                      style={{ width: `${widthPct}%` }}
+                      className="h-full rounded-full transition-all duration-700"
+                      style={{ width: `${widthPct}%`, background: theme.bar }}
                     />
                   </div>
                   <div className="w-24 text-right flex-shrink-0">
-                    <span className="text-sm font-semibold text-gray-700">{stageData.count}</span>
+                    <span className="text-sm font-semibold tabular-nums text-white">{stageData.count}</span>
                     {stageData.value > 0 && (
-                      <span className="text-xs text-gray-400 ml-1">
-                        · R${(stageData.value / 1000).toFixed(1)}k
+                      <span className="text-xs ml-1.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                        R${(stageData.value / 1000).toFixed(1)}k
                       </span>
                     )}
                   </div>
@@ -155,34 +205,98 @@ export default async function CommercialDashboardPage() {
         </div>
       </section>
 
-      {/* Campanhas ativas */}
+      {/* ── Campanhas ────────────────────────────────── */}
       <section>
-        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
+        <p className="text-[11px] font-semibold uppercase tracking-wider mb-4" style={{ color: 'rgba(255,255,255,0.30)' }}>
           Campanhas Ativas
-        </h2>
+        </p>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-1">
-            <p className="text-xs text-gray-500 uppercase tracking-wide">Orçamento total</p>
-            <p className="text-2xl font-bold text-gray-900">
-              R$ {stats.totalBudget.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+
+          {/* Card orçamento total */}
+          <div style={CARD}>
+            <p className="text-[10px] font-semibold uppercase tracking-wider mb-3" style={{ color: 'rgba(255,255,255,0.30)' }}>
+              Orçamento total
             </p>
-            <p className="text-xs text-gray-400">
-              R$ {stats.totalSpent.toFixed(0)} investido ({stats.totalBudget > 0 ? Math.round((stats.totalSpent / stats.totalBudget) * 100) : 0}%)
+            <p className="text-2xl font-bold tabular-nums" style={{ color: '#d6b25e' }}>
+              R$ {fmtInt(stats.totalBudget)}
+            </p>
+            <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              R$ {fmtInt(stats.totalSpent)} investido ({stats.budgetPct}%)
             </p>
           </div>
-          <div className="rounded-xl border border-gray-200 bg-white p-5 col-span-2">
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Progresso dos orçamentos</p>
-            <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+
+          {/* Barra de progresso */}
+          <div style={{ ...CARD, padding: '20px 22px', gridColumn: 'span 2 / span 2' }}>
+            <p className="text-[10px] font-semibold uppercase tracking-wider mb-4" style={{ color: 'rgba(255,255,255,0.30)' }}>
+              Progresso dos orçamentos
+            </p>
+            <div className="rounded-full overflow-hidden" style={{ height: 8, background: 'rgba(255,255,255,0.05)' }}>
               <div
-                className="h-full bg-emerald-500 rounded-full"
-                style={{ width: `${stats.totalBudget > 0 ? Math.min((stats.totalSpent / stats.totalBudget) * 100, 100) : 0}%` }}
+                className="h-full rounded-full transition-all duration-700"
+                style={{ width: `${stats.budgetPct}%`, background: 'linear-gradient(90deg, #34d399 0%, #10b981 100%)' }}
               />
             </div>
-            <p className="text-xs text-gray-400 mt-2">
-              R$ {stats.totalSpent.toFixed(2).replace('.', ',')} de R$ {stats.totalBudget.toFixed(2).replace('.', ',')} gasto
-            </p>
+            <div className="flex justify-between items-center mt-2">
+              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                {fmtBRL(stats.totalSpent)} gasto
+              </p>
+              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                {fmtBRL(stats.totalBudget)} total
+              </p>
+            </div>
           </div>
         </div>
+
+        {/* Lista de campanhas */}
+        {stats.activeCampaigns.length > 0 && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mt-3">
+            {stats.activeCampaigns.map((c, i) => {
+              const pct = Number(c.budget) > 0 ? Math.min(Math.round((Number(c.spent) / Number(c.budget)) * 100), 100) : 0
+              const convRate = (c.leads_generated ?? 0) > 0 ? Math.round(((c.conversions ?? 0) / (c.leads_generated ?? 1)) * 100) : 0
+              return (
+                <div
+                  key={i}
+                  style={{
+                    background: 'rgba(255,255,255,0.02)',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    borderRadius: 12,
+                    padding: '16px 18px',
+                  }}
+                >
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <p className="text-sm font-semibold text-white truncate">{c.name}</p>
+                    <span
+                      className="text-[10px] px-2 py-0.5 rounded-full flex-shrink-0 font-medium"
+                      style={{ background: 'rgba(52,211,153,0.10)', color: 'rgba(52,211,153,0.80)' }}
+                    >
+                      ativa
+                    </span>
+                  </div>
+                  <div className="space-y-1 text-xs" style={{ color: 'rgba(255,255,255,0.40)' }}>
+                    <div className="flex justify-between">
+                      <span>Leads gerados</span>
+                      <span className="text-white font-medium">{c.leads_generated ?? 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Conversões</span>
+                      <span style={{ color: '#34d399', fontWeight: 600 }}>{c.conversions ?? 0} ({convRate}%)</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Gasto / orçamento</span>
+                      <span className="text-white">{pct}%</span>
+                    </div>
+                  </div>
+                  <div className="mt-3 rounded-full overflow-hidden" style={{ height: 3, background: 'rgba(255,255,255,0.05)' }}>
+                    <div
+                      className="h-full rounded-full"
+                      style={{ width: `${pct}%`, background: 'rgba(214,178,94,0.60)' }}
+                    />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </section>
     </div>
   )
