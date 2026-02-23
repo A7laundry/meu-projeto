@@ -2,24 +2,29 @@
 
 import { useState } from 'react'
 import { SectorQueue } from '@/components/domain/production/sector-queue'
-import { GenericSectorForm } from '@/components/domain/production/generic-sector-form'
-import type { Order, OrderStatus } from '@/types/order'
+import { WashingForm } from '@/components/domain/production/washing-form'
+import type { Order } from '@/types/order'
+import type { Equipment } from '@/types/equipment'
+import type { Recipe } from '@/types/recipe'
+import type { WashingKpis } from '@/actions/production/washing-kpis'
 
-interface SectorPageClientProps {
+interface WashingPageClientProps {
   unitId: string
+  operatorId: string
   operatorName: string
-  sectorKey: 'washing' | 'drying' | 'ironing' | 'shipping'
-  sectorName: string
-  statuses: OrderStatus[]
+  equipment: Equipment[]
+  recipes: Recipe[]
+  kpis: WashingKpis
 }
 
-export function SectorPageClient({
+export function WashingPageClient({
   unitId,
+  operatorId,
   operatorName,
-  sectorKey,
-  sectorName,
-  statuses,
-}: SectorPageClientProps) {
+  equipment,
+  recipes,
+  kpis,
+}: WashingPageClientProps) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [showSuccess, setShowSuccess] = useState(false)
 
@@ -46,19 +51,22 @@ export function SectorPageClient({
         </div>
       )}
       {selectedOrder ? (
-        <GenericSectorForm
+        <WashingForm
           order={selectedOrder}
           unitId={unitId}
-          sectorKey={sectorKey}
+          operatorId={operatorId}
+          equipment={equipment}
+          recipes={recipes}
+          kpis={kpis}
           onComplete={handleComplete}
           onCancel={() => setSelectedOrder(null)}
         />
       ) : (
         <SectorQueue
           unitId={unitId}
-          sectorName={sectorName}
+          sectorName="Lavagem"
           operatorName={operatorName}
-          statuses={statuses}
+          statuses={['washing']}
           onSelectOrder={setSelectedOrder}
         />
       )}

@@ -22,6 +22,8 @@ export interface SectorCompletionData {
   // Washing-specific
   cycles?: number
   weightKg?: number
+  recipeId?: string
+  startedAt?: string
   // Drying-specific
   temperatureLevel?: 'low' | 'medium' | 'high'
   // Ironing-specific
@@ -75,14 +77,45 @@ export async function completeSector(data: SectorCompletionData): Promise<Action
   const eventId = event.id
 
   if (data.sectorKey === 'washing') {
+    // Calcular chemical_usage a partir da receita selecionada
+    let chemicalUsage: Array<{ product_name: string; quantity_used: number }> = []
+    if (data.recipeId && data.cycles) {
+      const { data: chemicals } = await admin
+        .from('recipe_chemicals')
+        .select('quantity_per_cycle, chemical_products(name)')
+        .eq('recipe_id', data.recipeId)
+
+      if (chemicals && chemicals.length > 0) {
+        chemicalUsage = chemicals.map((c: { quantity_per_cycle: number; chemical_products: { name: string } | null }) => ({
+          product_name: c.chemical_products?.name ?? 'Produto',
+          quantity_used: (c.quantity_per_cycle ?? 0) * (data.cycles ?? 1),
+        }))
+      }
+    }
+
     await admin.from('washing_records').insert({
       order_event_id: eventId,
       equipment_id: data.equipmentId ?? null,
       cycles: data.cycles ?? 1,
       weight_kg: data.weightKg ?? null,
-      started_at: null,
+      started_at: data.startedAt ?? null,
       finished_at: new Date().toISOString(),
+      chemical_usage: chemicalUsage,
     })
+
+    // Registrar uso no equipment_log
+    if (data.equipmentId) {
+      await admin.from('equipment_logs').insert({
+        equipment_id: data.equipmentId,
+        unit_id: data.unitId,
+        operator_id: user?.id ?? null,
+        operator_name: null,
+        log_type: 'use',
+        cycles: data.cycles ?? 1,
+        notes: `Lavagem comanda ${data.orderId}`,
+        occurred_at: new Date().toISOString(),
+      })
+    }
   } else if (data.sectorKey === 'drying') {
     await admin.from('drying_records').insert({
       order_event_id: eventId,
