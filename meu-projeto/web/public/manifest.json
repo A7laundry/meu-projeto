@@ -1,26 +1,39 @@
 {
-  "name": "A7x TecNologia - OS.",
-  "short_name": "A7x OS",
-  "description": "Sistema Operacional Inteligente para gestão de lavanderias industriais",
+  "name": "A7x Lavanderia",
+  "short_name": "A7x",
+  "description": "Acompanhe suas peças em tempo real",
   "display": "standalone",
-  "orientation": "landscape",
-  "theme_color": "#07070a",
+  "orientation": "portrait",
+  "theme_color": "#071020",
   "background_color": "#07070a",
-  "start_url": "/",
+  "start_url": "/client/orders",
   "scope": "/",
   "lang": "pt-BR",
+  "categories": ["lifestyle", "utilities"],
   "icons": [
     {
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
