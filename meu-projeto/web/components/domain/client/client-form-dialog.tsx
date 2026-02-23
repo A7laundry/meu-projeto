@@ -82,15 +82,15 @@ export function ClientFormDialog({ unitId, client, trigger }: ClientFormDialogPr
         {trigger ?? (
           <button
             style={{
-              background: 'linear-gradient(135deg, #d6b25e 0%, #f0d080 100%)',
-              color: '#05050a',
+              background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
+              color: '#ffffff',
               fontWeight: 700,
               fontSize: 13,
               padding: '9px 18px',
               borderRadius: 10,
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 4px 16px rgba(214,178,94,0.25)',
+              boxShadow: '0 4px 16px rgba(59,130,246,0.25)',
               whiteSpace: 'nowrap',
               flexShrink: 0,
             }}
@@ -114,14 +114,14 @@ export function ClientFormDialog({ unitId, client, trigger }: ClientFormDialogPr
         <div
           className="px-6 pt-6 pb-5"
           style={{
-            background: 'linear-gradient(135deg, rgba(214,178,94,0.10) 0%, rgba(5,5,12,0.9) 100%)',
+            background: 'linear-gradient(135deg, rgba(59,130,246,0.10) 0%, rgba(5,5,12,0.9) 100%)',
             borderBottom: '1px solid rgba(255,255,255,0.06)',
           }}
         >
           <DialogHeader className="mb-4">
             <DialogTitle
               className="text-xs font-semibold uppercase tracking-widest"
-              style={{ color: 'rgba(214,178,94,0.55)' }}
+              style={{ color: 'rgba(59,130,246,0.55)' }}
             >
               {isEditing ? '✏️ Editar cadastro' : '👤 Novo cliente'}
             </DialogTitle>
@@ -133,12 +133,12 @@ export function ClientFormDialog({ unitId, client, trigger }: ClientFormDialogPr
               className="w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-bold flex-shrink-0 transition-all duration-200"
               style={{
                 background: previewName.trim()
-                  ? 'linear-gradient(135deg, rgba(214,178,94,0.22) 0%, rgba(185,138,44,0.15) 100%)'
+                  ? 'linear-gradient(135deg, rgba(59,130,246,0.22) 0%, rgba(37,99,235,0.10) 100%)'
                   : 'rgba(255,255,255,0.04)',
                 border: previewName.trim()
-                  ? '1.5px solid rgba(214,178,94,0.40)'
+                  ? '1.5px solid rgba(59,130,246,0.40)'
                   : '1.5px solid rgba(255,255,255,0.08)',
-                color: previewName.trim() ? '#d6b25e' : 'rgba(255,255,255,0.20)',
+                color: previewName.trim() ? '#60a5fa' : 'rgba(255,255,255,0.20)',
               }}
             >
               {initials}
@@ -164,7 +164,7 @@ export function ClientFormDialog({ unitId, client, trigger }: ClientFormDialogPr
                       className="px-3 py-1 text-xs font-semibold transition-all duration-150"
                       style={
                         clientType === k
-                          ? { background: 'rgba(214,178,94,0.18)', color: '#d6b25e' }
+                          ? { background: 'rgba(59,130,246,0.18)', color: '#60a5fa' }
                           : { background: 'transparent', color: 'rgba(255,255,255,0.30)' }
                       }
                     >
@@ -270,9 +270,9 @@ export function ClientFormDialog({ unitId, client, trigger }: ClientFormDialogPr
                 style={
                   channel === ch.value
                     ? {
-                        background: 'rgba(214,178,94,0.14)',
-                        border: '1px solid rgba(214,178,94,0.40)',
-                        color: '#d6b25e',
+                        background: 'rgba(59,130,246,0.14)',
+                        border: '1px solid rgba(59,130,246,0.40)',
+                        color: '#60a5fa',
                       }
                     : {
                         background: 'rgba(255,255,255,0.04)',
@@ -399,13 +399,13 @@ export function ClientFormDialog({ unitId, client, trigger }: ClientFormDialogPr
                 borderRadius: 12,
                 border: 'none',
                 background: isPending
-                  ? 'rgba(214,178,94,0.40)'
-                  : 'linear-gradient(135deg, #d6b25e 0%, #f0d080 100%)',
-                color: '#05050a',
+                  ? 'rgba(59,130,246,0.40)'
+                  : 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
+                color: '#ffffff',
                 fontSize: 14,
                 fontWeight: 700,
                 cursor: isPending ? 'not-allowed' : 'pointer',
-                boxShadow: isPending ? 'none' : '0 4px 20px rgba(214,178,94,0.25)',
+                boxShadow: isPending ? 'none' : '0 4px 20px rgba(59,130,246,0.25)',
                 transition: 'all 0.15s',
               }}
             >
@@ -428,7 +428,7 @@ function SectionDivider({ label }: { label: string }) {
       <span className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.07)' }} />
       <span
         className="text-[10px] font-bold uppercase tracking-widest px-1 whitespace-nowrap"
-        style={{ color: 'rgba(214,178,94,0.50)' }}
+        style={{ color: 'rgba(59,130,246,0.50)' }}
       >
         {label}
       </span>

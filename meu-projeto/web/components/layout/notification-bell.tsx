@@ -59,9 +59,9 @@ export function NotificationBell({ initialCount }: NotificationBellProps) {
         onClick={handleToggle}
         className="relative w-8 h-8 flex items-center justify-center rounded-lg transition-all"
         style={{
-          background: open ? 'rgba(214,178,94,0.12)' : 'transparent',
-          border:     open ? '1px solid rgba(214,178,94,0.25)' : '1px solid transparent',
-          color:      open ? '#d6b25e' : 'rgba(255,255,255,0.40)',
+          background: open ? 'rgba(59,130,246,0.12)' : 'transparent',
+          border:     open ? '1px solid rgba(59,130,246,0.25)' : '1px solid transparent',
+          color:      open ? '#60a5fa' : 'rgba(255,255,255,0.40)',
         }}
         aria-label="Notificações"
       >

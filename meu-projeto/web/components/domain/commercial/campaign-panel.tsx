@@ -26,9 +26,9 @@ const SEGMENTS: Array<{
     icon: '🎂',
     label: 'Aniversariantes',
     sublabel: 'Este mês',
-    color: 'rgba(214,178,94,0.12)',
-    borderColor: 'rgba(214,178,94,0.30)',
-    badgeColor: '#d6b25e',
+    color: 'rgba(59,130,246,0.12)',
+    borderColor: 'rgba(59,130,246,0.30)',
+    badgeColor: '#60a5fa',
   },
   {
     key: 'dormant30',
@@ -196,12 +196,12 @@ function ClientRow({ client, segmentKey }: { client: CampaignClient; segmentKey:
         className="w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center text-xs font-bold"
         style={{
           background: client.birthday_today
-            ? 'rgba(214,178,94,0.18)'
+            ? 'rgba(59,130,246,0.18)'
             : 'rgba(255,255,255,0.05)',
           border: client.birthday_today
-            ? '1px solid rgba(214,178,94,0.35)'
+            ? '1px solid rgba(59,130,246,0.35)'
             : '1px solid rgba(255,255,255,0.08)',
-          color: client.birthday_today ? '#d6b25e' : 'rgba(255,255,255,0.40)',
+          color: client.birthday_today ? '#60a5fa' : 'rgba(255,255,255,0.40)',
         }}
       >
         {initials}
@@ -214,7 +214,7 @@ function ClientRow({ client, segmentKey }: { client: CampaignClient; segmentKey:
           {client.birthday_today && (
             <span
               className="text-[10px] px-1.5 py-0.5 rounded-full font-bold"
-              style={{ background: 'rgba(214,178,94,0.18)', color: '#d6b25e', border: '1px solid rgba(214,178,94,0.35)' }}
+              style={{ background: 'rgba(59,130,246,0.18)', color: '#60a5fa', border: '1px solid rgba(59,130,246,0.35)' }}
             >
               🎂 Hoje!
             </span>

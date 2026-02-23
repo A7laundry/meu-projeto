@@ -52,7 +52,7 @@ export default async function DirectorReportsPage({ searchParams }: Props) {
             className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
               days === opt.days
                 ? 'btn-gold rounded-full'
-                : 'border-white/15 bg-white/04 text-white/60 hover:border-[#d6b25e]/40 hover:text-white'
+                : 'border-white/15 bg-white/04 text-white/60 hover:border-[#60a5fa]/40 hover:text-white'
             }`}
           >
             {opt.label}
@@ -102,7 +102,7 @@ export default async function DirectorReportsPage({ searchParams }: Props) {
                           className="h-full rounded-full"
                           style={{
                             width: `${(row.totalOrders / maxOrders) * 100}%`,
-                            background: 'linear-gradient(90deg, #d6b25e, #b98a2c)',
+                            background: 'linear-gradient(90deg, #60a5fa, #2563eb)',
                           }}
                         />
                       </div>

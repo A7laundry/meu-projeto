@@ -16,8 +16,8 @@ export function XpTimeline({ logs }: XpTimelineProps) {
           key={log.id}
           className={`flex items-center gap-3 animate-fade-up stagger-${Math.min(i + 1, 6)}`}
         >
-          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#d6b25e]/10 flex items-center justify-center">
-            <span className="text-xs font-bold text-[#d6b25e] num-stat">+{log.amount}</span>
+          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#60a5fa]/10 flex items-center justify-center">
+            <span className="text-xs font-bold text-[#60a5fa] num-stat">+{log.amount}</span>
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs text-white/60 truncate">{log.reason}</p>

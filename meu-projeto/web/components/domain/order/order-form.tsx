@@ -270,7 +270,7 @@ export function OrderForm({ unitId, unitSlug, prices }: OrderFormProps) {
                   <div className="flex items-center gap-3">
                     {/* Preço do item */}
                     {subtotal != null && (
-                      <span className="text-sm font-semibold" style={{ color: '#d6b25e' }}>
+                      <span className="text-sm font-semibold" style={{ color: '#60a5fa' }}>
                         {fmtBRL(subtotal)}
                       </span>
                     )}
@@ -362,8 +362,8 @@ export function OrderForm({ unitId, unitSlug, prices }: OrderFormProps) {
         <section
           className="rounded-xl p-5"
           style={{
-            background: 'linear-gradient(135deg, rgba(214,178,94,0.06) 0%, rgba(5,5,8,0.8) 100%)',
-            border: '1px solid rgba(214,178,94,0.14)',
+            background: 'linear-gradient(135deg, rgba(59,130,246,0.06) 0%, rgba(5,5,8,0.8) 100%)',
+            border: '1px solid rgba(59,130,246,0.14)',
           }}
         >
           <div className="flex items-center justify-between">
@@ -371,7 +371,7 @@ export function OrderForm({ unitId, unitSlug, prices }: OrderFormProps) {
               <p className="text-xs uppercase tracking-wider text-white/35 font-semibold mb-0.5">
                 Valor estimado da comanda
               </p>
-              <p className="text-2xl font-bold tracking-tight" style={{ color: '#d6b25e' }}>
+              <p className="text-2xl font-bold tracking-tight" style={{ color: '#60a5fa' }}>
                 {fmtBRL(estimatedTotal)}
               </p>
             </div>

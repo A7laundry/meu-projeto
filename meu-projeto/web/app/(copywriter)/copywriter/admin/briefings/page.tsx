@@ -45,7 +45,7 @@ export default async function AdminBriefingsPage() {
                 <td className="px-4 py-3">
                   <DifficultyBadge difficulty={b.difficulty} />
                 </td>
-                <td className="px-4 py-3 text-right text-xs text-[#d6b25e]/70 num-stat">+{b.xp_reward}</td>
+                <td className="px-4 py-3 text-right text-xs text-[#60a5fa]/70 num-stat">+{b.xp_reward}</td>
                 <td className="px-4 py-3">
                   <BriefingStatusBadge status={b.status} />
                 </td>
@@ -89,7 +89,7 @@ function BriefingStatusBadge({ status }: { status: string }) {
     draft: { label: 'Rascunho', className: 'text-white/40 bg-white/5 border-white/10' },
     published: { label: 'Publicado', className: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30' },
     in_progress: { label: 'Em Andamento', className: 'text-blue-400 bg-blue-400/10 border-blue-400/30' },
-    completed: { label: 'Concluído', className: 'text-[#d6b25e] bg-[#d6b25e]/10 border-[#d6b25e]/30' },
+    completed: { label: 'Concluído', className: 'text-[#60a5fa] bg-[#60a5fa]/10 border-[#60a5fa]/30' },
     cancelled: { label: 'Cancelado', className: 'text-red-400 bg-red-400/10 border-red-400/30' },
   }
   const c = config[status] ?? config.draft

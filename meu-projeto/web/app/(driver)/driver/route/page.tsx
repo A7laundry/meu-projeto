@@ -32,7 +32,7 @@ export default async function DriverRoutePage() {
     return (
       <div className="p-6 space-y-4">
         <div>
-          <p className="text-[10px] uppercase tracking-widest text-[#d6b25e]/40 font-semibold mb-1 capitalize">{today}</p>
+          <p className="text-[10px] uppercase tracking-widest text-[#60a5fa]/40 font-semibold mb-1 capitalize">{today}</p>
           <h1 className="text-xl font-bold text-white">Olá, {firstName}</h1>
         </div>
         <div
@@ -63,7 +63,7 @@ export default async function DriverRoutePage() {
     <div className="p-4 space-y-4">
       {/* Saudação */}
       <div className="pt-1">
-        <p className="text-[10px] uppercase tracking-widest text-[#d6b25e]/40 font-semibold mb-1 capitalize">{today}</p>
+        <p className="text-[10px] uppercase tracking-widest text-[#60a5fa]/40 font-semibold mb-1 capitalize">{today}</p>
         <h1 className="text-xl font-bold text-white">Olá, {firstName}</h1>
         <p className="text-sm text-white/40 mt-0.5">
           {visitedStops} de {totalStops} paradas concluídas
@@ -74,13 +74,13 @@ export default async function DriverRoutePage() {
       <div
         className="rounded-2xl p-4"
         style={{
-          background: 'linear-gradient(135deg, rgba(214,178,94,0.07) 0%, rgba(5,5,8,0.9) 100%)',
-          border: '1px solid rgba(214,178,94,0.12)',
+          background: 'linear-gradient(135deg, rgba(59,130,246,0.07) 0%, rgba(5,5,8,0.9) 100%)',
+          border: '1px solid rgba(59,130,246,0.12)',
         }}
       >
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm text-white/55">Progresso do dia</span>
-          <span className="text-lg font-bold tabular-nums" style={{ color: '#d6b25e' }}>{progress}%</span>
+          <span className="text-lg font-bold tabular-nums" style={{ color: '#60a5fa' }}>{progress}%</span>
         </div>
         <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.07)' }}>
           <div
@@ -89,7 +89,7 @@ export default async function DriverRoutePage() {
               width: `${progress}%`,
               background: progress === 100
                 ? 'linear-gradient(90deg, #34d399, #10b981)'
-                : 'linear-gradient(90deg, #d6b25e, #b98a2c)',
+                : 'linear-gradient(90deg, #60a5fa, #2563eb)',
             }}
           />
         </div>
@@ -198,9 +198,9 @@ export default async function DriverRoutePage() {
                           type="submit"
                           className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
                           style={{
-                            background: 'rgba(214,178,94,0.14)',
-                            color: '#d6b25e',
-                            border: '1px solid rgba(214,178,94,0.28)',
+                            background: 'rgba(59,130,246,0.14)',
+                            color: '#60a5fa',
+                            border: '1px solid rgba(59,130,246,0.28)',
                           }}
                         >
                           Visitar

@@ -139,9 +139,9 @@ export function SectorQueue({
           <span
             className="text-xs px-3 py-1 rounded-full font-semibold"
             style={{
-              background: filtered.length > 0 ? 'rgba(214,178,94,0.12)' : 'rgba(52,211,153,0.10)',
-              color: filtered.length > 0 ? '#d6b25e' : '#34d399',
-              border: `1px solid ${filtered.length > 0 ? 'rgba(214,178,94,0.22)' : 'rgba(52,211,153,0.22)'}`,
+              background: filtered.length > 0 ? 'rgba(59,130,246,0.12)' : 'rgba(52,211,153,0.10)',
+              color: filtered.length > 0 ? '#60a5fa' : '#34d399',
+              border: `1px solid ${filtered.length > 0 ? 'rgba(59,130,246,0.22)' : 'rgba(52,211,153,0.22)'}`,
             }}
           >
             {filtered.length} comanda{filtered.length !== 1 ? 's' : ''}
@@ -229,7 +229,7 @@ export function SectorQueue({
           <div className="flex items-center justify-center h-32">
             <div
               className="h-8 w-8 animate-spin rounded-full border-2 border-t-transparent"
-              style={{ borderColor: 'rgba(214,178,94,0.40)', borderTopColor: 'transparent' }}
+              style={{ borderColor: 'rgba(59,130,246,0.40)', borderTopColor: 'transparent' }}
             />
           </div>
         ) : sortedFiltered.length === 0 ? (
@@ -269,7 +269,7 @@ export function SectorQueue({
                   <div className="flex items-start justify-between mb-2">
                     <span
                       className="font-mono text-2xl font-black tracking-tight leading-none transition-colors"
-                      style={{ color: sla.urgent ? sla.color : '#d6b25e' }}
+                      style={{ color: sla.urgent ? sla.color : '#60a5fa' }}
                     >
                       {order.order_number}
                     </span>

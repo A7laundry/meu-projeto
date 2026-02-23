@@ -47,7 +47,7 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
       style={{
         background: 'rgba(8,8,14,0.92)',
         backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(214,178,94,0.18)',
+        border: '1px solid rgba(59,130,246,0.18)',
         boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
       }}
     >

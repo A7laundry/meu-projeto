@@ -86,7 +86,7 @@ export function ClientList({ unitId, initialClients }: ClientListProps) {
             <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.30)' }}>
               Pessoa Física
             </p>
-            <p className="text-2xl font-bold mt-0.5" style={{ color: '#d6b25e', fontVariantNumeric: 'tabular-nums' }}>
+            <p className="text-2xl font-bold mt-0.5" style={{ color: '#60a5fa', fontVariantNumeric: 'tabular-nums' }}>
               {stats.pf}
             </p>
           </div>
@@ -190,7 +190,7 @@ function ClientCard({
         opacity: client.active ? 1 : 0.55,
       }}
       onMouseEnter={e => {
-        ;(e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(214,178,94,0.22)'
+        ;(e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(59,130,246,0.22)'
         ;(e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.045)'
       }}
       onMouseLeave={e => {
@@ -203,9 +203,9 @@ function ClientCard({
         <div
           className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold"
           style={{
-            background: 'linear-gradient(135deg, rgba(214,178,94,0.15) 0%, rgba(185,138,44,0.08) 100%)',
-            border: '1px solid rgba(214,178,94,0.25)',
-            color: '#d6b25e',
+            background: 'linear-gradient(135deg, rgba(59,130,246,0.15) 0%, rgba(185,138,44,0.08) 100%)',
+            border: '1px solid rgba(59,130,246,0.25)',
+            color: '#60a5fa',
           }}
         >
           {initials}
@@ -216,7 +216,7 @@ function ClientCard({
             href={`/unit/${unitId}/clients/${client.id}`}
             className="block text-sm font-semibold truncate transition-colors duration-150"
             style={{ color: 'rgba(255,255,255,0.88)' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#d6b25e')}
+            onMouseEnter={e => (e.currentTarget.style.color = '#60a5fa')}
             onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.88)')}
           >
             {client.name}
@@ -326,9 +326,9 @@ function ClientCard({
         <Link
           href={`/unit/${unitId}/clients/${client.id}`}
           className="text-xs px-2.5 py-1.5 rounded-lg transition-all duration-150"
-          style={{ color: '#d6b25e', background: 'rgba(214,178,94,0.09)', borderRadius: 8 }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(214,178,94,0.16)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(214,178,94,0.09)')}
+          style={{ color: '#60a5fa', background: 'rgba(59,130,246,0.09)', borderRadius: 8 }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(59,130,246,0.16)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(59,130,246,0.09)')}
         >
           Ver →
         </Link>

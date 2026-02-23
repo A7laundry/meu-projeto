@@ -31,14 +31,14 @@ export default async function ProfilePage() {
             <h1 className="text-xl font-bold text-white/90">{user?.full_name}</h1>
             {profile && <StreakIndicator streak={profile.current_streak} />}
           </div>
-          <p className="text-sm text-[#d6b25e]/60">{stats?.levelTitle ?? 'Novato'} · Nível {stats?.level ?? 0}</p>
+          <p className="text-sm text-[#60a5fa]/60">{stats?.levelTitle ?? 'Novato'} · Nível {stats?.level ?? 0}</p>
           {profile?.bio && (
             <p className="text-xs text-white/40 mt-2 max-w-md">{profile.bio}</p>
           )}
           {profile?.specialties && profile.specialties.length > 0 && (
             <div className="flex gap-1.5 mt-2">
               {profile.specialties.map((s) => (
-                <span key={s} className="text-[10px] px-2 py-0.5 rounded-full bg-[#d6b25e]/10 text-[#d6b25e]/60 border border-[#d6b25e]/15">
+                <span key={s} className="text-[10px] px-2 py-0.5 rounded-full bg-[#60a5fa]/10 text-[#60a5fa]/60 border border-[#60a5fa]/15">
                   {s}
                 </span>
               ))}

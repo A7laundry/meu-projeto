@@ -83,7 +83,7 @@ export function PricingFormDialog({ unitId, entry, trigger }: PricingFormDialogP
         className="max-w-md"
         style={{
           background: '#0d0d14',
-          border: '1px solid rgba(214,178,94,0.15)',
+          border: '1px solid rgba(59,130,246,0.15)',
         }}
       >
         <DialogHeader>
@@ -182,8 +182,8 @@ export function PricingFormDialog({ unitId, entry, trigger }: PricingFormDialogP
             <div
               className="rounded-xl p-3 flex items-center gap-3"
               style={{
-                background: 'rgba(214,178,94,0.06)',
-                border: '1px solid rgba(214,178,94,0.12)',
+                background: 'rgba(59,130,246,0.06)',
+                border: '1px solid rgba(59,130,246,0.12)',
               }}
             >
               <span className="text-xl">{selectedPiece?.icon}</span>
@@ -191,7 +191,7 @@ export function PricingFormDialog({ unitId, entry, trigger }: PricingFormDialogP
                 <p className="text-xs text-white/40">{selectedPiece?.label}</p>
                 <p className="text-sm font-semibold text-white/80">
                   cobrado{' '}
-                  <span style={{ color: '#d6b25e' }}>
+                  <span style={{ color: '#60a5fa' }}>
                     {UNIT_LABELS.find(u => u.value === unitLabel)?.label}
                   </span>
                 </p>

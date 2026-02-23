@@ -10,8 +10,8 @@ export default function DirectorDashboardLoading() {
           <div className="h-2 w-40 rounded-full bg-white/04 animate-pulse" />
         </div>
         <div className="flex gap-4">
-          <div className="h-4 w-10 rounded bg-[#d6b25e]/10 animate-pulse" />
-          <div className="h-4 w-20 rounded bg-[#d6b25e]/10 animate-pulse" />
+          <div className="h-4 w-10 rounded bg-[#60a5fa]/10 animate-pulse" />
+          <div className="h-4 w-20 rounded bg-[#60a5fa]/10 animate-pulse" />
         </div>
       </div>
 
@@ -26,7 +26,7 @@ export default function DirectorDashboardLoading() {
 
       {/* Unidades skeleton */}
       <section className="space-y-3">
-        <div className="h-2 w-20 rounded-full bg-[#d6b25e]/15 animate-pulse" />
+        <div className="h-2 w-20 rounded-full bg-[#60a5fa]/15 animate-pulse" />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {[1, 2].map((i) => (
             <div key={i} className="card-dark rounded-xl p-5 space-y-4 animate-fade-up" style={{ animationDelay: `${i * 0.08}s` }}>

@@ -38,8 +38,8 @@ export default async function SectorLayout({ children }: { children: React.React
   const sector = user?.sector ?? ''
   const sectorLabel = SECTOR_LABELS[sector] ?? 'Setor'
   const sectorIcon = SECTOR_ICONS[sector] ?? '◈'
-  const sectorBg = SECTOR_COLORS[sector] ?? 'rgba(214,178,94,0.12)'
-  const sectorText = SECTOR_TEXT[sector] ?? '#d6b25e'
+  const sectorBg = SECTOR_COLORS[sector] ?? 'rgba(59,130,246,0.12)'
+  const sectorText = SECTOR_TEXT[sector] ?? '#60a5fa'
   const initial = user?.full_name?.charAt(0).toUpperCase() ?? '?'
 
   return (
@@ -70,7 +70,7 @@ export default async function SectorLayout({ children }: { children: React.React
               border: '1px solid rgba(59,130,246,0.30)',
             }}
           >
-            <span className="text-xs font-black leading-none" style={{ color: '#d6b25e' }}>A</span>
+            <span className="text-xs font-black leading-none" style={{ color: '#60a5fa' }}>A</span>
           </div>
 
           {/* Divider */}

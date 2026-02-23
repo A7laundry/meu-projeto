@@ -36,11 +36,11 @@ export function LevelProgress({ totalXp, level, levelTitle, xpProgress }: LevelP
             <div
               className={`w-2.5 h-2.5 rounded-full transition-all ${
                 totalXp >= t.xp
-                  ? 'bg-[#d6b25e] shadow-[0_0_8px_rgba(214,178,94,0.6)]'
+                  ? 'bg-[#60a5fa] shadow-[0_0_8px_rgba(59,130,246,0.6)]'
                   : 'bg-white/10'
               }`}
             />
-            <span className={`text-[9px] ${totalXp >= t.xp ? 'text-[#d6b25e]/70' : 'text-white/20'}`}>
+            <span className={`text-[9px] ${totalXp >= t.xp ? 'text-[#60a5fa]/70' : 'text-white/20'}`}>
               {t.title}
             </span>
             <span className="text-[8px] text-white/15 num-stat">{t.xp}</span>

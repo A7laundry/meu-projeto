@@ -102,7 +102,7 @@ function PriceCard({ entry, unitId }: { entry: PriceTableEntry; unitId: string }
       style={{
         background: 'rgba(255,255,255,0.03)',
         border: isSpecific
-          ? '1px solid rgba(214,178,94,0.12)'
+          ? '1px solid rgba(59,130,246,0.12)'
           : '1px solid rgba(255,255,255,0.07)',
       }}
     >
@@ -110,8 +110,8 @@ function PriceCard({ entry, unitId }: { entry: PriceTableEntry; unitId: string }
       <div
         className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-lg"
         style={{
-          background: 'rgba(214,178,94,0.08)',
-          border: '1px solid rgba(214,178,94,0.14)',
+          background: 'rgba(59,130,246,0.08)',
+          border: '1px solid rgba(59,130,246,0.14)',
         }}
       >
         {icon}
@@ -136,7 +136,7 @@ function PriceCard({ entry, unitId }: { entry: PriceTableEntry; unitId: string }
             <p className="text-[11px] text-white/35 mt-0.5">Preço genérico · {unitLabel}</p>
           </>
         )}
-        <p className="text-xl font-bold mt-1.5 tabular-nums" style={{ color: '#d6b25e' }}>
+        <p className="text-xl font-bold mt-1.5 tabular-nums" style={{ color: '#60a5fa' }}>
           {fmtBRL(entry.price)}
           {isSpecific && (
             <span className="text-xs font-normal text-white/35 ml-1">{unitLabel}</span>

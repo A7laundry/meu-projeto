@@ -33,7 +33,7 @@ export function ChartSkeleton({ height = 200 }: { height?: number }) {
 export function SectionSkeleton() {
   return (
     <section className="space-y-3">
-      <div className="h-2 w-24 rounded-full bg-[#d6b25e]/15 animate-pulse" />
+      <div className="h-2 w-24 rounded-full bg-[#60a5fa]/15 animate-pulse" />
       <KpiRowSkeleton />
     </section>
   )

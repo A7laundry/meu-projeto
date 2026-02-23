@@ -124,7 +124,7 @@ export function GenericSectorForm({
           <p className="text-[10px] uppercase tracking-widest font-semibold mb-0.5" style={{ color: config.accentColor }}>
             {config.label}
           </p>
-          <h2 className="text-2xl font-black font-mono tracking-tight" style={{ color: '#d6b25e' }}>
+          <h2 className="text-2xl font-black font-mono tracking-tight" style={{ color: '#60a5fa' }}>
             {order.order_number}
           </h2>
           <p className="text-sm text-white/55 mt-0.5">

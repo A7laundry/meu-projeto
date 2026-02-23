@@ -14,7 +14,7 @@ import { ROUTE_SHIFT_LABELS as SHIFT_LABELS } from '@/types/logistics'
 
 const STATUS_COLORS: Record<ManifestStatus, string> = {
   pending: 'bg-[rgba(255,255,255,0.05)] text-white/75',
-  in_progress: 'bg-blue-100 text-[#d6b25e]',
+  in_progress: 'bg-blue-100 text-[#60a5fa]',
   completed: 'bg-green-100 text-green-700',
 }
 

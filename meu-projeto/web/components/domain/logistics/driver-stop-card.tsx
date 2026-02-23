@@ -33,7 +33,7 @@ export function DriverStopCard({ stop, unitId, index }: DriverStopCardProps) {
       }`}
     >
       <div className="flex items-start gap-3">
-        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-[#d6b25e]">
+        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-[#60a5fa]">
           {index + 1}
         </span>
         <div className="min-w-0 flex-1">

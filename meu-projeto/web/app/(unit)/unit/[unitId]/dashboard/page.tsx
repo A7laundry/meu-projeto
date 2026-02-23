@@ -115,7 +115,7 @@ export default async function UnitDashboardPage({
           <KpiCard
             title="Comandas do dia" value={dailyVolume.total_orders}
             subtitle="Criadas hoje" stagger={2}
-            icon={ClipboardList} iconColor="#d6b25e" iconBg="rgba(214,178,94,0.12)"
+            icon={ClipboardList} iconColor="#60a5fa" iconBg="rgba(59,130,246,0.12)"
           />
           <KpiCard
             title="Peças processadas" value={dailyVolume.total_items}
@@ -193,7 +193,7 @@ export default async function UnitDashboardPage({
                       </div>
                       <div className="h-1 rounded-full bg-white/04 overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-[#d6b25e]/60"
+                          className="h-full rounded-full bg-[#60a5fa]/60"
                           style={{ width: `${pct}%`, transition: 'width 0.8s cubic-bezier(0.16,1,0.3,1)' }}
                         />
                       </div>

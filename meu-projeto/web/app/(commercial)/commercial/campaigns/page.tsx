@@ -140,9 +140,9 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
           href={`/commercial/campaigns/${campaign.id}`}
           className="flex-1 text-center text-xs py-2 rounded-xl transition-all"
           style={{
-            border: '1px solid rgba(214,178,94,0.20)',
-            color: 'rgba(214,178,94,0.75)',
-            background: 'rgba(214,178,94,0.06)',
+            border: '1px solid rgba(59,130,246,0.20)',
+            color: 'rgba(59,130,246,0.75)',
+            background: 'rgba(59,130,246,0.06)',
             textDecoration: 'none',
           }}
         >
@@ -195,7 +195,7 @@ export default async function CampaignsPage() {
             {' · '}{totalLeads} leads
             {' · '}{totalConversions} conversões
             {' · '}
-            <span style={{ color: '#d6b25e', fontWeight: 600 }}>
+            <span style={{ color: '#60a5fa', fontWeight: 600 }}>
               R$ {totalSpent.toFixed(2).replace('.', ',')} investido
             </span>
           </p>
@@ -206,9 +206,9 @@ export default async function CampaignsPage() {
           <summary
             className="cursor-pointer inline-flex items-center gap-2 text-sm font-semibold px-4 py-2.5 rounded-xl transition-all list-none"
             style={{
-              background: 'linear-gradient(135deg, #d6b25e 0%, #f0d080 100%)',
+              background: 'linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%)',
               color: '#05050a',
-              boxShadow: '0 4px 16px rgba(214,178,94,0.22)',
+              boxShadow: '0 4px 16px rgba(59,130,246,0.22)',
             }}
           >
             + Nova Campanha
@@ -262,7 +262,7 @@ export default async function CampaignsPage() {
                 type="submit"
                 className="w-full text-sm font-semibold py-2.5 rounded-xl"
                 style={{
-                  background: 'linear-gradient(135deg, #d6b25e 0%, #f0d080 100%)',
+                  background: 'linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%)',
                   color: '#05050a',
                   border: 'none',
                   cursor: 'pointer',

@@ -30,7 +30,7 @@ const STAGE_DARK: Record<LeadStage, { bg: string; text: string; border: string; 
   prospect:  { bg: 'rgba(255,255,255,0.02)', text: 'rgba(255,255,255,0.40)',  border: 'rgba(255,255,255,0.07)',  headerBg: 'rgba(255,255,255,0.04)'  },
   contacted: { bg: 'rgba(96,165,250,0.04)',  text: 'rgba(96,165,250,0.80)',   border: 'rgba(96,165,250,0.12)',   headerBg: 'rgba(96,165,250,0.08)'   },
   qualified: { bg: 'rgba(167,139,250,0.04)', text: 'rgba(167,139,250,0.80)',  border: 'rgba(167,139,250,0.12)',  headerBg: 'rgba(167,139,250,0.08)'  },
-  proposal:  { bg: 'rgba(214,178,94,0.04)',  text: 'rgba(214,178,94,0.90)',   border: 'rgba(214,178,94,0.14)',   headerBg: 'rgba(214,178,94,0.09)'   },
+  proposal:  { bg: 'rgba(59,130,246,0.04)',  text: 'rgba(59,130,246,0.90)',   border: 'rgba(59,130,246,0.14)',   headerBg: 'rgba(59,130,246,0.09)'   },
   won:       { bg: 'rgba(52,211,153,0.04)',  text: 'rgba(52,211,153,0.85)',   border: 'rgba(52,211,153,0.12)',   headerBg: 'rgba(52,211,153,0.08)'   },
   lost:      { bg: 'rgba(248,113,113,0.04)', text: 'rgba(248,113,113,0.70)',  border: 'rgba(248,113,113,0.10)',  headerBg: 'rgba(248,113,113,0.07)'  },
 }
@@ -184,7 +184,7 @@ export function KanbanBoard({ initialLeads }: KanbanBoardProps) {
                         {lead.name}
                       </p>
                       {Number(lead.estimated_monthly_value) > 0 && (
-                        <span className="text-[11px] flex-shrink-0 tabular-nums" style={{ color: '#d6b25e', fontWeight: 600 }}>
+                        <span className="text-[11px] flex-shrink-0 tabular-nums" style={{ color: '#60a5fa', fontWeight: 600 }}>
                           R${Number(lead.estimated_monthly_value).toFixed(0)}
                         </span>
                       )}

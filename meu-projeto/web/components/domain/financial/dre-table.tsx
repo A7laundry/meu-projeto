@@ -39,7 +39,7 @@ export function DreTable({ rows }: DreTableProps) {
                 className={`text-right ${
                   row.isTotal
                     ? row.isPositive
-                      ? 'font-bold text-[#d6b25e]'
+                      ? 'font-bold text-[#60a5fa]'
                       : 'font-bold text-red-700'
                     : row.isPositive
                       ? 'text-green-700'

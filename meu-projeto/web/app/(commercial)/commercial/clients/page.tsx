@@ -78,7 +78,7 @@ function LtvBadge({ ltv }: { ltv: number }) {
   if (ltv >= 5000) return (
     <span
       className="text-xs font-semibold px-2.5 py-0.5 rounded-full"
-      style={{ background: 'rgba(214,178,94,0.12)', color: 'rgba(214,178,94,0.90)', border: '1px solid rgba(214,178,94,0.20)' }}
+      style={{ background: 'rgba(59,130,246,0.12)', color: 'rgba(59,130,246,0.90)', border: '1px solid rgba(59,130,246,0.20)' }}
     >
       🏆 R$ {ltv.toFixed(0)}/ano
     </span>
@@ -112,7 +112,7 @@ export default async function CommercialClientsPage() {
     { label: 'Total de Clientes', value: String(clients.length), accent: '#60a5fa' },
     { label: 'Com Pedidos',       value: String(activeClients.length), accent: '#a78bfa' },
     { label: 'LTV Médio/Ano',     value: `R$ ${avgLtv.toFixed(0)}`, accent: '#34d399' },
-    { label: 'LTV Total Rede',    value: `R$ ${(totalLtv / 1000).toFixed(1)}k`, accent: '#d6b25e' },
+    { label: 'LTV Total Rede',    value: `R$ ${(totalLtv / 1000).toFixed(1)}k`, accent: '#60a5fa' },
   ]
 
   return (

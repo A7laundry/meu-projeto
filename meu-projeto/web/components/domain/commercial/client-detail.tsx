@@ -86,13 +86,13 @@ export function ClientDetail({ unitId, client, stats, notes, orders }: ClientDet
         <div
           className="rounded-2xl px-5 py-4 flex items-center gap-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(214,178,94,0.18) 0%, rgba(5,5,8,0.6) 100%)',
-            border: '1px solid rgba(214,178,94,0.35)',
+            background: 'linear-gradient(135deg, rgba(59,130,246,0.18) 0%, rgba(5,5,8,0.6) 100%)',
+            border: '1px solid rgba(59,130,246,0.35)',
           }}
         >
           <span className="text-3xl">🎂</span>
           <div>
-            <p className="text-sm font-semibold" style={{ color: '#d6b25e' }}>
+            <p className="text-sm font-semibold" style={{ color: '#60a5fa' }}>
               Hoje é aniversário de {client.name.split(' ')[0]}!
             </p>
             <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.45)' }}>
@@ -105,7 +105,7 @@ export function ClientDetail({ unitId, client, stats, notes, orders }: ClientDet
             rel="noopener noreferrer"
             className="ml-auto text-xs font-semibold px-3 py-1.5 rounded-lg flex-shrink-0 transition-all"
             style={{
-              background: 'linear-gradient(135deg, #d6b25e 0%, #f0d080 100%)',
+              background: 'linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%)',
               color: '#05050a',
             }}
           >
@@ -121,9 +121,9 @@ export function ClientDetail({ unitId, client, stats, notes, orders }: ClientDet
           <div
             className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 text-base font-bold"
             style={{
-              background: 'linear-gradient(135deg, rgba(214,178,94,0.18) 0%, rgba(185,138,44,0.08) 100%)',
-              border: '1px solid rgba(214,178,94,0.30)',
-              color: '#d6b25e',
+              background: 'linear-gradient(135deg, rgba(59,130,246,0.18) 0%, rgba(185,138,44,0.08) 100%)',
+              border: '1px solid rgba(59,130,246,0.30)',
+              color: '#60a5fa',
             }}
           >
             {initials}
@@ -207,7 +207,7 @@ export function ClientDetail({ unitId, client, stats, notes, orders }: ClientDet
       <div className="grid grid-cols-3 gap-3">
         {[
           { label: 'Comandas',     value: String(stats.totalOrders), accent: '#60a5fa' },
-          { label: 'Total gasto',  value: formatCurrency(stats.totalSpent), accent: '#d6b25e' },
+          { label: 'Total gasto',  value: formatCurrency(stats.totalSpent), accent: '#60a5fa' },
           { label: 'Ticket médio', value: formatCurrency(stats.avgTicket), accent: '#a78bfa' },
         ].map((s) => (
           <div
@@ -228,8 +228,8 @@ export function ClientDetail({ unitId, client, stats, notes, orders }: ClientDet
         <div
           className="rounded-2xl p-5"
           style={{
-            background: 'linear-gradient(135deg, rgba(214,178,94,0.09) 0%, rgba(5,5,8,0.85) 100%)',
-            border: '1px solid rgba(214,178,94,0.22)',
+            background: 'linear-gradient(135deg, rgba(59,130,246,0.09) 0%, rgba(5,5,8,0.85) 100%)',
+            border: '1px solid rgba(59,130,246,0.22)',
           }}
         >
           <div className="flex items-center justify-between gap-4">
@@ -237,7 +237,7 @@ export function ClientDetail({ unitId, client, stats, notes, orders }: ClientDet
               <p className="text-[10px] font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
                 LTV Anual Estimado
               </p>
-              <p className="text-3xl font-bold tabular-nums" style={{ color: '#d6b25e' }}>
+              <p className="text-3xl font-bold tabular-nums" style={{ color: '#60a5fa' }}>
                 {formatCurrency(stats.annualLtv)}
               </p>
               <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.30)' }}>
@@ -297,7 +297,7 @@ export function ClientDetail({ unitId, client, stats, notes, orders }: ClientDet
                   </span>
                   {order.estimated_total > 0 && (
                     <div className="flex-shrink-0 text-right w-20">
-                      <p className="text-sm font-semibold tabular-nums" style={{ color: '#d6b25e' }}>
+                      <p className="text-sm font-semibold tabular-nums" style={{ color: '#60a5fa' }}>
                         {formatCurrency(order.estimated_total)}
                       </p>
                     </div>

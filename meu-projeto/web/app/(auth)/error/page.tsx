@@ -31,7 +31,7 @@ export default function AuthErrorPage() {
           href="/login"
           className="inline-flex items-center justify-center rounded-xl px-6 py-2.5 text-sm font-semibold transition-all"
           style={{
-            background: 'linear-gradient(135deg, #d6b25e 0%, #f0d080 100%)',
+            background: 'linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%)',
             color: '#05050a',
           }}
         >

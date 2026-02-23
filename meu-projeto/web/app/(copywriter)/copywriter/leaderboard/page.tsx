@@ -68,7 +68,7 @@ export default async function LeaderboardPage() {
                   <span className="text-sm text-white/80 font-medium">{entry.name}</span>
                 </td>
                 <td className="px-4 py-3">
-                  <span className="text-xs text-[#d6b25e]/70">{entry.levelTitle}</span>
+                  <span className="text-xs text-[#60a5fa]/70">{entry.levelTitle}</span>
                 </td>
                 <td className="px-4 py-3 text-right">
                   <span className="text-sm text-white/70 num-stat font-medium">{entry.totalXp}</span>

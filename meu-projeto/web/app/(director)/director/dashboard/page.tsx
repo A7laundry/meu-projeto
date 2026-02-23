@@ -108,8 +108,8 @@ export default async function DirectorDashboardPage() {
         <div className="flex items-center gap-4">
           <LiveIndicator intervalSeconds={60} />
           <div className="w-px h-4 bg-white/10" />
-          <Link href="/director/nps" className="text-sm text-[#d6b25e]/70 hover:text-[#d6b25e] transition-colors">NPS</Link>
-          <Link href="/director/reports" className="text-sm text-[#d6b25e]/70 hover:text-[#d6b25e] transition-colors">Relatórios</Link>
+          <Link href="/director/nps" className="text-sm text-[#60a5fa]/70 hover:text-[#60a5fa] transition-colors">NPS</Link>
+          <Link href="/director/reports" className="text-sm text-[#60a5fa]/70 hover:text-[#60a5fa] transition-colors">Relatórios</Link>
         </div>
       </div>
 
@@ -206,7 +206,7 @@ export default async function DirectorDashboardPage() {
       <section className="space-y-4">
         <div className="flex items-center gap-3">
           <h2 className="section-title" style={{ flex: 1 }}>NPS — Satisfação dos Clientes</h2>
-          <Link href="/director/nps" className="text-xs text-[#d6b25e]/60 hover:text-[#d6b25e] transition-colors flex-shrink-0">
+          <Link href="/director/nps" className="text-xs text-[#60a5fa]/60 hover:text-[#60a5fa] transition-colors flex-shrink-0">
             Ver detalhes →
           </Link>
         </div>
@@ -261,7 +261,7 @@ export default async function DirectorDashboardPage() {
                         {unitSla} alerta{unitSla !== 1 ? 's' : ''}
                       </Link>
                     )}
-                    <Link href={`/unit/${unit.id}/dashboard`} className="text-xs text-[#d6b25e]/60 hover:text-[#d6b25e] transition-colors">
+                    <Link href={`/unit/${unit.id}/dashboard`} className="text-xs text-[#60a5fa]/60 hover:text-[#60a5fa] transition-colors">
                       Ver →
                     </Link>
                   </div>

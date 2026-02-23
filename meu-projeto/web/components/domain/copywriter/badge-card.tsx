@@ -28,7 +28,7 @@ export function BadgeCard({ badge, earned, awardedAt }: BadgeCardProps) {
         {badge.description}
       </p>
       {earned && awardedAt && (
-        <p className="text-[9px] text-[#d6b25e]/40 mt-1.5">
+        <p className="text-[9px] text-[#60a5fa]/40 mt-1.5">
           {new Date(awardedAt).toLocaleDateString('pt-BR')}
         </p>
       )}

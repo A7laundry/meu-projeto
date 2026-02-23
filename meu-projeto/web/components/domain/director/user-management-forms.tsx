@@ -18,12 +18,12 @@ const ALL_ROLES: { value: UserRole; label: string }[] = [
 ]
 
 const inputCls =
-  'w-full rounded-lg px-3 py-2 text-sm text-white bg-white/05 border border-white/10 focus:outline-none focus:border-[#d6b25e]/50 focus:ring-1 focus:ring-[#d6b25e]/30 placeholder:text-white/25 transition-colors'
+  'w-full rounded-lg px-3 py-2 text-sm text-white bg-white/05 border border-white/10 focus:outline-none focus:border-[#60a5fa]/50 focus:ring-1 focus:ring-[#60a5fa]/30 placeholder:text-white/25 transition-colors'
 
 const labelCls = 'block text-xs font-medium text-white/50 mb-1'
 
 const btnGold =
-  'px-4 py-2 rounded-lg text-sm font-semibold bg-[#d6b25e] text-black hover:bg-[#e8cc7e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+  'px-4 py-2 rounded-lg text-sm font-semibold bg-[#60a5fa] text-black hover:bg-[#e8cc7e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
 
 const btnGhost =
   'px-4 py-2 rounded-lg text-sm text-white/40 hover:text-white/70 hover:bg-white/05 transition-colors'
@@ -75,14 +75,14 @@ export function CreateUserModal({
           <div
             className="relative w-full max-w-md mx-4 rounded-xl p-6"
             style={{
-              background: 'linear-gradient(160deg, rgba(214,178,94,0.05) 0%, rgba(5,5,8,0.98) 100%)',
-              border: '1px solid rgba(214,178,94,0.15)',
+              background: 'linear-gradient(160deg, rgba(59,130,246,0.05) 0%, rgba(5,5,8,0.98) 100%)',
+              border: '1px solid rgba(59,130,246,0.15)',
               boxShadow: '0 25px 50px rgba(0,0,0,0.6)',
             }}
           >
             <div className="flex items-center justify-between mb-5">
               <div>
-                <p className="text-[10px] uppercase tracking-widest text-[#d6b25e]/40 font-semibold mb-1">
+                <p className="text-[10px] uppercase tracking-widest text-[#60a5fa]/40 font-semibold mb-1">
                   Gestão de Usuários
                 </p>
                 <h2 className="text-lg font-bold text-white">Novo Usuário</h2>
@@ -187,7 +187,7 @@ export function EditUserSheet({
       <button
         onClick={() => setOpen(true)}
         title="Editar usuário"
-        className="w-7 h-7 flex items-center justify-center rounded-md text-white/30 hover:text-[#d6b25e] hover:bg-[#d6b25e]/08 transition-all text-sm"
+        className="w-7 h-7 flex items-center justify-center rounded-md text-white/30 hover:text-[#60a5fa] hover:bg-[#60a5fa]/08 transition-all text-sm"
       >
         ✏
       </button>
@@ -205,13 +205,13 @@ export function EditUserSheet({
             className="relative flex flex-col w-full max-w-sm h-full overflow-y-auto"
             style={{
               background: 'linear-gradient(180deg, #060609 0%, #07070a 100%)',
-              borderLeft: '1px solid rgba(214,178,94,0.12)',
+              borderLeft: '1px solid rgba(59,130,246,0.12)',
               boxShadow: '-20px 0 60px rgba(0,0,0,0.5)',
             }}
           >
             <div className="flex items-center justify-between px-6 py-5 border-b border-white/05">
               <div>
-                <p className="text-[10px] uppercase tracking-widest text-[#d6b25e]/40 font-semibold mb-0.5">
+                <p className="text-[10px] uppercase tracking-widest text-[#60a5fa]/40 font-semibold mb-0.5">
                   Editar
                 </p>
                 <h2 className="text-base font-bold text-white truncate max-w-[200px]">

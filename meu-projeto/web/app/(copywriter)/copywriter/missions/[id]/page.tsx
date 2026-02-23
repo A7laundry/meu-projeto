@@ -30,7 +30,7 @@ export default async function MissionDetailPage({ params }: MissionDetailProps) 
           <DifficultyBadge difficulty={briefing.difficulty} />
         </div>
         <div className="flex items-center gap-3 text-xs text-white/40">
-          <span className="text-[#d6b25e] font-medium">+{briefing.xp_reward} XP</span>
+          <span className="text-[#60a5fa] font-medium">+{briefing.xp_reward} XP</span>
           <span>·</span>
           <span className="capitalize">{briefing.content_type.replace('_', ' ')}</span>
           {briefing.word_limit && (
@@ -63,7 +63,7 @@ export default async function MissionDetailPage({ params }: MissionDetailProps) 
                 href={link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-xs text-[#d6b25e]/70 hover:text-[#d6b25e] truncate"
+                className="block text-xs text-[#60a5fa]/70 hover:text-[#60a5fa] truncate"
               >
                 {link}
               </a>

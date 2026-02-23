@@ -18,7 +18,7 @@ const STAGE_DARK: Record<LeadStage, { bg: string; text: string; bar: string }> =
   prospect:  { bg: 'rgba(255,255,255,0.05)',  text: 'rgba(255,255,255,0.45)', bar: 'rgba(255,255,255,0.20)' },
   contacted: { bg: 'rgba(96,165,250,0.10)',   text: 'rgba(96,165,250,0.80)',  bar: 'rgba(96,165,250,0.50)'  },
   qualified: { bg: 'rgba(167,139,250,0.10)',  text: 'rgba(167,139,250,0.80)', bar: 'rgba(167,139,250,0.50)' },
-  proposal:  { bg: 'rgba(214,178,94,0.12)',   text: 'rgba(214,178,94,0.90)',  bar: 'rgba(214,178,94,0.60)'  },
+  proposal:  { bg: 'rgba(59,130,246,0.12)',   text: 'rgba(59,130,246,0.90)',  bar: 'rgba(59,130,246,0.60)'  },
   won:       { bg: 'rgba(52,211,153,0.10)',   text: 'rgba(52,211,153,0.85)',  bar: 'rgba(52,211,153,0.55)'  },
   lost:      { bg: 'rgba(248,113,113,0.08)',  text: 'rgba(248,113,113,0.70)', bar: 'rgba(248,113,113,0.45)' },
 }
@@ -101,7 +101,7 @@ export default async function CommercialDashboardPage() {
       label: 'Pipeline ativo',
       value: fmtBRL(stats.pipelineValue),
       sub: `${stats.totalLeads} leads no total`,
-      accent: '#d6b25e',
+      accent: '#60a5fa',
       icon: '💰',
     },
     {
@@ -217,7 +217,7 @@ export default async function CommercialDashboardPage() {
             <p className="text-[10px] font-semibold uppercase tracking-wider mb-3" style={{ color: 'rgba(255,255,255,0.30)' }}>
               Orçamento total
             </p>
-            <p className="text-2xl font-bold tabular-nums" style={{ color: '#d6b25e' }}>
+            <p className="text-2xl font-bold tabular-nums" style={{ color: '#60a5fa' }}>
               R$ {fmtInt(stats.totalBudget)}
             </p>
             <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.35)' }}>
@@ -289,7 +289,7 @@ export default async function CommercialDashboardPage() {
                   <div className="mt-3 rounded-full overflow-hidden" style={{ height: 3, background: 'rgba(255,255,255,0.05)' }}>
                     <div
                       className="h-full rounded-full"
-                      style={{ width: `${pct}%`, background: 'rgba(214,178,94,0.60)' }}
+                      style={{ width: `${pct}%`, background: 'rgba(59,130,246,0.60)' }}
                     />
                   </div>
                 </div>

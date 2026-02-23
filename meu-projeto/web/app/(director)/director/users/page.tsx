@@ -6,7 +6,7 @@ import type { UserRole } from '@/types/auth'
 // ─── Role metadata ────────────────────────────────────────────────────────────
 
 const ROLE_META: Record<UserRole, { label: string; color: string }> = {
-  director:     { label: 'Director',     color: '#d6b25e' },
+  director:     { label: 'Director',     color: '#60a5fa' },
   unit_manager: { label: 'Ger. Unidade', color: 'rgba(96,165,250,0.9)' },
   operator:     { label: 'Operador',     color: 'rgba(52,211,153,0.9)' },
   driver:       { label: 'Motorista',    color: 'rgba(251,191,36,0.9)' },
@@ -72,7 +72,7 @@ export default async function UsersPage({
       {/* ── Header ── */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[10px] uppercase tracking-widest text-[#d6b25e]/40 font-semibold mb-1">
+          <p className="text-[10px] uppercase tracking-widest text-[#60a5fa]/40 font-semibold mb-1">
             Gestão Central
           </p>
           <h1 className="text-2xl font-bold text-white tracking-tight">
@@ -90,7 +90,7 @@ export default async function UsersPage({
         <select
           name="role"
           defaultValue={params.role ?? 'all'}
-          className="px-3 py-1.5 rounded-lg text-sm text-white/70 bg-white/05 border border-white/08 focus:outline-none focus:border-[#d6b25e]/40 transition-colors"
+          className="px-3 py-1.5 rounded-lg text-sm text-white/70 bg-white/05 border border-white/08 focus:outline-none focus:border-[#60a5fa]/40 transition-colors"
           onChange={(e) => { const f = new FormData(); f.set('role', e.target.value); }}
         >
           <option value="all" className="bg-[#07070a]">Todos os roles</option>
@@ -102,7 +102,7 @@ export default async function UsersPage({
         <select
           name="unit_id"
           defaultValue={params.unit_id ?? 'all'}
-          className="px-3 py-1.5 rounded-lg text-sm text-white/70 bg-white/05 border border-white/08 focus:outline-none focus:border-[#d6b25e]/40 transition-colors"
+          className="px-3 py-1.5 rounded-lg text-sm text-white/70 bg-white/05 border border-white/08 focus:outline-none focus:border-[#60a5fa]/40 transition-colors"
         >
           <option value="all" className="bg-[#07070a]">Todas as unidades</option>
           {units.map(u => (
@@ -113,7 +113,7 @@ export default async function UsersPage({
         <select
           name="status"
           defaultValue={params.status ?? 'all'}
-          className="px-3 py-1.5 rounded-lg text-sm text-white/70 bg-white/05 border border-white/08 focus:outline-none focus:border-[#d6b25e]/40 transition-colors"
+          className="px-3 py-1.5 rounded-lg text-sm text-white/70 bg-white/05 border border-white/08 focus:outline-none focus:border-[#60a5fa]/40 transition-colors"
         >
           <option value="all" className="bg-[#07070a]">Todos os status</option>
           <option value="active" className="bg-[#07070a]">Ativos</option>
@@ -212,7 +212,7 @@ export default async function UsersPage({
           className="flex items-center gap-2 cursor-pointer select-none list-none py-3 px-4 rounded-xl transition-colors hover:bg-white/03"
           style={{ border: '1px solid rgba(255,255,255,0.06)' }}
         >
-          <span className="text-[#d6b25e]/60 text-sm transition-transform group-open:rotate-90">▶</span>
+          <span className="text-[#60a5fa]/60 text-sm transition-transform group-open:rotate-90">▶</span>
           <span className="text-sm font-medium text-white/60 group-hover:text-white/80 transition-colors">
             Matriz de Permissões
           </span>

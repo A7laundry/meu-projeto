@@ -25,7 +25,7 @@ export function FinancialNetworkSummary({ financial }: FinancialNetworkSummaryPr
         }`}
       >
         <p className={`text-xs uppercase tracking-widest font-semibold mb-1 ${
-          financial.balance >= 0 ? 'text-[#d6b25e]/70' : 'text-yellow-400/70'
+          financial.balance >= 0 ? 'text-[#60a5fa]/70' : 'text-yellow-400/70'
         }`}>
           Saldo projetado
         </p>

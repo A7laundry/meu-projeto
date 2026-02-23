@@ -32,13 +32,13 @@ export default async function CampaignsPage({
         <div
           className="rounded-xl px-5 py-4 flex flex-wrap gap-4 items-center"
           style={{
-            background: 'linear-gradient(135deg, rgba(214,178,94,0.08) 0%, rgba(5,5,12,0.8) 100%)',
-            border: '1px solid rgba(214,178,94,0.18)',
+            background: 'linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(5,5,12,0.8) 100%)',
+            border: '1px solid rgba(59,130,246,0.18)',
           }}
         >
           {data.birthday.filter(c => c.birthday_today).length > 0 && (
             <span className="text-sm text-white/70">
-              🎂 <strong className="text-[#d6b25e]">{data.birthday.filter(c => c.birthday_today).length}</strong> aniversariante{data.birthday.filter(c => c.birthday_today).length !== 1 ? 's' : ''} <strong>hoje</strong>
+              🎂 <strong className="text-[#60a5fa]">{data.birthday.filter(c => c.birthday_today).length}</strong> aniversariante{data.birthday.filter(c => c.birthday_today).length !== 1 ? 's' : ''} <strong>hoje</strong>
             </span>
           )}
           {data.birthday.length > 0 && (

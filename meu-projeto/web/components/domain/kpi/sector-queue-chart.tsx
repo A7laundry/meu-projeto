@@ -31,13 +31,13 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
       style={{
         background: 'rgba(8,8,14,0.92)',
         backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(214,178,94,0.18)',
+        border: '1px solid rgba(59,130,246,0.18)',
         boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
       }}
     >
       <p className="text-white/40 mb-1.5">{label}</p>
       {payload.map((p, i) => (
-        <p key={i} className="font-semibold num-stat text-[#d6b25e]">
+        <p key={i} className="font-semibold num-stat text-[#60a5fa]">
           {p.value} <span className="text-white/50 font-normal">{p.name}</span>
         </p>
       ))}
@@ -65,8 +65,8 @@ export function SectorQueueChart({ data }: SectorQueueChartProps) {
           <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: -24 }}>
             <defs>
               <linearGradient id="goldBar" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#d6b25e" stopOpacity={0.95} />
-                <stop offset="100%" stopColor="#b98a2c" stopOpacity={0.70} />
+                <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.95} />
+                <stop offset="100%" stopColor="#2563eb" stopOpacity={0.70} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
@@ -82,7 +82,7 @@ export function SectorQueueChart({ data }: SectorQueueChartProps) {
               tickLine={false}
               allowDecimals={false}
             />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(214,178,94,0.04)', radius: 4 }} />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(59,130,246,0.04)', radius: 4 }} />
             <Bar dataKey="peças" fill="url(#goldBar)" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>

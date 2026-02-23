@@ -14,7 +14,7 @@ export function MissionCard({ briefing, submissionsCount = 0 }: MissionCardProps
   return (
     <Link
       href={`/copywriter/missions/${briefing.id}`}
-      className="card-stat rounded-xl p-5 space-y-3 block hover:border-[#d6b25e]/25 transition-all"
+      className="card-stat rounded-xl p-5 space-y-3 block hover:border-[#60a5fa]/25 transition-all"
     >
       <div className="flex items-start justify-between gap-2">
         <h3 className="text-sm font-semibold text-white/90 line-clamp-2 flex-1">
@@ -26,7 +26,7 @@ export function MissionCard({ briefing, submissionsCount = 0 }: MissionCardProps
       <p className="text-xs text-white/40 line-clamp-2">{briefing.description}</p>
 
       <div className="flex items-center gap-3 text-[10px]">
-        <span className="flex items-center gap-1 text-[#d6b25e]/80 font-medium">
+        <span className="flex items-center gap-1 text-[#60a5fa]/80 font-medium">
           +{briefing.xp_reward} XP
         </span>
         <span className="text-white/25">·</span>

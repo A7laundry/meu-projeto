@@ -39,7 +39,7 @@ function CustomTooltip({
       style={{
         background: 'rgba(8,8,14,0.95)',
         backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(214,178,94,0.18)',
+        border: '1px solid rgba(59,130,246,0.18)',
         boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
       }}
     >
@@ -73,7 +73,7 @@ export function UnitComparisonChart({ data, height = 220 }: Props) {
             <span className="w-2 h-2 rounded-full bg-emerald-400" /> No prazo
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full" style={{ background: '#d6b25e' }} /> Em processo
+            <span className="w-2 h-2 rounded-full" style={{ background: '#60a5fa' }} /> Em processo
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-red-400" /> Atrasadas
@@ -113,7 +113,7 @@ export function UnitComparisonChart({ data, height = 220 }: Props) {
             cursor={{ fill: 'rgba(255,255,255,0.03)' }}
           />
           <Bar dataKey="onTime" name="No prazo" stackId="a" fill="#34d399" radius={[0, 0, 0, 0]} />
-          <Bar dataKey="inQueue" name="Em processo" stackId="a" fill="#d6b25e" radius={[0, 0, 0, 0]} />
+          <Bar dataKey="inQueue" name="Em processo" stackId="a" fill="#60a5fa" radius={[0, 0, 0, 0]} />
           <Bar dataKey="late" name="Atrasadas" stackId="a" fill="#f87171" radius={[3, 3, 3, 3]} />
         </BarChart>
       </ResponsiveContainer>

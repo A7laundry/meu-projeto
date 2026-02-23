@@ -24,7 +24,7 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
       style={{
         background: 'rgba(8,8,14,0.92)',
         backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(214,178,94,0.20)',
+        border: '1px solid rgba(59,130,246,0.20)',
         boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
       }}
     >
@@ -53,9 +53,9 @@ export function WeeklyTrendChart({ data, height = 140 }: Props) {
           <AreaChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -24 }}>
             <defs>
               <linearGradient id="goldGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#d6b25e" stopOpacity={0.30} />
-                <stop offset="60%" stopColor="#d6b25e" stopOpacity={0.06} />
-                <stop offset="100%" stopColor="#d6b25e" stopOpacity={0} />
+                <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.30} />
+                <stop offset="60%" stopColor="#60a5fa" stopOpacity={0.06} />
+                <stop offset="100%" stopColor="#60a5fa" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
@@ -72,15 +72,15 @@ export function WeeklyTrendChart({ data, height = 140 }: Props) {
               allowDecimals={false}
               domain={[0, Math.ceil(maxOrders * 1.2)]}
             />
-            <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(214,178,94,0.15)', strokeWidth: 1 }} />
+            <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(59,130,246,0.15)', strokeWidth: 1 }} />
             <Area
               type="monotone"
               dataKey="orders"
-              stroke="#d6b25e"
+              stroke="#60a5fa"
               strokeWidth={2}
               fill="url(#goldGradient)"
               dot={false}
-              activeDot={{ r: 4, fill: '#d6b25e', stroke: 'rgba(214,178,94,0.3)', strokeWidth: 4 }}
+              activeDot={{ r: 4, fill: '#60a5fa', stroke: 'rgba(59,130,246,0.3)', strokeWidth: 4 }}
             />
           </AreaChart>
         </ResponsiveContainer>

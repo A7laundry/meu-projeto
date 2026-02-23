@@ -55,13 +55,13 @@ export function DirectorSidebar({ units }: DirectorSidebarProps) {
       style={{
         width: mounted && collapsed ? 60 : 224,
         background: 'linear-gradient(180deg, #060609 0%, #07070a 60%, #060609 100%)',
-        borderRight: '1px solid rgba(214,178,94,0.08)',
+        borderRight: '1px solid rgba(59,130,246,0.08)',
         boxShadow: '1px 0 0 rgba(255,255,255,0.02)',
       }}
     >
       {/* Logo + toggle */}
       <div
-        className="flex items-center border-b border-[#d6b25e]/08 flex-shrink-0"
+        className="flex items-center border-b border-[#60a5fa]/08 flex-shrink-0"
         style={{ padding: collapsed ? '16px 12px' : '16px 20px', justifyContent: collapsed ? 'center' : 'space-between' }}
       >
         {!collapsed && (
@@ -69,15 +69,15 @@ export function DirectorSidebar({ units }: DirectorSidebarProps) {
             <div
               className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
               style={{
-                background: 'linear-gradient(135deg, rgba(214,178,94,0.18) 0%, rgba(185,138,44,0.08) 100%)',
-                border: '1px solid rgba(214,178,94,0.25)',
+                background: 'linear-gradient(135deg, rgba(59,130,246,0.18) 0%, rgba(185,138,44,0.08) 100%)',
+                border: '1px solid rgba(59,130,246,0.25)',
               }}
             >
               <span className="text-sm font-black gold-text leading-none">A</span>
             </div>
             <div className="min-w-0">
               <p className="text-sm font-bold text-white/90 leading-none truncate group-hover:text-white transition-colors">A7x OS</p>
-              <p className="text-[9px] text-[#d6b25e]/40 mt-0.5 uppercase tracking-wider">Executivo</p>
+              <p className="text-[9px] text-[#60a5fa]/40 mt-0.5 uppercase tracking-wider">Executivo</p>
             </div>
           </Link>
         )}
@@ -86,8 +86,8 @@ export function DirectorSidebar({ units }: DirectorSidebarProps) {
             <div
               className="w-8 h-8 rounded-lg flex items-center justify-center"
               style={{
-                background: 'linear-gradient(135deg, rgba(214,178,94,0.18) 0%, rgba(185,138,44,0.08) 100%)',
-                border: '1px solid rgba(214,178,94,0.25)',
+                background: 'linear-gradient(135deg, rgba(59,130,246,0.18) 0%, rgba(185,138,44,0.08) 100%)',
+                border: '1px solid rgba(59,130,246,0.25)',
               }}
             >
               <span className="text-sm font-black gold-text leading-none">A</span>
@@ -110,7 +110,7 @@ export function DirectorSidebar({ units }: DirectorSidebarProps) {
       {/* Nav principal */}
       <nav className="py-4 space-y-0.5 flex-shrink-0" style={{ padding: collapsed ? '16px 8px' : '16px 12px' }}>
         {!collapsed && (
-          <p className="text-[9px] uppercase tracking-widest text-[#d6b25e]/30 font-semibold px-3 mb-2">
+          <p className="text-[9px] uppercase tracking-widest text-[#60a5fa]/30 font-semibold px-3 mb-2">
             Menu
           </p>
         )}
@@ -125,13 +125,13 @@ export function DirectorSidebar({ units }: DirectorSidebarProps) {
                 'relative flex items-center rounded-lg transition-all duration-200',
                 collapsed ? 'justify-center p-3' : 'gap-3 px-3 py-2.5',
                 active
-                  ? 'bg-[#d6b25e]/10 text-[#d6b25e] font-medium' + (collapsed ? '' : ' nav-indicator')
+                  ? 'bg-[#60a5fa]/10 text-[#60a5fa] font-medium' + (collapsed ? '' : ' nav-indicator')
                   : 'text-white/45 hover:text-white/85 hover:bg-white/04',
               ].join(' ')}
             >
               <Icon
                 size={15}
-                className={`flex-shrink-0 transition-colors ${active ? 'text-[#d6b25e]' : 'text-white/25'}`}
+                className={`flex-shrink-0 transition-colors ${active ? 'text-[#60a5fa]' : 'text-white/25'}`}
               />
               {!collapsed && <span className="truncate text-sm">{label}</span>}
             </Link>
@@ -142,11 +142,11 @@ export function DirectorSidebar({ units }: DirectorSidebarProps) {
       {/* Unidades individuais */}
       {units.length > 0 && (
         <div
-          className="flex-1 border-t border-[#d6b25e]/08"
+          className="flex-1 border-t border-[#60a5fa]/08"
           style={{ padding: collapsed ? '16px 8px' : '16px 12px' }}
         >
           {!collapsed && (
-            <p className="text-[9px] uppercase tracking-widest text-[#d6b25e]/30 font-semibold px-3 mb-2">
+            <p className="text-[9px] uppercase tracking-widest text-[#60a5fa]/30 font-semibold px-3 mb-2">
               Unidades
             </p>
           )}
@@ -163,11 +163,11 @@ export function DirectorSidebar({ units }: DirectorSidebarProps) {
                     'relative flex items-center rounded-lg transition-all duration-200',
                     collapsed ? 'justify-center p-3' : 'gap-2.5 px-3 py-2',
                     active
-                      ? 'bg-[#d6b25e]/10 text-[#d6b25e] font-medium' + (collapsed ? '' : ' nav-indicator')
+                      ? 'bg-[#60a5fa]/10 text-[#60a5fa] font-medium' + (collapsed ? '' : ' nav-indicator')
                       : 'text-white/35 hover:text-white/75 hover:bg-white/04',
                   ].join(' ')}
                 >
-                  <div className={`rounded-full flex-shrink-0 transition-colors ${collapsed ? 'w-2 h-2' : 'w-1.5 h-1.5'} ${active ? 'bg-[#d6b25e]' : 'bg-white/15'}`} />
+                  <div className={`rounded-full flex-shrink-0 transition-colors ${collapsed ? 'w-2 h-2' : 'w-1.5 h-1.5'} ${active ? 'bg-[#60a5fa]' : 'bg-white/15'}`} />
                   {!collapsed && <span className="truncate text-xs">{unit.name}</span>}
                 </Link>
               )
@@ -178,7 +178,7 @@ export function DirectorSidebar({ units }: DirectorSidebarProps) {
 
       {/* Footer */}
       <div
-        className="border-t border-[#d6b25e]/08 mt-auto"
+        className="border-t border-[#60a5fa]/08 mt-auto"
         style={{ padding: collapsed ? '12px 8px' : '12px 20px' }}
       >
         {firstUnitId && (

@@ -54,7 +54,7 @@ export default async function AdminReviewsPage() {
                       <DifficultyBadge difficulty={submission.briefing.difficulty} />
                     )}
                     <span>·</span>
-                    <span className="text-[#d6b25e]/60">+{submission.briefing?.xp_reward ?? 0} XP</span>
+                    <span className="text-[#60a5fa]/60">+{submission.briefing?.xp_reward ?? 0} XP</span>
                   </div>
                 </div>
               </div>

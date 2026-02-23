@@ -19,7 +19,7 @@ export default async function LeadsPage() {
           <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
             {leads.length} lead{leads.length !== 1 ? 's' : ''} no total
             {totalValue > 0 && (
-              <span style={{ color: '#d6b25e', marginLeft: 8, fontWeight: 600 }}>
+              <span style={{ color: '#60a5fa', marginLeft: 8, fontWeight: 600 }}>
                 · R${(totalValue / 1000).toFixed(1)}k em aberto
               </span>
             )}
@@ -31,9 +31,9 @@ export default async function LeadsPage() {
           <summary
             className="cursor-pointer inline-flex items-center gap-2 text-sm font-semibold px-4 py-2.5 rounded-xl transition-all list-none"
             style={{
-              background: 'linear-gradient(135deg, #d6b25e 0%, #f0d080 100%)',
+              background: 'linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%)',
               color: '#05050a',
-              boxShadow: '0 4px 16px rgba(214,178,94,0.25)',
+              boxShadow: '0 4px 16px rgba(59,130,246,0.25)',
             }}
           >
             + Novo Lead
@@ -97,7 +97,7 @@ export default async function LeadsPage() {
                 type="submit"
                 className="w-full text-sm font-semibold py-2.5 rounded-xl transition-all"
                 style={{
-                  background: 'linear-gradient(135deg, #d6b25e 0%, #f0d080 100%)',
+                  background: 'linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%)',
                   color: '#05050a',
                   border: 'none',
                   cursor: 'pointer',

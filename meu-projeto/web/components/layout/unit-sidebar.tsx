@@ -27,9 +27,9 @@ export function UnitSidebar({ unitId }: UnitSidebarProps) {
   const pathname = usePathname()
 
   return (
-    <aside className="w-52 border-r border-[#d6b25e]/10 bg-[#07070a] py-4 px-3 flex-shrink-0 overflow-y-auto">
+    <aside className="w-52 border-r border-[#60a5fa]/10 bg-[#07070a] py-4 px-3 flex-shrink-0 overflow-y-auto">
       <div className="px-3 mb-4">
-        <p className="text-[10px] uppercase tracking-widest text-[#d6b25e]/40 font-semibold">
+        <p className="text-[10px] uppercase tracking-widest text-[#60a5fa]/40 font-semibold">
           Unidade
         </p>
       </div>
@@ -44,13 +44,13 @@ export function UnitSidebar({ unitId }: UnitSidebarProps) {
               className={[
                 'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-all',
                 active
-                  ? 'bg-[#d6b25e]/10 text-[#d6b25e] font-medium'
+                  ? 'bg-[#60a5fa]/10 text-[#60a5fa] font-medium'
                   : 'text-white/50 hover:text-white/90 hover:bg-white/5',
               ].join(' ')}
             >
               <span className={[
                 'text-xs',
-                active ? 'text-[#d6b25e]' : 'text-white/30',
+                active ? 'text-[#60a5fa]' : 'text-white/30',
               ].join(' ')}>
                 {icon}
               </span>

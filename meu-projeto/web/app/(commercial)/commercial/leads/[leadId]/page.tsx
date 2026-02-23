@@ -20,7 +20,7 @@ const STAGE_DOT: Record<LeadStage, string> = {
   prospect:  'rgba(255,255,255,0.35)',
   contacted: 'rgba(96,165,250,0.80)',
   qualified: 'rgba(167,139,250,0.80)',
-  proposal:  'rgba(214,178,94,0.90)',
+  proposal:  'rgba(59,130,246,0.90)',
   won:       'rgba(52,211,153,0.90)',
   lost:      'rgba(248,113,113,0.75)',
 }
@@ -183,7 +183,7 @@ export default async function LeadDetailPage({
               {lead.estimated_monthly_value > 0 && (
                 <div>
                   <p className="text-[10px] uppercase tracking-wider mb-0.5" style={{ color: 'rgba(255,255,255,0.25)' }}>Ticket estimado</p>
-                  <p className="text-sm font-bold tabular-nums" style={{ color: '#d6b25e' }}>
+                  <p className="text-sm font-bold tabular-nums" style={{ color: '#60a5fa' }}>
                     R$ {Number(lead.estimated_monthly_value).toFixed(2).replace('.', ',')}/mês
                   </p>
                 </div>
@@ -230,7 +230,7 @@ export default async function LeadDetailPage({
                   type="submit"
                   className="w-full text-sm font-semibold py-2.5 rounded-xl transition-all"
                   style={{
-                    background: 'linear-gradient(135deg, #d6b25e 0%, #f0d080 100%)',
+                    background: 'linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%)',
                     color: '#05050a',
                     border: 'none',
                     cursor: 'pointer',
@@ -303,7 +303,7 @@ export default async function LeadDetailPage({
                   type="submit"
                   className="text-sm font-semibold rounded-xl transition-all"
                   style={{
-                    background: 'linear-gradient(135deg, #d6b25e 0%, #f0d080 100%)',
+                    background: 'linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%)',
                     color: '#05050a',
                     border: 'none',
                     cursor: 'pointer',

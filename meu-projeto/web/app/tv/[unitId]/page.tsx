@@ -13,7 +13,7 @@ const STAGE_CONFIG: Record<OrderStatus, { label: string; icon: string; color: st
   washing:  { label: 'Lavagem',   icon: '◎',  color: '#34d399', bg: 'rgba(52,211,153,0.07)',  border: 'rgba(52,211,153,0.20)'  },
   drying:   { label: 'Secagem',   icon: '◉',  color: '#fbbf24', bg: 'rgba(251,191,36,0.07)',  border: 'rgba(251,191,36,0.20)'  },
   ironing:  { label: 'Passadoria',icon: '◈',  color: '#a78bfa', bg: 'rgba(167,139,250,0.07)', border: 'rgba(167,139,250,0.20)' },
-  ready:    { label: 'Pronto',    icon: '✓',  color: '#d6b25e', bg: 'rgba(214,178,94,0.10)',  border: 'rgba(214,178,94,0.30)'  },
+  ready:    { label: 'Pronto',    icon: '✓',  color: '#60a5fa', bg: 'rgba(59,130,246,0.10)',  border: 'rgba(59,130,246,0.30)'  },
   shipped:  { label: 'Expedido',  icon: '📦', color: '#a1a1aa', bg: 'rgba(161,161,170,0.05)', border: 'rgba(161,161,170,0.15)' },
   delivered:{ label: 'Entregue',  icon: '✅', color: '#a1a1aa', bg: 'rgba(161,161,170,0.05)', border: 'rgba(161,161,170,0.15)' },
 }
@@ -69,12 +69,12 @@ export default async function TvPage({ params }: Props) {
           <div
             style={{
               width: 40, height: 40, borderRadius: 10,
-              background: 'linear-gradient(135deg, rgba(214,178,94,0.22) 0%, rgba(185,138,44,0.10) 100%)',
-              border: '1.5px solid rgba(214,178,94,0.35)',
+              background: 'linear-gradient(135deg, rgba(59,130,246,0.22) 0%, rgba(185,138,44,0.10) 100%)',
+              border: '1.5px solid rgba(59,130,246,0.35)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
-            <span style={{ fontSize: 18, fontWeight: 900, color: '#d6b25e' }}>A</span>
+            <span style={{ fontSize: 18, fontWeight: 900, color: '#60a5fa' }}>A</span>
           </div>
           <div>
             <p style={{ fontSize: 22, fontWeight: 700, color: '#fff', lineHeight: 1 }}>
@@ -98,12 +98,12 @@ export default async function TvPage({ params }: Props) {
           {/* Relógio */}
           <div
             style={{
-              background: 'rgba(214,178,94,0.08)',
-              border: '1px solid rgba(214,178,94,0.22)',
+              background: 'rgba(59,130,246,0.08)',
+              border: '1px solid rgba(59,130,246,0.22)',
               borderRadius: 14, padding: '8px 18px',
             }}
           >
-            <p style={{ fontSize: 36, fontWeight: 800, color: '#d6b25e', lineHeight: 1, letterSpacing: '-0.5px' }}>
+            <p style={{ fontSize: 36, fontWeight: 800, color: '#60a5fa', lineHeight: 1, letterSpacing: '-0.5px' }}>
               {timeStr}
             </p>
           </div>
@@ -111,7 +111,7 @@ export default async function TvPage({ params }: Props) {
       </div>
 
       {/* ── Divisor gold ───────────────────────────────────── */}
-      <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(214,178,94,0.30), transparent)', flexShrink: 0 }} />
+      <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(59,130,246,0.30), transparent)', flexShrink: 0 }} />
 
       {/* ── Colunas de estágio ─────────────────────────────── */}
       <div
@@ -180,10 +180,10 @@ export default async function TvPage({ params }: Props) {
                       key={order.id}
                       style={{
                         background: isReady
-                          ? 'rgba(214,178,94,0.07)'
+                          ? 'rgba(59,130,246,0.07)'
                           : 'rgba(255,255,255,0.03)',
                         border: isReady
-                          ? '1px solid rgba(214,178,94,0.20)'
+                          ? '1px solid rgba(59,130,246,0.20)'
                           : '1px solid rgba(255,255,255,0.07)',
                         borderRadius: 12,
                         padding: '12px 14px',
@@ -195,7 +195,7 @@ export default async function TvPage({ params }: Props) {
                           style={{
                             fontSize: isReady ? 18 : 16,
                             fontWeight: 700,
-                            color: isReady ? '#d6b25e' : 'rgba(255,255,255,0.90)',
+                            color: isReady ? '#60a5fa' : 'rgba(255,255,255,0.90)',
                             lineHeight: 1.2,
                           }}
                         >

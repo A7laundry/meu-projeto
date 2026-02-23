@@ -56,7 +56,7 @@ export default async function DirectorNpsPage() {
               }}
             >
               <Button type="submit" variant="outline" size="sm"
-                className="border-white/15 bg-white/5 text-white/70 hover:border-[#d6b25e]/40 hover:bg-[#d6b25e]/08 hover:text-white"
+                className="border-white/15 bg-white/5 text-white/70 hover:border-[#60a5fa]/40 hover:bg-[#60a5fa]/08 hover:text-white"
               >
                 + {unit.name}
               </Button>
@@ -126,7 +126,7 @@ export default async function DirectorNpsPage() {
                         <Link
                           href={`/nps/${survey.id}`}
                           target="_blank"
-                          className="text-xs text-[#d6b25e] hover:underline"
+                          className="text-xs text-[#60a5fa] hover:underline"
                         >
                           Link
                         </Link>

@@ -113,7 +113,7 @@ export default async function CampaignDetailPage({ params }: Props) {
         {[
           { label: 'Leads gerados',  val: String(campaign.leads_generated), color: 'rgba(96,165,250,0.85)' },
           { label: 'Conversões',     val: String(campaign.conversions),      color: 'rgba(52,211,153,0.85)' },
-          { label: 'Custo / Lead',   val: costPerLead ? `R$${costPerLead.toFixed(2).replace('.', ',')}` : '—', color: 'rgba(214,178,94,0.90)' },
+          { label: 'Custo / Lead',   val: costPerLead ? `R$${costPerLead.toFixed(2).replace('.', ',')}` : '—', color: 'rgba(59,130,246,0.90)' },
           { label: 'Custo / Conv.',  val: costPerConv ? `R$${costPerConv.toFixed(2).replace('.', ',')}` : '—', color: 'rgba(167,139,250,0.85)' },
         ].map((k) => (
           <div
@@ -246,7 +246,7 @@ export default async function CampaignDetailPage({ params }: Props) {
             type="submit"
             className="text-sm font-semibold px-5 py-2.5 rounded-xl transition-all"
             style={{
-              background: 'linear-gradient(135deg, #d6b25e 0%, #f0d080 100%)',
+              background: 'linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%)',
               color: '#05050a',
               border: 'none',
               cursor: 'pointer',

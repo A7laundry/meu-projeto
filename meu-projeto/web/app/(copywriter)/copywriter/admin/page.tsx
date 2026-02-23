@@ -49,7 +49,7 @@ export default async function AdminDashboardPage() {
                 return (
                   <tr key={w.id} className="border-b border-white/[0.03] hover:bg-white/[0.02]">
                     <td className="px-4 py-3 text-sm text-white/80">{w.profile?.full_name ?? '—'}</td>
-                    <td className="px-4 py-3 text-xs text-[#d6b25e]/70">{title}</td>
+                    <td className="px-4 py-3 text-xs text-[#60a5fa]/70">{title}</td>
                     <td className="px-4 py-3 text-right text-sm text-white/70 num-stat">{w.total_xp}</td>
                     <td className="px-4 py-3 text-right text-xs text-white/40 num-stat">{w.missions_done}</td>
                     <td className="px-4 py-3 text-right text-xs text-white/40 num-stat">{w.avg_score}</td>

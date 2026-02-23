@@ -51,11 +51,11 @@ export function KpiCard({
           <div
             className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
             style={{
-              background: iconBg ?? 'rgba(214,178,94,0.12)',
-              border: `1px solid ${iconColor ?? '#d6b25e'}25`,
+              background: iconBg ?? 'rgba(59,130,246,0.12)',
+              border: `1px solid ${iconColor ?? '#60a5fa'}25`,
             }}
           >
-            <Icon size={16} style={{ color: iconColor ?? '#d6b25e' }} />
+            <Icon size={16} style={{ color: iconColor ?? '#60a5fa' }} />
           </div>
           {trend !== undefined && trend !== 0 && (
             <span
