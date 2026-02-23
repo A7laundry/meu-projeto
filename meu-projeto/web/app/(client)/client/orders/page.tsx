@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { getUser } from '@/lib/auth/get-user'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { Order, OrderEvent, OrderItem, OrderStatus } from '@/types/order'
@@ -9,16 +11,15 @@ const PROCESS_STEPS: {
   label: string
   description: string
   icon: string
-  color: string
 }[] = [
-  { status: 'received',  label: 'Recebida',   description: 'Suas peças chegaram à unidade',                icon: '📥', color: '#60a5fa' },
-  { status: 'sorting',   label: 'Triagem',    description: 'Separando por tipo de tecido e cor',           icon: '🔍', color: '#93c5fd' },
-  { status: 'washing',   label: 'Lavagem',    description: 'Na máquina com fórmula especial',              icon: '🫧', color: '#60a5fa' },
-  { status: 'drying',    label: 'Secagem',    description: 'Secagem controlada para preservar o tecido',   icon: '💨', color: '#93c5fd' },
-  { status: 'ironing',   label: 'Passadoria', description: 'Passando e dobrando suas peças',               icon: '🌡️', color: '#60a5fa' },
-  { status: 'ready',     label: 'Pronta',     description: 'Suas peças estão prontas para retirada!',      icon: '✅', color: '#34d399' },
-  { status: 'shipped',   label: 'Em entrega', description: 'O entregador está a caminho',                  icon: '🚚', color: '#60a5fa' },
-  { status: 'delivered', label: 'Entregue',   description: 'Entregue com sucesso!',                        icon: '🏠', color: '#34d399' },
+  { status: 'received',  label: 'Recebida',   description: 'Suas peças chegaram à unidade',              icon: '📥' },
+  { status: 'sorting',   label: 'Triagem',    description: 'Separando por tipo de tecido e cor',         icon: '🔍' },
+  { status: 'washing',   label: 'Lavagem',    description: 'Na máquina com fórmula especial',            icon: '🫧' },
+  { status: 'drying',    label: 'Secagem',    description: 'Secagem controlada para preservar o tecido', icon: '💨' },
+  { status: 'ironing',   label: 'Passadoria', description: 'Passando e dobrando suas peças',             icon: '🌡️' },
+  { status: 'ready',     label: 'Pronta',     description: 'Suas peças estão prontas para retirada!',    icon: '✅' },
+  { status: 'shipped',   label: 'Em entrega', description: 'O entregador está a caminho',                icon: '🚚' },
+  { status: 'delivered', label: 'Entregue',   description: 'Entregue com sucesso!',                      icon: '🏠' },
 ]
 
 const STATUS_INDEX: Record<OrderStatus, number> = Object.fromEntries(
@@ -35,16 +36,61 @@ const PIECE_TYPE_LABELS: Record<string, string> = {
   other:      'Outros',
 }
 
+/* ─── Serviços de upsell ─────────────────────────────────────────── */
+
+const UPSELL_SERVICES = [
+  {
+    icon: '🛡️',
+    title: 'Impermeabilização',
+    tagline: 'Proteja seus tênis e bolsas por até 6 meses',
+    badge: 'Popular',
+    badgeColor: '#f59e0b',
+    accentColor: '#f59e0b',
+    bg: 'rgba(245,158,11,0.06)',
+    border: 'rgba(245,158,11,0.18)',
+  },
+  {
+    icon: '🚚',
+    title: 'Entrega em Casa',
+    tagline: 'Receba suas peças sem sair de casa — taxa única',
+    badge: 'Novo',
+    badgeColor: '#34d399',
+    accentColor: '#34d399',
+    bg: 'rgba(52,211,153,0.06)',
+    border: 'rgba(52,211,153,0.18)',
+  },
+  {
+    icon: '🔄',
+    title: 'Plano Mensal',
+    tagline: '20% de desconto em todas as lavagens do mês',
+    badge: '-20%',
+    badgeColor: '#60a5fa',
+    accentColor: '#60a5fa',
+    bg: 'rgba(96,165,250,0.06)',
+    border: 'rgba(96,165,250,0.18)',
+  },
+  {
+    icon: '✨',
+    title: 'Higienização Premium',
+    tagline: 'Limpeza profunda com ozônio — ideal para casacos',
+    badge: 'Premium',
+    badgeColor: '#c084fc',
+    accentColor: '#c084fc',
+    bg: 'rgba(192,132,252,0.06)',
+    border: 'rgba(192,132,252,0.18)',
+  },
+]
+
 /* ─── Busca de dados ─────────────────────────────────────────────── */
 
-async function getClientRecord(profileId: string): Promise<string | null> {
+async function getClientRecord(profileId: string): Promise<{ id: string; name: string } | null> {
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('clients')
-    .select('id')
+    .select('id, name')
     .eq('profile_id', profileId)
     .maybeSingle()
-  return data?.id ?? null
+  return data ?? null
 }
 
 async function getClientOrders(clientId: string): Promise<Order[]> {
@@ -54,7 +100,7 @@ async function getClientOrders(clientId: string): Promise<Order[]> {
     .select(`*, items:order_items(*), events:order_events(*)`)
     .eq('client_id', clientId)
     .order('created_at', { ascending: false })
-    .limit(30)
+    .limit(50)
   return (data ?? []) as Order[]
 }
 
@@ -70,22 +116,36 @@ export default async function ClientOrdersPage() {
     )
   }
 
-  // Busca o registro de cliente vinculado ao perfil do usuário
-  const clientId = await getClientRecord(user.id)
-  const orders = clientId ? await getClientOrders(clientId) : []
+  const clientRecord = await getClientRecord(user.id)
+  const orders = clientRecord ? await getClientOrders(clientRecord.id) : []
   const active  = orders.filter((o) => o.status !== 'delivered')
   const history = orders.filter((o) => o.status === 'delivered')
-  const firstName = user.full_name.split(' ')[0]
+  const firstName = (clientRecord?.name ?? user.full_name).split(' ')[0]
+
+  const totalPieces = orders.reduce(
+    (acc, o) => acc + (o.items?.reduce((s, i) => s + i.quantity, 0) ?? 0), 0
+  )
+
+  // Simular pontos de fidelidade: 1 ponto por peça lavada em comandas entregues
+  const loyaltyPoints = history.reduce(
+    (acc, o) => acc + (o.items?.reduce((s, i) => s + i.quantity, 0) ?? 0) * 10, 0
+  )
+  const nextReward = 100
+  const loyaltyProgress = Math.min((loyaltyPoints % nextReward) / nextReward * 100, 100)
+  const rewardsEarned = Math.floor(loyaltyPoints / nextReward)
+
+  // Última comanda entregue para NPS
+  const lastDelivered = history[0]
 
   return (
     <div
       className="min-h-[calc(100vh-56px)]"
-      style={{ background: 'linear-gradient(180deg, #071020 0%, #0d1b2e 100%)' }}
+      style={{ background: 'linear-gradient(180deg, #071020 0%, #0b1628 50%, #070e1a 100%)' }}
     >
-      {/* Top accent line */}
+      {/* Top accent */}
       <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(59,130,246,0.50), transparent)' }} />
 
-      <div className="max-w-xl mx-auto px-4 py-6 space-y-6 pb-10">
+      <div className="max-w-xl mx-auto px-4 py-6 space-y-6 pb-16">
 
         {/* ─── Saudação ─────────────────────────────────────────── */}
         <div className="pt-2">
@@ -102,47 +162,87 @@ export default async function ClientOrdersPage() {
             {active.length > 0
               ? `${active.length} comanda${active.length > 1 ? 's' : ''} em andamento`
               : history.length > 0
-                ? 'Nenhuma comanda em andamento'
+                ? 'Todas as peças entregues — obrigado pela confiança!'
                 : 'Bem-vindo! Suas comandas aparecerão aqui.'}
           </p>
         </div>
 
-        {/* ─── Resumo estatístico ───────────────────────────────── */}
+        {/* ─── Cards de stats ───────────────────────────────────── */}
         {orders.length > 0 && (
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-2.5">
             {[
-              {
-                label: 'Em andamento',
-                value: active.length,
-                color: '#3b82f6',
-                bg: 'rgba(59,130,246,0.10)',
-                border: 'rgba(59,130,246,0.18)',
-              },
-              {
-                label: 'Entregues',
-                value: history.length,
-                color: '#34d399',
-                bg: 'rgba(52,211,153,0.08)',
-                border: 'rgba(52,211,153,0.16)',
-              },
-              {
-                label: 'Total de peças',
-                value: orders.reduce((acc, o) => acc + (o.items?.reduce((s, i) => s + i.quantity, 0) ?? 0), 0),
-                color: '#93c5fd',
-                bg: 'rgba(147,197,253,0.07)',
-                border: 'rgba(147,197,253,0.14)',
-              },
-            ].map((stat) => (
+              { label: 'Em andamento', value: active.length, color: '#3b82f6', bg: 'rgba(59,130,246,0.10)', border: 'rgba(59,130,246,0.18)' },
+              { label: 'Entregues', value: history.length, color: '#34d399', bg: 'rgba(52,211,153,0.08)', border: 'rgba(52,211,153,0.16)' },
+              { label: 'Total peças', value: totalPieces, color: '#93c5fd', bg: 'rgba(147,197,253,0.07)', border: 'rgba(147,197,253,0.14)' },
+            ].map((s) => (
               <div
-                key={stat.label}
+                key={s.label}
                 className="rounded-xl p-3 text-center"
-                style={{ background: stat.bg, border: `1px solid ${stat.border}` }}
+                style={{ background: s.bg, border: `1px solid ${s.border}` }}
               >
-                <p className="text-lg font-bold leading-none" style={{ color: stat.color }}>{stat.value}</p>
-                <p className="text-[10px] mt-1 leading-tight" style={{ color: 'rgba(255,255,255,0.35)' }}>{stat.label}</p>
+                <p className="text-lg font-bold leading-none" style={{ color: s.color }}>{s.value}</p>
+                <p className="text-[10px] mt-1 leading-tight" style={{ color: 'rgba(255,255,255,0.32)' }}>{s.label}</p>
               </div>
             ))}
           </div>
+        )}
+
+        {/* ─── Programa de Fidelidade ───────────────────────────── */}
+        {loyaltyPoints > 0 && (
+          <div
+            className="rounded-2xl p-4"
+            style={{
+              background: 'linear-gradient(135deg, rgba(96,165,250,0.08) 0%, rgba(192,132,252,0.06) 100%)',
+              border: '1px solid rgba(96,165,250,0.18)',
+            }}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">⭐</span>
+                <div>
+                  <p className="text-sm font-semibold text-white">Programa Fidelidade</p>
+                  <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                    {rewardsEarned > 0 ? `${rewardsEarned} recompensa${rewardsEarned > 1 ? 's' : ''} resgatável${rewardsEarned > 1 ? 'is' : ''}` : 'Acumule pontos a cada lavagem'}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-xl font-bold" style={{ color: '#93c5fd' }}>{loyaltyPoints}</p>
+                <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.30)' }}>pontos</p>
+              </div>
+            </div>
+            {/* Barra de progresso */}
+            <div>
+              <div className="flex justify-between text-[10px] mb-1.5" style={{ color: 'rgba(255,255,255,0.30)' }}>
+                <span>{loyaltyPoints % nextReward} pts</span>
+                <span>{nextReward} pts = 1 lavagem grátis</span>
+              </div>
+              <div className="h-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.07)' }}>
+                <div
+                  className="h-1.5 rounded-full transition-all"
+                  style={{
+                    width: `${loyaltyProgress}%`,
+                    background: 'linear-gradient(90deg, #60a5fa, #c084fc)',
+                  }}
+                />
+              </div>
+              {rewardsEarned > 0 && (
+                <div className="mt-2.5 flex items-center gap-2">
+                  <span
+                    className="text-xs px-3 py-1 rounded-lg font-semibold"
+                    style={{ background: 'rgba(96,165,250,0.15)', color: '#93c5fd', border: '1px solid rgba(96,165,250,0.25)' }}
+                  >
+                    🎁 {rewardsEarned}× lavagem grátis disponível
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ─── NPS pós-entrega ──────────────────────────────────── */}
+        {lastDelivered && (
+          <NpsWidget orderId={lastDelivered.id} orderNumber={lastDelivered.order_number} />
         )}
 
         {/* ─── Comandas ativas ──────────────────────────────────── */}
@@ -163,7 +263,7 @@ export default async function ClientOrdersPage() {
         )}
 
         {/* ─── Empty state ──────────────────────────────────────── */}
-        {active.length === 0 && (
+        {active.length === 0 && orders.length === 0 && (
           <div
             className="rounded-2xl p-8 text-center"
             style={{
@@ -179,10 +279,51 @@ export default async function ClientOrdersPage() {
             </div>
             <p className="font-semibold text-white/75">Nenhuma peça em processo</p>
             <p className="text-sm mt-1.5" style={{ color: 'rgba(255,255,255,0.30)' }}>
-              Traga suas peças à unidade e acompanhe cada etapa do processo aqui em tempo real.
+              Traga suas peças à unidade e acompanhe cada etapa aqui em tempo real.
             </p>
           </div>
         )}
+
+        {/* ─── Serviços & Upsell ────────────────────────────────── */}
+        <section>
+          <div className="flex items-center justify-between mb-3">
+            <p
+              className="text-[10px] uppercase tracking-widest font-semibold"
+              style={{ color: 'rgba(255,255,255,0.25)' }}
+            >
+              Serviços exclusivos
+            </p>
+            <span
+              className="text-[10px] px-2 py-0.5 rounded-full"
+              style={{ background: 'rgba(59,130,246,0.12)', color: '#60a5fa', border: '1px solid rgba(59,130,246,0.20)' }}
+            >
+              Peça na unidade
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-2.5">
+            {UPSELL_SERVICES.map((s) => (
+              <div
+                key={s.title}
+                className="rounded-xl p-3.5 cursor-pointer active:scale-95 transition-transform"
+                style={{ background: s.bg, border: `1px solid ${s.border}` }}
+              >
+                <div className="flex items-start justify-between gap-1 mb-2">
+                  <span className="text-xl">{s.icon}</span>
+                  <span
+                    className="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wide"
+                    style={{ background: `${s.badgeColor}22`, color: s.badgeColor, border: `1px solid ${s.badgeColor}33` }}
+                  >
+                    {s.badge}
+                  </span>
+                </div>
+                <p className="text-sm font-semibold text-white leading-tight">{s.title}</p>
+                <p className="text-[11px] mt-1 leading-tight" style={{ color: 'rgba(255,255,255,0.38)' }}>
+                  {s.tagline}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
 
         {/* ─── Histórico ────────────────────────────────────────── */}
         {history.length > 0 && (
@@ -198,10 +339,42 @@ export default async function ClientOrdersPage() {
                 <HistoryCard key={order.id} order={order} />
               ))}
             </div>
+            {history.length > 10 && (
+              <p className="text-center text-xs mt-3" style={{ color: 'rgba(255,255,255,0.22)' }}>
+                +{history.length - 10} comandas anteriores
+              </p>
+            )}
           </section>
         )}
 
-        {/* ─── Footer informativo ───────────────────────────────── */}
+        {/* ─── Banner de indicação ──────────────────────────────── */}
+        <div
+          className="rounded-2xl p-5 relative overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(96,165,250,0.06) 100%)',
+            border: '1px solid rgba(59,130,246,0.20)',
+          }}
+        >
+          {/* Círculo decorativo */}
+          <div
+            className="absolute -right-8 -top-8 w-32 h-32 rounded-full"
+            style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%)' }}
+          />
+          <div className="relative">
+            <p className="text-base font-bold text-white mb-1">Indique e Ganhe 🎁</p>
+            <p className="text-xs mb-3" style={{ color: 'rgba(255,255,255,0.40)' }}>
+              Cada amigo indicado te dá 50 pontos + 10% de desconto na próxima lavagem.
+            </p>
+            <button
+              className="text-xs font-semibold px-4 py-2 rounded-lg"
+              style={{ background: 'rgba(59,130,246,0.20)', color: '#93c5fd', border: '1px solid rgba(59,130,246,0.30)' }}
+            >
+              Compartilhar meu código
+            </button>
+          </div>
+        </div>
+
+        {/* ─── Footer ───────────────────────────────────────────── */}
         <div
           className="rounded-xl px-4 py-3 flex items-center gap-3"
           style={{
@@ -211,10 +384,48 @@ export default async function ClientOrdersPage() {
         >
           <span className="text-base flex-shrink-0">💬</span>
           <p className="text-xs" style={{ color: 'rgba(255,255,255,0.28)' }}>
-            Precisa de ajuda? Entre em contato com a unidade.
+            Dúvidas? Entre em contato diretamente com a unidade.
           </p>
         </div>
       </div>
+    </div>
+  )
+}
+
+/* ─── Widget de NPS ──────────────────────────────────────────────── */
+
+function NpsWidget({ orderId, orderNumber }: { orderId: string; orderNumber: string }) {
+  return (
+    <div
+      className="rounded-2xl p-4"
+      style={{
+        background: 'linear-gradient(135deg, rgba(52,211,153,0.06) 0%, rgba(16,185,129,0.04) 100%)',
+        border: '1px solid rgba(52,211,153,0.16)',
+      }}
+    >
+      <div className="flex items-start gap-3 mb-3">
+        <span className="text-xl">🎉</span>
+        <div>
+          <p className="text-sm font-semibold text-white">Comanda #{orderNumber} entregue!</p>
+          <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.38)' }}>
+            Como foi a sua experiência? Sua opinião melhora nosso serviço.
+          </p>
+        </div>
+      </div>
+      <div className="flex gap-1.5">
+        {['😞','😐','🙂','😊','🤩'].map((emoji, i) => (
+          <button
+            key={i}
+            className="flex-1 py-2 rounded-xl text-base active:scale-95 transition-transform"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+          >
+            {emoji}
+          </button>
+        ))}
+      </div>
+      <p className="text-[10px] text-center mt-2" style={{ color: 'rgba(255,255,255,0.22)' }}>
+        Péssimo → Excelente
+      </p>
     </div>
   )
 }
@@ -240,9 +451,9 @@ function OrderTracker({ order }: { order: Order }) {
   })
   eventTimestamps['received'] = order.created_at
 
-  const accentColor = isDelivered || isReady ? '#34d399' : isShipped ? '#60a5fa' : '#3b82f6'
-  const accentBg   = isDelivered || isReady ? 'rgba(52,211,153,0.10)' : isShipped ? 'rgba(96,165,250,0.10)' : 'rgba(59,130,246,0.10)'
-  const accentBorder = isDelivered || isReady ? 'rgba(52,211,153,0.22)' : isShipped ? 'rgba(96,165,250,0.22)' : 'rgba(59,130,246,0.22)'
+  const accentColor  = isDelivered || isReady ? '#34d399' : isShipped ? '#60a5fa' : '#3b82f6'
+  const accentBg     = isDelivered || isReady ? 'rgba(52,211,153,0.10)'  : 'rgba(59,130,246,0.10)'
+  const accentBorder = isDelivered || isReady ? 'rgba(52,211,153,0.22)'  : 'rgba(59,130,246,0.22)'
 
   return (
     <div
@@ -250,7 +461,7 @@ function OrderTracker({ order }: { order: Order }) {
       style={{
         background: 'linear-gradient(160deg, rgba(59,130,246,0.06) 0%, rgba(7,16,32,0.97) 100%)',
         border: `1px solid ${accentBorder}`,
-        boxShadow: `0 4px 24px rgba(0,0,0,0.3), 0 0 0 0.5px ${accentBorder}`,
+        boxShadow: `0 4px 24px rgba(0,0,0,0.30), 0 0 0 0.5px ${accentBorder}`,
       }}
     >
       {/* ── Header ── */}
@@ -364,11 +575,7 @@ function OrderTracker({ order }: { order: Order }) {
               <div
                 className="w-6 h-6 rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5 font-bold"
                 style={{
-                  background: done
-                    ? 'rgba(52,211,153,0.18)'
-                    : current
-                      ? `${accentBg}`
-                      : 'rgba(255,255,255,0.04)',
+                  background: done ? 'rgba(52,211,153,0.18)' : current ? accentBg : 'rgba(255,255,255,0.04)',
                   border: done
                     ? '1px solid rgba(52,211,153,0.32)'
                     : current
@@ -404,7 +611,7 @@ function OrderTracker({ order }: { order: Order }) {
         })}
       </div>
 
-      {/* ── Rodapé: entrega prometida ── */}
+      {/* ── Rodapé: previsão ── */}
       {promised && !isDelivered && (
         <div
           className="px-5 py-3 flex items-center justify-between"
@@ -462,12 +669,19 @@ function HistoryCard({ order }: { order: Order }) {
           </p>
         </div>
       </div>
-      <span
-        className="text-[11px] px-2 py-0.5 rounded-full font-medium flex-shrink-0"
-        style={{ background: 'rgba(52,211,153,0.10)', color: '#34d399', border: '1px solid rgba(52,211,153,0.22)' }}
-      >
-        ✓ Entregue
-      </span>
+      <div className="flex flex-col items-end gap-1 flex-shrink-0">
+        <span
+          className="text-[11px] px-2 py-0.5 rounded-full font-medium"
+          style={{ background: 'rgba(52,211,153,0.10)', color: '#34d399', border: '1px solid rgba(52,211,153,0.22)' }}
+        >
+          ✓ Entregue
+        </span>
+        {totalPieces > 0 && (
+          <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.22)' }}>
+            +{totalPieces * 10} pts
+          </span>
+        )}
+      </div>
     </div>
   )
 }
