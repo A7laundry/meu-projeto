@@ -15,23 +15,48 @@ import {
   Menu,
   X,
   Users,
+  ExternalLink,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
-const NAV_ITEMS: { href: string; label: string; icon: LucideIcon }[] = [
-  { href: '/director/dashboard',   label: 'Dashboard Geral', icon: LayoutDashboard },
-  { href: '/director/units',       label: 'Unidades',         icon: Building2 },
-  { href: '/director/reports',     label: 'Relatórios',       icon: FileBarChart },
-  { href: '/director/nps',         label: 'NPS & Pesquisas',  icon: Star },
-  { href: '/commercial/dashboard', label: 'Comercial',        icon: Briefcase },
-  { href: '/director/users',       label: 'Usuários',         icon: Users },
+// ─── Grupos de navegação ──────────────────────────────────────────────────────
+
+const NAV_GROUPS: {
+  label: string
+  items: { href: string; label: string; icon: LucideIcon; external?: boolean }[]
+}[] = [
+  {
+    label: 'Rede',
+    items: [
+      { href: '/director/dashboard', label: 'Dashboard Geral', icon: LayoutDashboard },
+      { href: '/director/units',     label: 'Unidades',         icon: Building2 },
+      { href: '/director/users',     label: 'Usuários',         icon: Users },
+    ],
+  },
+  {
+    label: 'Análise',
+    items: [
+      { href: '/director/reports', label: 'Relatórios',      icon: FileBarChart },
+      { href: '/director/nps',     label: 'NPS & Pesquisas', icon: Star },
+    ],
+  },
+  {
+    label: 'Módulos',
+    items: [
+      { href: '/commercial/dashboard', label: 'Comercial', icon: Briefcase, external: true },
+    ],
+  },
 ]
 
 const STORAGE_KEY = 'a7x-sidebar-collapsed'
 
-interface DirectorNavProps {
-  units: { id: string; name: string }[]
+const sidebarStyle: React.CSSProperties = {
+  background: 'linear-gradient(180deg, #091523 0%, #0d1b2e 60%, #091523 100%)',
+  borderRight: '1px solid rgba(59,130,246,0.09)',
+  boxShadow: '1px 0 0 rgba(255,255,255,0.02)',
 }
+
+// ─── NavLinks ─────────────────────────────────────────────────────────────────
 
 function NavLinks({
   collapsed,
@@ -48,39 +73,90 @@ function NavLinks({
 
   return (
     <>
-      {/* Nav principal */}
-      <nav className="py-4 space-y-0.5 flex-shrink-0" style={{ padding: collapsed ? '16px 8px' : '16px 12px' }}>
-        {!collapsed && (
-          <p className="text-[9px] uppercase tracking-widest text-[#d6b25e]/30 font-semibold px-3 mb-2">Menu</p>
-        )}
-        {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href || pathname.startsWith(href + '/')
-          return (
-            <Link
-              key={href}
-              href={href}
-              onClick={onLinkClick}
-              title={collapsed ? label : undefined}
-              className={[
-                'relative flex items-center rounded-lg transition-all duration-200',
-                collapsed ? 'justify-center p-3' : 'gap-3 px-3 py-2.5',
-                active
-                  ? 'bg-[#d6b25e]/10 text-[#d6b25e] font-medium' + (collapsed ? '' : ' nav-indicator')
-                  : 'text-white/45 hover:text-white/85 hover:bg-white/04',
-              ].join(' ')}
-            >
-              <Icon size={15} className={`flex-shrink-0 ${active ? 'text-[#d6b25e]' : 'text-white/25'}`} />
-              {!collapsed && <span className="truncate text-sm">{label}</span>}
-            </Link>
-          )
-        })}
+      {/* Nav principal por grupos */}
+      <nav
+        className="flex-shrink-0 space-y-4"
+        style={{ padding: collapsed ? '16px 8px' : '16px 12px' }}
+      >
+        {NAV_GROUPS.map((group) => (
+          <div key={group.label}>
+            {!collapsed && (
+              <p
+                className="text-[9px] uppercase tracking-widest font-semibold px-3 mb-1.5"
+                style={{ color: 'rgba(59,130,246,0.35)' }}
+              >
+                {group.label}
+              </p>
+            )}
+            <div className="space-y-0.5">
+              {group.items.map(({ href, label, icon: Icon, external }) => {
+                const active = pathname === href || pathname.startsWith(href + '/')
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={onLinkClick}
+                    title={collapsed ? label : undefined}
+                    className={[
+                      'relative flex items-center rounded-lg transition-all duration-200',
+                      collapsed ? 'justify-center p-3' : 'gap-3 px-3 py-2.5',
+                      active ? 'nav-indicator' : '',
+                    ].join(' ')}
+                    style={active ? {
+                      background: 'rgba(59,130,246,0.12)',
+                      color: '#60a5fa',
+                      fontWeight: 500,
+                    } : {
+                      color: 'rgba(255,255,255,0.40)',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!active) {
+                        e.currentTarget.style.color = 'rgba(255,255,255,0.80)'
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!active) {
+                        e.currentTarget.style.color = 'rgba(255,255,255,0.40)'
+                        e.currentTarget.style.background = ''
+                      }
+                    }}
+                  >
+                    <Icon
+                      size={15}
+                      className="flex-shrink-0"
+                      style={{ color: active ? '#60a5fa' : 'rgba(255,255,255,0.22)' }}
+                    />
+                    {!collapsed && (
+                      <span className="truncate text-sm flex-1">{label}</span>
+                    )}
+                    {!collapsed && external && (
+                      <ExternalLink size={10} style={{ color: 'rgba(255,255,255,0.18)', flexShrink: 0 }} />
+                    )}
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
       {/* Unidades */}
       {units.length > 0 && (
-        <div className="flex-1 border-t border-[#d6b25e]/08" style={{ padding: collapsed ? '16px 8px' : '16px 12px' }}>
+        <div
+          className="flex-1"
+          style={{
+            borderTop: '1px solid rgba(59,130,246,0.07)',
+            padding: collapsed ? '16px 8px' : '16px 12px',
+          }}
+        >
           {!collapsed && (
-            <p className="text-[9px] uppercase tracking-widest text-[#d6b25e]/30 font-semibold px-3 mb-2">Unidades</p>
+            <p
+              className="text-[9px] uppercase tracking-widest font-semibold px-3 mb-1.5"
+              style={{ color: 'rgba(59,130,246,0.30)' }}
+            >
+              Unidades
+            </p>
           )}
           <nav className="space-y-0.5">
             {units.map((unit) => {
@@ -95,12 +171,31 @@ function NavLinks({
                   className={[
                     'relative flex items-center rounded-lg transition-all duration-200',
                     collapsed ? 'justify-center p-3' : 'gap-2.5 px-3 py-2',
-                    active
-                      ? 'bg-[#d6b25e]/10 text-[#d6b25e] font-medium' + (collapsed ? '' : ' nav-indicator')
-                      : 'text-white/35 hover:text-white/75 hover:bg-white/04',
                   ].join(' ')}
+                  style={active ? {
+                    background: 'rgba(59,130,246,0.10)',
+                    color: '#60a5fa',
+                    fontWeight: 500,
+                  } : {
+                    color: 'rgba(255,255,255,0.32)',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!active) {
+                      e.currentTarget.style.color = 'rgba(255,255,255,0.70)'
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!active) {
+                      e.currentTarget.style.color = 'rgba(255,255,255,0.32)'
+                      e.currentTarget.style.background = ''
+                    }
+                  }}
                 >
-                  <div className={`rounded-full flex-shrink-0 ${collapsed ? 'w-2 h-2' : 'w-1.5 h-1.5'} ${active ? 'bg-[#d6b25e]' : 'bg-white/15'}`} />
+                  <div
+                    className={`rounded-full flex-shrink-0 ${collapsed ? 'w-2 h-2' : 'w-1.5 h-1.5'}`}
+                    style={{ background: active ? '#3b82f6' : 'rgba(255,255,255,0.15)' }}
+                  />
                   {!collapsed && <span className="truncate text-xs">{unit.name}</span>}
                 </Link>
               )
@@ -110,7 +205,13 @@ function NavLinks({
       )}
 
       {/* Footer TV */}
-      <div className="border-t border-[#d6b25e]/08 mt-auto" style={{ padding: collapsed ? '12px 8px' : '12px 20px' }}>
+      <div
+        className="mt-auto"
+        style={{
+          borderTop: '1px solid rgba(59,130,246,0.07)',
+          padding: collapsed ? '12px 8px' : '12px 20px',
+        }}
+      >
         {firstUnitId && (
           <a
             href={`/tv/${firstUnitId}`}
@@ -118,15 +219,18 @@ function NavLinks({
             rel="noopener noreferrer"
             title={collapsed ? 'Painel TV' : undefined}
             className={[
-              'flex items-center rounded-lg text-white/25 hover:text-white/60 hover:bg-white/04 transition-all',
+              'flex items-center rounded-lg transition-all',
               collapsed ? 'justify-center p-3' : 'gap-2.5 px-3 py-2',
             ].join(' ')}
+            style={{ color: 'rgba(255,255,255,0.22)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.55)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.22)'; e.currentTarget.style.background = '' }}
           >
             <Tv size={13} className="flex-shrink-0" />
             {!collapsed && (
               <>
                 <span className="text-xs">Painel TV</span>
-                <span className="ml-auto text-[10px] opacity-50">↗</span>
+                <span className="ml-auto text-[10px] opacity-40">↗</span>
               </>
             )}
           </a>
@@ -141,7 +245,9 @@ function NavLinks({
   )
 }
 
-export function DirectorNav({ units }: DirectorNavProps) {
+// ─── DirectorNav ──────────────────────────────────────────────────────────────
+
+export function DirectorNav({ units }: { units: { id: string; name: string }[] }) {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -155,7 +261,6 @@ export function DirectorNav({ units }: DirectorNavProps) {
     })
   }, [])
 
-  // Fechar mobile nav quando pathname muda
   useEffect(() => {
     startTransition(() => setMobileOpen(false))
   }, [pathname])
@@ -164,12 +269,6 @@ export function DirectorNav({ units }: DirectorNavProps) {
     const next = !collapsed
     setCollapsed(next)
     localStorage.setItem(STORAGE_KEY, String(next))
-  }
-
-  const sidebarStyle: React.CSSProperties = {
-    background: 'linear-gradient(180deg, #060609 0%, #07070a 60%, #060609 100%)',
-    borderRight: '1px solid rgba(214,178,94,0.08)',
-    boxShadow: '1px 0 0 rgba(255,255,255,0.02)',
   }
 
   return (
@@ -181,25 +280,43 @@ export function DirectorNav({ units }: DirectorNavProps) {
       >
         {/* Logo + toggle */}
         <div
-          className="flex items-center border-b border-[#d6b25e]/08 flex-shrink-0"
-          style={{ padding: collapsed ? '16px 12px' : '16px 20px', justifyContent: collapsed ? 'center' : 'space-between' }}
+          className="flex items-center flex-shrink-0"
+          style={{
+            borderBottom: '1px solid rgba(59,130,246,0.08)',
+            padding: collapsed ? '16px 12px' : '16px 20px',
+            justifyContent: collapsed ? 'center' : 'space-between',
+          }}
         >
           {!collapsed ? (
             <Link href="/director/dashboard" className="flex items-center gap-2.5 group min-w-0">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg, rgba(214,178,94,0.18) 0%, rgba(185,138,44,0.08) 100%)', border: '1px solid rgba(214,178,94,0.25)' }}>
-                <span className="text-sm font-black gold-text leading-none">A</span>
+              <div
+                className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(59,130,246,0.20) 0%, rgba(37,99,235,0.10) 100%)',
+                  border: '1px solid rgba(59,130,246,0.30)',
+                }}
+              >
+                <span className="text-sm font-black leading-none gold-text">A</span>
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-bold text-white/90 leading-none truncate group-hover:text-white transition-colors">A7x OS</p>
-                <p className="text-[9px] text-[#d6b25e]/40 mt-0.5 uppercase tracking-wider">Executivo</p>
+                <p className="text-sm font-bold text-white/90 leading-none truncate group-hover:text-white transition-colors">
+                  A7x OS
+                </p>
+                <p className="text-[9px] mt-0.5 uppercase tracking-wider" style={{ color: 'rgba(59,130,246,0.45)' }}>
+                  Executivo
+                </p>
               </div>
             </Link>
           ) : (
             <Link href="/director/dashboard">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-                style={{ background: 'linear-gradient(135deg, rgba(214,178,94,0.18) 0%, rgba(185,138,44,0.08) 100%)', border: '1px solid rgba(214,178,94,0.25)' }}>
-                <span className="text-sm font-black gold-text leading-none">A</span>
+              <div
+                className="w-8 h-8 rounded-lg flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(59,130,246,0.20) 0%, rgba(37,99,235,0.10) 100%)',
+                  border: '1px solid rgba(59,130,246,0.30)',
+                }}
+              >
+                <span className="text-sm font-black leading-none gold-text">A</span>
               </div>
             </Link>
           )}
@@ -215,7 +332,7 @@ export function DirectorNav({ units }: DirectorNavProps) {
         <NavLinks collapsed={collapsed} units={units} pathname={pathname} />
       </aside>
 
-      {/* ── Mobile Hamburger Button (positioned after logo ~60px) ── */}
+      {/* ── Mobile Hamburger ── */}
       <button
         onClick={() => setMobileOpen(true)}
         className="lg:hidden fixed top-3 left-[72px] z-40 w-8 h-8 flex items-center justify-center rounded-lg text-white/40 hover:text-white hover:bg-white/08 transition-all"
@@ -224,31 +341,37 @@ export function DirectorNav({ units }: DirectorNavProps) {
         <Menu size={18} />
       </button>
 
-      {/* ── Mobile Drawer Overlay ── */}
+      {/* ── Mobile Drawer ── */}
       {mobileOpen && (
         <div
           className="lg:hidden fixed inset-0 z-50 flex"
           onClick={() => setMobileOpen(false)}
         >
-          {/* Backdrop */}
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-
-          {/* Drawer */}
           <div
-            className="relative flex flex-col w-72 h-full overflow-y-auto overflow-x-hidden"
+            className="relative flex flex-col w-72 h-full overflow-y-auto overflow-x-hidden scrollbar-dark"
             style={sidebarStyle}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header do drawer */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-[#d6b25e]/08">
+            <div
+              className="flex items-center justify-between px-5 py-4"
+              style={{ borderBottom: '1px solid rgba(59,130,246,0.08)' }}
+            >
               <Link href="/director/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-                  style={{ background: 'linear-gradient(135deg, rgba(214,178,94,0.18) 0%, rgba(185,138,44,0.08) 100%)', border: '1px solid rgba(214,178,94,0.25)' }}>
-                  <span className="text-sm font-black gold-text leading-none">A</span>
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(59,130,246,0.20) 0%, rgba(37,99,235,0.10) 100%)',
+                    border: '1px solid rgba(59,130,246,0.30)',
+                  }}
+                >
+                  <span className="text-sm font-black leading-none gold-text">A</span>
                 </div>
                 <div>
                   <p className="text-sm font-bold text-white/90">A7x OS</p>
-                  <p className="text-[9px] text-[#d6b25e]/40 uppercase tracking-wider">Executivo</p>
+                  <p className="text-[9px] uppercase tracking-wider" style={{ color: 'rgba(59,130,246,0.45)' }}>
+                    Executivo
+                  </p>
                 </div>
               </Link>
               <button
@@ -258,7 +381,6 @@ export function DirectorNav({ units }: DirectorNavProps) {
                 <X size={18} />
               </button>
             </div>
-
             <NavLinks
               collapsed={false}
               units={units}

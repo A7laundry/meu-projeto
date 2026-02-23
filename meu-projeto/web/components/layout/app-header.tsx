@@ -42,26 +42,32 @@ export function AppHeader({
       <header
         className="px-6 py-3 flex items-center justify-between flex-shrink-0"
         style={{
-          background: 'rgba(5,5,8,0.95)',
+          background: 'rgba(7,16,32,0.96)',
           backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(214,178,94,0.12)',
-          boxShadow: '0 1px 0 rgba(214,178,94,0.04), 0 4px 24px rgba(0,0,0,0.3)',
+          borderBottom: '1px solid rgba(59,130,246,0.12)',
+          boxShadow: '0 1px 0 rgba(59,130,246,0.04), 0 4px 24px rgba(0,0,0,0.3)',
         }}
       >
         <div className="flex items-center gap-4">
           <Link href={logoHref} className="flex items-center gap-2.5 group">
-            <div className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
-              style={{ background: 'linear-gradient(135deg, rgba(214,178,94,0.20) 0%, rgba(185,138,44,0.08) 100%)', border: '1px solid rgba(214,178,94,0.28)' }}
+            <div
+              className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
+              style={{
+                background: 'linear-gradient(135deg, rgba(59,130,246,0.22) 0%, rgba(37,99,235,0.10) 100%)',
+                border: '1px solid rgba(59,130,246,0.30)',
+              }}
             >
-              <span className="text-sm font-black gold-text leading-none">A</span>
+              <span className="text-sm font-black leading-none gold-text">A</span>
             </div>
             <div className="hidden sm:block">
-              <span className="text-sm font-bold text-white/90 group-hover:text-white transition-colors">A7x OS</span>
+              <span className="text-sm font-bold text-white/90 group-hover:text-white transition-colors">
+                A7x OS
+              </span>
             </div>
           </Link>
           {subtitle && (
             <>
-              <Separator orientation="vertical" className="h-4 bg-[#d6b25e]/15" />
+              <Separator orientation="vertical" className="h-4" style={{ background: 'rgba(59,130,246,0.18)' }} />
               <span className="text-sm text-white/50">{subtitle}</span>
             </>
           )}
@@ -73,16 +79,24 @@ export function AppHeader({
             <div className="flex items-center gap-2.5">
               <div className="hidden sm:block text-right">
                 <p className="text-xs font-medium text-white/80 leading-none">{user.full_name}</p>
-                {roleLabel && <p className="text-[10px] text-[#d6b25e]/55 mt-0.5 uppercase tracking-wide">{roleLabel}</p>}
+                {roleLabel && (
+                  <p
+                    className="text-[10px] mt-0.5 uppercase tracking-wide"
+                    style={{ color: 'rgba(59,130,246,0.55)' }}
+                  >
+                    {roleLabel}
+                  </p>
+                )}
               </div>
-              <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(214,178,94,0.22) 0%, rgba(185,138,44,0.12) 100%)',
-                  border: '1.5px solid rgba(214,178,94,0.35)',
-                  boxShadow: '0 0 12px rgba(214,178,94,0.12)',
+                  background: 'linear-gradient(135deg, rgba(59,130,246,0.25) 0%, rgba(37,99,235,0.14) 100%)',
+                  border: '1.5px solid rgba(59,130,246,0.38)',
+                  boxShadow: '0 0 12px rgba(59,130,246,0.14)',
                 }}
               >
-                <span className="text-xs font-bold text-[#d6b25e]">
+                <span className="text-xs font-bold" style={{ color: '#60a5fa' }}>
                   {user.full_name.charAt(0).toUpperCase()}
                 </span>
               </div>
@@ -91,7 +105,10 @@ export function AppHeader({
           <form action={logout}>
             <button
               type="submit"
-              className="text-xs text-white/35 hover:text-white/70 transition-colors border border-white/08 hover:border-white/20 rounded-md px-2.5 py-1.5"
+              className="text-xs text-white/35 hover:text-white/70 transition-colors rounded-md px-2.5 py-1.5"
+              style={{ border: '1px solid rgba(255,255,255,0.08)' }}
+              onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'rgba(59,130,246,0.25)')}
+              onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)')}
             >
               Sair
             </button>

@@ -25,14 +25,30 @@ interface CopywriterSidebarProps {
   xpProgress?: number
 }
 
-export function CopywriterSidebar({ userName, roleLabel, isAdmin, xp = 0, level = 'Novato', xpProgress = 0 }: CopywriterSidebarProps) {
+export function CopywriterSidebar({
+  userName,
+  roleLabel,
+  isAdmin,
+  xp = 0,
+  level = 'Novato',
+  xpProgress = 0,
+}: CopywriterSidebarProps) {
   const pathname = usePathname()
 
   return (
-    <aside className="w-56 border-r border-[#d6b25e]/10 bg-[#07070a] py-6 px-3 flex-shrink-0 flex flex-col overflow-y-auto">
+    <aside
+      className="w-56 flex-shrink-0 flex flex-col overflow-y-auto scrollbar-dark py-6 px-3"
+      style={{
+        background: 'linear-gradient(180deg, #091523 0%, #0d1b2e 60%, #091523 100%)',
+        borderRight: '1px solid rgba(59,130,246,0.09)',
+      }}
+    >
       {/* Módulo label */}
       <div className="px-3 mb-4">
-        <p className="text-[10px] uppercase tracking-widest text-[#d6b25e]/40 font-semibold">
+        <p
+          className="text-[10px] uppercase tracking-widest font-semibold"
+          style={{ color: 'rgba(59,130,246,0.40)' }}
+        >
           Copywriter
         </p>
       </div>
@@ -40,7 +56,7 @@ export function CopywriterSidebar({ userName, roleLabel, isAdmin, xp = 0, level 
       {/* Mini XP bar */}
       <div className="px-3 mb-6">
         <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[10px] font-medium text-[#d6b25e]/70">{level}</span>
+          <span className="text-[10px] font-medium" style={{ color: '#60a5fa' }}>{level}</span>
           <span className="text-[10px] text-white/30">{xp} XP</span>
         </div>
         <div className="xp-bar">
@@ -56,14 +72,28 @@ export function CopywriterSidebar({ userName, roleLabel, isAdmin, xp = 0, level 
             <Link
               key={href}
               href={href}
-              className={[
-                'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all',
-                active
-                  ? 'bg-[#d6b25e]/10 text-[#d6b25e] font-medium'
-                  : 'text-white/50 hover:text-white/90 hover:bg-white/5',
-              ].join(' ')}
+              className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all"
+              style={active ? {
+                background: 'rgba(59,130,246,0.12)',
+                color: '#60a5fa',
+                fontWeight: 500,
+              } : {
+                color: 'rgba(255,255,255,0.45)',
+              }}
+              onMouseEnter={(e) => {
+                if (!active) {
+                  e.currentTarget.style.color = 'rgba(255,255,255,0.85)'
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!active) {
+                  e.currentTarget.style.color = 'rgba(255,255,255,0.45)'
+                  e.currentTarget.style.background = ''
+                }
+              }}
             >
-              <span className={active ? 'text-[#d6b25e]' : 'text-white/30'}>{icon}</span>
+              <span style={{ color: active ? '#60a5fa' : 'rgba(255,255,255,0.25)' }}>{icon}</span>
               {label}
             </Link>
           )
@@ -83,14 +113,28 @@ export function CopywriterSidebar({ userName, roleLabel, isAdmin, xp = 0, level 
                 <Link
                   key={href}
                   href={href}
-                  className={[
-                    'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all',
-                    active
-                      ? 'bg-[#d6b25e]/10 text-[#d6b25e] font-medium'
-                      : 'text-white/50 hover:text-white/90 hover:bg-white/5',
-                  ].join(' ')}
+                  className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all"
+                  style={active ? {
+                    background: 'rgba(59,130,246,0.12)',
+                    color: '#60a5fa',
+                    fontWeight: 500,
+                  } : {
+                    color: 'rgba(255,255,255,0.45)',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!active) {
+                      e.currentTarget.style.color = 'rgba(255,255,255,0.85)'
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!active) {
+                      e.currentTarget.style.color = 'rgba(255,255,255,0.45)'
+                      e.currentTarget.style.background = ''
+                    }
+                  }}
                 >
-                  <span className={active ? 'text-[#d6b25e]' : 'text-white/30'}>{icon}</span>
+                  <span style={{ color: active ? '#60a5fa' : 'rgba(255,255,255,0.25)' }}>{icon}</span>
                   {label}
                 </Link>
               )
@@ -100,9 +144,12 @@ export function CopywriterSidebar({ userName, roleLabel, isAdmin, xp = 0, level 
       </nav>
 
       {/* Usuário */}
-      <div className="px-3 mt-4 pt-4 border-t border-[#d6b25e]/10">
+      <div
+        className="px-3 mt-4 pt-4"
+        style={{ borderTop: '1px solid rgba(59,130,246,0.08)' }}
+      >
         <p className="text-xs font-medium text-white/70 truncate">{userName}</p>
-        <p className="text-[10px] text-[#d6b25e]/50">{roleLabel}</p>
+        <p className="text-[10px]" style={{ color: 'rgba(59,130,246,0.45)' }}>{roleLabel}</p>
       </div>
 
       <div className="px-3 mt-2">

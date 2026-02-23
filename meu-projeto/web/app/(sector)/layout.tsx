@@ -22,7 +22,7 @@ const SECTOR_COLORS: Record<string, string> = {
   washing:  'rgba(52,211,153,0.18)',
   drying:   'rgba(251,191,36,0.18)',
   ironing:  'rgba(167,139,250,0.18)',
-  shipping: 'rgba(214,178,94,0.18)',
+  shipping: 'rgba(59,130,246,0.18)',
 }
 
 const SECTOR_TEXT: Record<string, string> = {
@@ -30,7 +30,7 @@ const SECTOR_TEXT: Record<string, string> = {
   washing:  '#34d399',
   drying:   '#fbbf24',
   ironing:  '#a78bfa',
-  shipping: '#d6b25e',
+  shipping: '#60a5fa',
 }
 
 export default async function SectorLayout({ children }: { children: React.ReactNode }) {
@@ -45,19 +45,19 @@ export default async function SectorLayout({ children }: { children: React.React
   return (
     <div
       className="min-h-screen flex flex-col text-white overflow-hidden"
-      style={{ background: 'linear-gradient(180deg, #060609 0%, #07070a 100%)' }}
+      style={{ background: 'linear-gradient(180deg, #071020 0%, #0d1b2e 100%)' }}
     >
-      {/* Gold top border line */}
-      <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(214,178,94,0.45), transparent)' }} />
+      {/* Blue top border line */}
+      <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(59,130,246,0.55), transparent)' }} />
 
       {/* Header premium do operador */}
       <header
         className="flex items-center justify-between px-4 py-3 flex-shrink-0"
         style={{
-          background: 'rgba(5,5,8,0.92)',
+          background: 'rgba(7,16,32,0.94)',
           backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(214,178,94,0.08)',
-          boxShadow: '0 1px 0 rgba(255,255,255,0.02), 0 4px 20px rgba(0,0,0,0.4)',
+          borderBottom: '1px solid rgba(59,130,246,0.10)',
+          boxShadow: '0 1px 0 rgba(59,130,246,0.04), 0 4px 20px rgba(0,0,0,0.4)',
         }}
       >
         {/* Left — logo + setor */}
@@ -66,15 +66,15 @@ export default async function SectorLayout({ children }: { children: React.React
           <div
             className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
             style={{
-              background: 'linear-gradient(135deg, rgba(214,178,94,0.18) 0%, rgba(185,138,44,0.08) 100%)',
-              border: '1px solid rgba(214,178,94,0.28)',
+              background: 'linear-gradient(135deg, rgba(59,130,246,0.20) 0%, rgba(37,99,235,0.10) 100%)',
+              border: '1px solid rgba(59,130,246,0.30)',
             }}
           >
             <span className="text-xs font-black leading-none" style={{ color: '#d6b25e' }}>A</span>
           </div>
 
           {/* Divider */}
-          <div style={{ width: 1, height: 20, background: 'rgba(214,178,94,0.12)' }} />
+          <div style={{ width: 1, height: 20, background: 'rgba(59,130,246,0.15)' }} />
 
           {/* Sector badge */}
           <div className="flex items-center gap-2">
@@ -117,7 +117,7 @@ export default async function SectorLayout({ children }: { children: React.React
             <button
               type="submit"
               className="text-[11px] text-white/30 hover:text-white/65 transition-colors rounded-md px-2.5 py-1.5"
-              style={{ border: '1px solid rgba(255,255,255,0.07)' }}
+              style={{ border: '1px solid rgba(59,130,246,0.10)' }}
             >
               Sair
             </button>
