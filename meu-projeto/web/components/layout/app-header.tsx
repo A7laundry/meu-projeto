@@ -107,8 +107,6 @@ export function AppHeader({
               type="submit"
               className="text-xs text-white/35 hover:text-white/70 transition-colors rounded-md px-2.5 py-1.5"
               style={{ border: '1px solid rgba(255,255,255,0.08)' }}
-              onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'rgba(59,130,246,0.25)')}
-              onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)')}
             >
               Sair
             </button>
