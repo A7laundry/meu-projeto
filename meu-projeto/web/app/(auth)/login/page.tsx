@@ -9,14 +9,14 @@ export default function LoginPage({
   return (
     <div
       className="min-h-screen flex dot-grid-bg"
-      style={{ background: 'linear-gradient(135deg, #050508 0%, #07070f 100%)' }}
+      style={{ background: 'linear-gradient(135deg, #071020 0%, #0d1b2e 100%)' }}
     >
-      {/* Gold spotlight */}
+      {/* Blue spotlight */}
       <div
         className="fixed pointer-events-none"
         style={{
           top: 0, left: 0, right: 0, height: '60vh',
-          background: 'radial-gradient(ellipse 80% 60% at 30% 0%, rgba(214,178,94,0.07) 0%, transparent 65%)',
+          background: 'radial-gradient(ellipse 80% 60% at 30% 0%, rgba(59,130,246,0.08) 0%, transparent 65%)',
           zIndex: 0,
         }}
       />
@@ -27,17 +27,17 @@ export default function LoginPage({
         style={{
           width: '52%',
           padding: '48px 56px',
-          borderRight: '1px solid rgba(214,178,94,0.08)',
-          background: 'linear-gradient(160deg, rgba(214,178,94,0.04) 0%, transparent 50%)',
+          borderRight: '1px solid rgba(59,130,246,0.09)',
+          background: 'linear-gradient(160deg, rgba(59,130,246,0.05) 0%, transparent 50%)',
         }}
       >
         {/* Logo */}
         <Link href="/home" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
           <div style={{
             width: 36, height: 36, borderRadius: 10,
-            background: 'linear-gradient(135deg, #d6b25e 0%, #b08030 100%)',
+            background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 15, fontWeight: 900, color: '#05050a',
+            fontSize: 15, fontWeight: 900, color: '#ffffff',
           }}>A</div>
           <span style={{ fontWeight: 700, fontSize: 15, color: 'rgba(255,255,255,0.85)', letterSpacing: '-0.01em' }}>
             A7x <span style={{ color: 'rgba(255,255,255,0.28)', fontWeight: 400 }}>TecNologia</span>
@@ -48,7 +48,7 @@ export default function LoginPage({
         <div>
           <p style={{
             fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase',
-            color: 'rgba(214,178,94,0.55)', marginBottom: 20,
+            color: 'rgba(96,165,250,0.70)', marginBottom: 20,
           }}>
             Sistema Operacional Inteligente
           </p>
@@ -73,9 +73,9 @@ export default function LoginPage({
               <div key={f.title} style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
                 <span style={{
                   width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-                  background: 'rgba(214,178,94,0.08)', border: '1px solid rgba(214,178,94,0.16)',
+                  background: 'rgba(59,130,246,0.10)', border: '1px solid rgba(59,130,246,0.20)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 16, color: '#d6b25e',
+                  fontSize: 16, color: '#60a5fa',
                 }}>{f.icon}</span>
                 <div>
                   <p style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.80)', margin: '0 0 2px' }}>{f.title}</p>
@@ -101,9 +101,9 @@ export default function LoginPage({
         <div className="lg:hidden mb-10 text-center">
           <div style={{
             width: 44, height: 44, borderRadius: 12, margin: '0 auto 12px',
-            background: 'linear-gradient(135deg, #d6b25e 0%, #b08030 100%)',
+            background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 18, fontWeight: 900, color: '#05050a',
+            fontSize: 18, fontWeight: 900, color: '#ffffff',
           }}>A</div>
           <p className="shimmer-text" style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-0.04em' }}>A7x TecNologia</p>
           <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.30)', marginTop: 4 }}>Sistema Operacional Inteligente</p>
