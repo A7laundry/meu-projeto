@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { requireUnitAccess, requireRole } from '@/lib/auth/guards'
+import { requireUnitAccess } from '@/lib/auth/guards'
 import type { ClientStats, CrmNote } from '@/types/crm'
 
 export interface ClientOrder {
@@ -24,8 +24,8 @@ const noteSchema = z.object({
   content: z.string().min(3, 'Nota deve ter ao menos 3 caracteres'),
 })
 
-export async function listClientNotes(clientId: string, limit = 10): Promise<CrmNote[]> {
-  await requireRole(['unit_manager', 'store', 'sdr', 'closer'])
+export async function listClientNotes(clientId: string, unitId: string, limit = 10): Promise<CrmNote[]> {
+  await requireUnitAccess(unitId, ['unit_manager', 'store', 'sdr', 'closer'])
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('crm_notes')

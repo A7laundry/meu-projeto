@@ -14,7 +14,7 @@ export default async function ClientDetailPage({
   const { unitId, clientId } = await params
   const [clients, notes, stats, orders] = await Promise.all([
     listClients(unitId),
-    listClientNotes(clientId),
+    listClientNotes(clientId, unitId),
     getClientStats(clientId, unitId),
     listClientOrders(clientId, unitId),
   ])

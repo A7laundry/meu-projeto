@@ -175,6 +175,17 @@ export async function removeRouteStop(
 ): Promise<ActionResult> {
   await requireUnitAccess(unitId, ['unit_manager', 'director'])
   const supabase = createAdminClient()
+  // Verificar que o stop pertence a uma rota da unidade
+  const { data: stop } = await supabase
+    .from('route_stops')
+    .select('route_id, route:logistics_routes(unit_id)')
+    .eq('id', stopId)
+    .single()
+
+  if (!stop || (stop.route as unknown as { unit_id: string })?.unit_id !== unitId) {
+    return { success: false, error: 'Parada não pertence a esta unidade' }
+  }
+
   const { error } = await supabase
     .from('route_stops')
     .delete()

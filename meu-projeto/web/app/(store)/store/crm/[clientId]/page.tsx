@@ -16,7 +16,7 @@ export default async function StoreCrmDetailPage({ params }: Props) {
 
   const [stats, notes, orders] = await Promise.all([
     getClientStats(clientId, user.unit_id),
-    listClientNotes(clientId, 20),
+    listClientNotes(clientId, user.unit_id, 20),
     listClientOrders(clientId, user.unit_id, 20),
   ])
 

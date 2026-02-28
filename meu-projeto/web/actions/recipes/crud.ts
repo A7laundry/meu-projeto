@@ -113,6 +113,7 @@ export async function updateRecipe(
     .from('recipes')
     .update(parsed.data)
     .eq('id', id)
+    .eq('unit_id', unitId)
     .select()
     .single()
 
@@ -133,6 +134,7 @@ export async function toggleRecipeActive(
     .from('recipes')
     .update({ active })
     .eq('id', id)
+    .eq('unit_id', unitId)
 
   if (error) return { success: false, error: `Erro ao alterar status: ${error.message}` }
 

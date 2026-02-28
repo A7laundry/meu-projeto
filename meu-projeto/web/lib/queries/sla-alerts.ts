@@ -77,3 +77,67 @@ export async function getSlaAlerts(unitId: string): Promise<SlaAlert[]> {
   // Ordenar pelo maior excesso primeiro
   return alerts.sort((a, b) => b.excessMinutes - a.excessMinutes)
 }
+
+export async function getSlaAlertsByUnit(unitIds: string[]): Promise<Map<string, SlaAlert[]>> {
+  if (unitIds.length === 0) return new Map()
+
+  const supabase = createAdminClient()
+  const sectors = Object.keys(SLA_MINUTES) as OrderStatus[]
+
+  const { data: orders } = await supabase
+    .from('orders')
+    .select(`
+      id,
+      unit_id,
+      order_number,
+      client_name,
+      status,
+      created_at,
+      events:order_events(occurred_at)
+    `)
+    .in('unit_id', unitIds)
+    .in('status', sectors)
+    .order('created_at', { ascending: true })
+    .order('occurred_at', { ascending: true, referencedTable: 'order_events' })
+
+  const alertsByUnit = new Map<string, SlaAlert[]>()
+  for (const uid of unitIds) alertsByUnit.set(uid, [])
+
+  if (!orders) return alertsByUnit
+
+  const now = Date.now()
+
+  for (const order of orders) {
+    const sla = SLA_MINUTES[order.status as OrderStatus]
+    if (!sla) continue
+
+    const eventsArr = Array.isArray(order.events) ? order.events : []
+    const lastEvent = eventsArr[eventsArr.length - 1] as { occurred_at: string } | undefined
+    const since = lastEvent
+      ? new Date(lastEvent.occurred_at).getTime()
+      : new Date(order.created_at).getTime()
+
+    const minutesInSector = Math.floor((now - since) / 60_000)
+
+    if (minutesInSector > sla) {
+      const unitAlerts = alertsByUnit.get(order.unit_id) ?? []
+      unitAlerts.push({
+        orderId: order.id,
+        orderNumber: order.order_number,
+        clientName: order.client_name,
+        status: order.status as OrderStatus,
+        lastEventAt: lastEvent?.occurred_at ?? order.created_at,
+        minutesInSector,
+        slaMinutes: sla,
+        excessMinutes: minutesInSector - sla,
+      })
+      alertsByUnit.set(order.unit_id, unitAlerts)
+    }
+  }
+
+  for (const [uid, alerts] of alertsByUnit) {
+    alertsByUnit.set(uid, alerts.sort((a, b) => b.excessMinutes - a.excessMinutes))
+  }
+
+  return alertsByUnit
+}

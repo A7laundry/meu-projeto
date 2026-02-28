@@ -25,7 +25,8 @@ export async function getNetworkCostPerKg(unitIds: string[]): Promise<number | n
   const now = new Date()
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
 
-  const [{ data: payables }, { data: orderItems }] = await Promise.all([
+  // Buscar payables e order IDs em paralelo
+  const [{ data: payables }, { data: orderIds }] = await Promise.all([
     supabase
       .from('payables')
       .select('amount')
@@ -33,26 +34,28 @@ export async function getNetworkCostPerKg(unitIds: string[]): Promise<number | n
       .eq('status', 'paid')
       .gte('paid_at', monthStart),
     supabase
-      .from('order_items')
-      .select('quantity')
-      .in('order_id', await getOrderIdsThisMonth(unitIds, monthStart)),
+      .from('orders')
+      .select('id')
+      .in('unit_id', unitIds)
+      .gte('created_at', monthStart),
   ])
 
+  const ids = (orderIds ?? []).map((o) => o.id)
+  let totalItems = 0
+
+  if (ids.length > 0) {
+    const { data: orderItems } = await supabase
+      .from('order_items')
+      .select('quantity')
+      .in('order_id', ids)
+
+    totalItems = (orderItems ?? []).reduce((s, i) => s + Number(i.quantity), 0)
+  }
+
   const totalCost = (payables ?? []).reduce((s, p) => s + Number(p.amount), 0)
-  const totalItems = (orderItems ?? []).reduce((s, i) => s + Number(i.quantity), 0)
 
   if (totalItems === 0) return null
   return totalCost / totalItems
-}
-
-async function getOrderIdsThisMonth(unitIds: string[], monthStart: string): Promise<string[]> {
-  const supabase = createAdminClient()
-  const { data } = await supabase
-    .from('orders')
-    .select('id')
-    .in('unit_id', unitIds)
-    .gte('created_at', monthStart)
-  return (data ?? []).map((o) => o.id)
 }
 
 // FR-E7-04: Peças/hora por unidade (setor_records: total_items / horas hoje)
@@ -69,8 +72,16 @@ export async function getNetworkPiecesPerHour(unitIds: string[]): Promise<Pieces
     .in('unit_id', unitIds)
     .gte('created_at', today)
 
+  // Agrupar records por unit_id com Map (O(1) lookup em vez de O(n) filter)
+  const recordsByUnit = new Map<string, typeof records>()
+  for (const uid of unitIds) recordsByUnit.set(uid, [])
+  for (const record of records ?? []) {
+    const unitRecords = recordsByUnit.get(record.unit_id)
+    if (unitRecords) unitRecords.push(record)
+  }
+
   return unitIds.map((unitId) => {
-    const unitRecords = (records ?? []).filter((r) => r.unit_id === unitId)
+    const unitRecords = recordsByUnit.get(unitId) ?? []
     const totalItems = unitRecords.reduce((s, r) => s + Number(r.total_items ?? 0), 0)
 
     if (unitRecords.length < 2) {

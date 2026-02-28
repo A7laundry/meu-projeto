@@ -2,7 +2,7 @@
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireRole } from '@/lib/auth/guards'
-import { getSlaAlerts } from '@/lib/queries/sla-alerts'
+import { getSlaAlertsByUnit } from '@/lib/queries/sla-alerts'
 
 export interface UnitFinancial {
   unitId: string
@@ -52,17 +52,15 @@ export async function getNetworkFinancial(unitIds: string[]): Promise<NetworkFin
   return { totalReceivable, totalPayable, balance: totalReceivable - totalPayable }
 }
 
-// TODO: refactor to single query to avoid N+1 — getSlaAlerts has internal SLA logic
-// that makes a simple IN-filter refactor non-trivial
 export async function getNetworkSlaAlerts(unitIds: string[]): Promise<UnitSlaCount[]> {
   await requireRole(['director'])
-  const results = await Promise.all(
-    unitIds.map(async (unitId) => {
-      const alerts = await getSlaAlerts(unitId)
-      return { unitId, alertCount: alerts.length }
-    }),
-  )
-  return results
+  if (unitIds.length === 0) return []
+
+  const alertsByUnit = await getSlaAlertsByUnit(unitIds)
+  return unitIds.map((unitId) => ({
+    unitId,
+    alertCount: alertsByUnit.get(unitId)?.length ?? 0,
+  }))
 }
 
 export async function getNetworkManifests(unitIds: string[]): Promise<UnitManifestSummary[]> {
@@ -78,8 +76,15 @@ export async function getNetworkManifests(unitIds: string[]): Promise<UnitManife
     .in('unit_id', unitIds)
     .eq('date', today)
 
+  const manifestsByUnit = new Map<string, Array<{ status: string }>>()
+  for (const uid of unitIds) manifestsByUnit.set(uid, [])
+  for (const m of data ?? []) {
+    const arr = manifestsByUnit.get(m.unit_id)
+    if (arr) arr.push(m)
+  }
+
   return unitIds.map((unitId) => {
-    const unitManifests = (data ?? []).filter((m) => m.unit_id === unitId)
+    const unitManifests = manifestsByUnit.get(unitId) ?? []
     return {
       unitId,
       totalManifests: unitManifests.length,
@@ -106,43 +111,47 @@ export async function exportNetworkKpisCsv(
 ): Promise<string> {
   await requireRole(['director'])
   void days // parâmetro reservado para filtro futuro por período
+  if (units.length === 0) return ''
+
   const supabase = createAdminClient()
   const today = new Date().toISOString().split('T')[0]
+  const unitIds = units.map((u) => u.id)
+
+  const [
+    { data: allOrders },
+    { data: allReceivables },
+    { data: allPayables },
+    alertsByUnit,
+    { data: allManifests },
+  ] = await Promise.all([
+    supabase.from('orders').select('unit_id').in('unit_id', unitIds).gte('created_at', today),
+    supabase.from('receivables').select('unit_id, amount').in('unit_id', unitIds).eq('status', 'pending'),
+    supabase.from('payables').select('unit_id, amount').in('unit_id', unitIds).eq('status', 'pending'),
+    getSlaAlertsByUnit(unitIds),
+    supabase.from('daily_manifests').select('unit_id').in('unit_id', unitIds).eq('date', today),
+  ])
 
   const rows: string[][] = [
     ['Unidade', 'Comandas hoje', 'A receber (R$)', 'A pagar (R$)', 'Saldo (R$)', 'Alertas SLA', 'Romaneios hoje'],
   ]
 
-  await Promise.all(
-    units.map(async (unit) => {
-      const [
-        { data: orders },
-        { data: receivables },
-        { data: payables },
-        alerts,
-        { data: manifests },
-      ] = await Promise.all([
-        supabase.from('orders').select('id', { count: 'exact', head: true }).eq('unit_id', unit.id).gte('created_at', today),
-        supabase.from('receivables').select('amount').eq('unit_id', unit.id).eq('status', 'pending'),
-        supabase.from('payables').select('amount').eq('unit_id', unit.id).eq('status', 'pending'),
-        getSlaAlerts(unit.id),
-        supabase.from('daily_manifests').select('id').eq('unit_id', unit.id).eq('date', today),
-      ])
+  for (const unit of units) {
+    const orderCount = (allOrders ?? []).filter((o) => o.unit_id === unit.id).length
+    const totalR = (allReceivables ?? []).filter((r) => r.unit_id === unit.id).reduce((s, r) => s + Number(r.amount), 0)
+    const totalP = (allPayables ?? []).filter((p) => p.unit_id === unit.id).reduce((s, p) => s + Number(p.amount), 0)
+    const alertCount = alertsByUnit.get(unit.id)?.length ?? 0
+    const manifestCount = (allManifests ?? []).filter((m) => m.unit_id === unit.id).length
 
-      const totalR = (receivables ?? []).reduce((s, r) => s + Number(r.amount), 0)
-      const totalP = (payables ?? []).reduce((s, p) => s + Number(p.amount), 0)
-
-      rows.push([
-        sanitizeCsvValue(unit.name),
-        String((orders as unknown as { length: number })?.length ?? 0),
-        totalR.toFixed(2),
-        totalP.toFixed(2),
-        (totalR - totalP).toFixed(2),
-        String(alerts.length),
-        String((manifests ?? []).length),
-      ])
-    }),
-  )
+    rows.push([
+      sanitizeCsvValue(unit.name),
+      String(orderCount),
+      totalR.toFixed(2),
+      totalP.toFixed(2),
+      (totalR - totalP).toFixed(2),
+      String(alertCount),
+      String(manifestCount),
+    ])
+  }
 
   return rows.map((r) => r.join(';')).join('\n')
 }

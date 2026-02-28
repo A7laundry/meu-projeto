@@ -35,8 +35,8 @@ export default async function EquipmentDetailPage({
   if (!equipment) notFound()
 
   const [logs, totalCycles] = await Promise.all([
-    listEquipmentLogs(equipmentId),
-    getTotalCycles(equipmentId),
+    listEquipmentLogs(equipmentId, unitId),
+    getTotalCycles(equipmentId, unitId),
   ])
 
   return (

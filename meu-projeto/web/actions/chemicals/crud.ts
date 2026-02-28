@@ -110,6 +110,7 @@ export async function updateChemicalProduct(
     .from('chemical_products')
     .update(parsed.data)
     .eq('id', id)
+    .eq('unit_id', unitId)
     .select()
     .single()
 

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { requireRole } from '@/lib/auth/guards'
+import { requireUnitAccess } from '@/lib/auth/guards'
 import { z } from 'zod'
 import type { EquipmentLog } from '@/types/equipment-log'
 
@@ -19,8 +19,8 @@ const logSchema = z.object({
   occurred_at: z.string().optional(),
 })
 
-export async function listEquipmentLogs(equipmentId: string): Promise<EquipmentLog[]> {
-  await requireRole(['unit_manager', 'operator'])
+export async function listEquipmentLogs(equipmentId: string, unitId: string): Promise<EquipmentLog[]> {
+  await requireUnitAccess(unitId, ['unit_manager', 'operator'])
   const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('equipment_logs')
@@ -33,8 +33,8 @@ export async function listEquipmentLogs(equipmentId: string): Promise<EquipmentL
   return data as EquipmentLog[]
 }
 
-export async function getTotalCycles(equipmentId: string): Promise<number> {
-  await requireRole(['unit_manager', 'operator'])
+export async function getTotalCycles(equipmentId: string, unitId: string): Promise<number> {
+  await requireUnitAccess(unitId, ['unit_manager', 'operator'])
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('equipment_logs')
@@ -52,7 +52,7 @@ export async function createEquipmentLog(
   formData: FormData,
   operatorName: string | null
 ): Promise<ActionResult<EquipmentLog>> {
-  await requireRole(['unit_manager', 'operator'])
+  await requireUnitAccess(unitId, ['unit_manager', 'operator'])
   const raw = {
     log_type: formData.get('log_type'),
     cycles: formData.get('cycles') || null,
@@ -73,7 +73,7 @@ export async function createEquipmentLog(
   if (parsed.data.log_type === 'repair_completed') equipmentStatus = 'active'
 
   if (equipmentStatus) {
-    await admin.from('equipment').update({ status: equipmentStatus }).eq('id', equipmentId)
+    await admin.from('equipment').update({ status: equipmentStatus }).eq('id', equipmentId).eq('unit_id', unitId)
   }
 
   const { data, error } = await admin

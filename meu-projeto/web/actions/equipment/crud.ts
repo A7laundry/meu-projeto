@@ -93,6 +93,7 @@ export async function updateEquipment(
     .from('equipment')
     .update(parsed.data)
     .eq('id', id)
+    .eq('unit_id', unitId)
     .select()
     .single()
 
@@ -113,6 +114,7 @@ export async function updateEquipmentStatus(
     .from('equipment')
     .update({ status })
     .eq('id', id)
+    .eq('unit_id', unitId)
 
   if (error) return { success: false, error: `Erro ao atualizar status: ${error.message}` }
 
