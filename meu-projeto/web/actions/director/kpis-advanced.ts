@@ -1,6 +1,7 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireRole } from '@/lib/auth/guards'
 
 export interface AdvancedKpis {
   costPerKg: number | null
@@ -17,6 +18,7 @@ export interface PiecesPerHour {
 
 // FR-E7-03: Custo por kg = total pago no mês / total itens processados no mês
 export async function getNetworkCostPerKg(unitIds: string[]): Promise<number | null> {
+  await requireRole(['director'])
   if (unitIds.length === 0) return null
 
   const supabase = createAdminClient()
@@ -55,6 +57,7 @@ async function getOrderIdsThisMonth(unitIds: string[], monthStart: string): Prom
 
 // FR-E7-04: Peças/hora por unidade (setor_records: total_items / horas hoje)
 export async function getNetworkPiecesPerHour(unitIds: string[]): Promise<PiecesPerHour[]> {
+  await requireRole(['director'])
   if (unitIds.length === 0) return []
 
   const supabase = createAdminClient()
@@ -86,6 +89,7 @@ export async function getNetworkPiecesPerHour(unitIds: string[]): Promise<Pieces
 
 // FR-E7-05: Taxa de ruptura = comandas atrasadas hoje / total comandas hoje
 export async function getNetworkDeliveryBreakage(unitIds: string[]): Promise<number> {
+  await requireRole(['director'])
   if (unitIds.length === 0) return 0
 
   const supabase = createAdminClient()
@@ -116,6 +120,7 @@ export async function getNetworkDeliveryBreakage(unitIds: string[]): Promise<num
 
 // FR-E7-08: Consumo de insumo por lavagem = total movimentos (saídas) / ordens hoje
 export async function getNetworkChemicalPerOrder(unitIds: string[]): Promise<number | null> {
+  await requireRole(['director'])
   if (unitIds.length === 0) return null
 
   const supabase = createAdminClient()
@@ -144,6 +149,7 @@ export async function getNetworkChemicalPerOrder(unitIds: string[]): Promise<num
 
 // Agrega todos os KPIs avançados em uma chamada
 export async function getAdvancedKpis(unitIds: string[]): Promise<AdvancedKpis> {
+  await requireRole(['director'])
   const [costPerKg, piecesPerHourByUnit, deliveryBreakageRate, chemicalPerOrder] =
     await Promise.all([
       getNetworkCostPerKg(unitIds),

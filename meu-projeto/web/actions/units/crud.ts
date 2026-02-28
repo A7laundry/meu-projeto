@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireRole } from '@/lib/auth/guards'
 import type { Unit } from '@/types/unit'
 import { z } from 'zod'
 
@@ -23,6 +24,7 @@ export type ActionResult<T = void> =
   | { success: false; error: string }
 
 export async function listUnits(): Promise<Unit[]> {
+  await requireRole(['director'])
   const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('units')
@@ -34,6 +36,7 @@ export async function listUnits(): Promise<Unit[]> {
 }
 
 export async function getUnit(id: string): Promise<Unit | null> {
+  await requireRole(['director', 'unit_manager'])
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('units')
@@ -45,6 +48,7 @@ export async function getUnit(id: string): Promise<Unit | null> {
 }
 
 export async function createUnit(formData: FormData): Promise<ActionResult<Unit>> {
+  await requireRole(['director'])
   const raw = {
     name: formData.get('name') as string,
     slug: formData.get('slug') as string,
@@ -80,6 +84,7 @@ export async function createUnit(formData: FormData): Promise<ActionResult<Unit>
 }
 
 export async function updateUnit(id: string, formData: FormData): Promise<ActionResult<Unit>> {
+  await requireRole(['director'])
   const raw = {
     name: formData.get('name') as string,
     slug: formData.get('slug') as string,
@@ -112,6 +117,7 @@ export async function updateUnit(id: string, formData: FormData): Promise<Action
 }
 
 export async function toggleUnitStatus(id: string, active: boolean): Promise<ActionResult> {
+  await requireRole(['director'])
   const admin = createAdminClient()
   const { error } = await admin
     .from('units')

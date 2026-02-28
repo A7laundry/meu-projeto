@@ -1,6 +1,7 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireRole } from '@/lib/auth/guards'
 
 export interface DailyTrend {
   date: string   // 'dd/MM'
@@ -8,6 +9,7 @@ export interface DailyTrend {
 }
 
 export async function getWeeklyTrend(unitIds: string[]): Promise<DailyTrend[]> {
+  await requireRole(['director'])
   if (unitIds.length === 0) return []
 
   const supabase = createAdminClient()

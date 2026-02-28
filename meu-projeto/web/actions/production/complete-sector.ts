@@ -2,7 +2,9 @@
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
-import type { ActionResult } from '@/actions/staff/invite'
+import { requireRole } from '@/lib/auth/guards'
+import { validateTransition } from '@/lib/auth/order-machine'
+import type { ActionResult } from '@/lib/auth/action-result'
 import type { OrderStatus } from '@/types/order'
 
 // Mapa de transições de status por setor
@@ -34,109 +36,128 @@ export interface SectorCompletionData {
 }
 
 export async function completeSector(data: SectorCompletionData): Promise<ActionResult> {
-  const admin = createAdminClient()
-  const supabase = createAdminClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  try {
+    const { user } = await requireRole(['operator'])
 
-  const transition = SECTOR_TRANSITIONS[data.sectorKey]
-  if (!transition) {
-    return { success: false, error: 'Setor inválido.' }
-  }
-
-  // Atualizar status da comanda
-  const { error: orderError } = await admin
-    .from('orders')
-    .update({ status: transition.nextStatus })
-    .eq('id', data.orderId)
-    .eq('unit_id', data.unitId)
-
-  if (orderError) {
-    return { success: false, error: `Erro ao atualizar comanda: ${orderError.message}` }
-  }
-
-  // Registrar evento
-  const { data: event, error: eventError } = await admin
-    .from('order_events')
-    .insert({
-      order_id: data.orderId,
-      unit_id: data.unitId,
-      sector: transition.sector,
-      event_type: 'exit',
-      operator_id: user?.id ?? null,
-      equipment_id: data.equipmentId ?? null,
-      notes: data.notes ?? null,
-    })
-    .select('id')
-    .single()
-
-  if (eventError || !event) {
-    return { success: false, error: `Erro ao registrar evento: ${eventError?.message}` }
-  }
-
-  // Inserir registro específico do setor
-  const eventId = event.id
-
-  if (data.sectorKey === 'washing') {
-    // Calcular chemical_usage a partir da receita selecionada
-    let chemicalUsage: Array<{ product_name: string; quantity_used: number }> = []
-    if (data.recipeId && data.cycles) {
-      const { data: chemicals } = await admin
-        .from('recipe_chemicals')
-        .select('quantity_per_cycle, chemical_products(name)')
-        .eq('recipe_id', data.recipeId)
-
-      if (chemicals && chemicals.length > 0) {
-        chemicalUsage = chemicals.map((c: { quantity_per_cycle: number; chemical_products: { name: string } | null }) => ({
-          product_name: c.chemical_products?.name ?? 'Produto',
-          quantity_used: (c.quantity_per_cycle ?? 0) * (data.cycles ?? 1),
-        }))
-      }
+    const transition = SECTOR_TRANSITIONS[data.sectorKey]
+    if (!transition) {
+      return { success: false, error: 'Setor inválido.' }
     }
 
-    await admin.from('washing_records').insert({
-      order_event_id: eventId,
-      equipment_id: data.equipmentId ?? null,
-      cycles: data.cycles ?? 1,
-      weight_kg: data.weightKg ?? null,
-      started_at: data.startedAt ?? null,
-      finished_at: new Date().toISOString(),
-      chemical_usage: chemicalUsage,
-    })
+    const admin = createAdminClient()
 
-    // Registrar uso no equipment_log
-    if (data.equipmentId) {
-      await admin.from('equipment_logs').insert({
-        equipment_id: data.equipmentId,
+    // Buscar status atual da comanda para validar transição
+    const { data: currentOrder, error: fetchError } = await admin
+      .from('orders')
+      .select('status')
+      .eq('id', data.orderId)
+      .eq('unit_id', data.unitId)
+      .single()
+
+    if (fetchError || !currentOrder) {
+      return { success: false, error: 'Comanda não encontrada.' }
+    }
+
+    // Validar transição via state machine
+    validateTransition(currentOrder.status as OrderStatus, transition.nextStatus)
+
+    // Atualizar status da comanda
+    const { error: orderError } = await admin
+      .from('orders')
+      .update({ status: transition.nextStatus })
+      .eq('id', data.orderId)
+      .eq('unit_id', data.unitId)
+
+    if (orderError) {
+      return { success: false, error: `Erro ao atualizar comanda: ${orderError.message}` }
+    }
+
+    // Registrar evento
+    const { data: event, error: eventError } = await admin
+      .from('order_events')
+      .insert({
+        order_id: data.orderId,
         unit_id: data.unitId,
-        operator_id: user?.id ?? null,
-        operator_name: null,
-        log_type: 'use',
+        sector: transition.sector,
+        event_type: 'exit',
+        operator_id: user.id,
+        equipment_id: data.equipmentId ?? null,
+        notes: data.notes ?? null,
+      })
+      .select('id')
+      .single()
+
+    if (eventError || !event) {
+      return { success: false, error: `Erro ao registrar evento: ${eventError?.message}` }
+    }
+
+    // Inserir registro específico do setor
+    const eventId = event.id
+
+    if (data.sectorKey === 'washing') {
+      // Calcular chemical_usage a partir da receita selecionada
+      let chemicalUsage: Array<{ product_name: string; quantity_used: number }> = []
+      if (data.recipeId && data.cycles) {
+        const { data: chemicals } = await admin
+          .from('recipe_chemicals')
+          .select('quantity_per_cycle, chemical_products(name)')
+          .eq('recipe_id', data.recipeId)
+
+        if (chemicals && chemicals.length > 0) {
+          chemicalUsage = chemicals.map((c) => ({
+            product_name: (c.chemical_products as unknown as { name: string } | null)?.name ?? 'Produto',
+            quantity_used: ((c.quantity_per_cycle as number) ?? 0) * (data.cycles ?? 1),
+          }))
+        }
+      }
+
+      await admin.from('washing_records').insert({
+        order_event_id: eventId,
+        equipment_id: data.equipmentId ?? null,
         cycles: data.cycles ?? 1,
-        notes: `Lavagem comanda ${data.orderId}`,
-        occurred_at: new Date().toISOString(),
+        weight_kg: data.weightKg ?? null,
+        started_at: data.startedAt ?? null,
+        finished_at: new Date().toISOString(),
+        chemical_usage: chemicalUsage,
+      })
+
+      // Registrar uso no equipment_log
+      if (data.equipmentId) {
+        await admin.from('equipment_logs').insert({
+          equipment_id: data.equipmentId,
+          unit_id: data.unitId,
+          operator_id: user.id,
+          operator_name: null,
+          log_type: 'use',
+          cycles: data.cycles ?? 1,
+          notes: `Lavagem comanda ${data.orderId}`,
+          occurred_at: new Date().toISOString(),
+        })
+      }
+    } else if (data.sectorKey === 'drying') {
+      await admin.from('drying_records').insert({
+        order_event_id: eventId,
+        equipment_id: data.equipmentId ?? null,
+        temperature_level: data.temperatureLevel ?? 'medium',
+        finished_at: new Date().toISOString(),
+      })
+    } else if (data.sectorKey === 'ironing') {
+      await admin.from('ironing_records').insert({
+        order_event_id: eventId,
+        pieces_by_type: data.piecesByType ?? [],
+        finished_at: new Date().toISOString(),
+      })
+    } else if (data.sectorKey === 'shipping') {
+      await admin.from('shipping_records').insert({
+        order_event_id: eventId,
+        packaging_type: data.packagingType ?? 'bag',
+        packaging_quantity: data.packagingQuantity ?? 1,
       })
     }
-  } else if (data.sectorKey === 'drying') {
-    await admin.from('drying_records').insert({
-      order_event_id: eventId,
-      equipment_id: data.equipmentId ?? null,
-      temperature_level: data.temperatureLevel ?? 'medium',
-      finished_at: new Date().toISOString(),
-    })
-  } else if (data.sectorKey === 'ironing') {
-    await admin.from('ironing_records').insert({
-      order_event_id: eventId,
-      pieces_by_type: data.piecesByType ?? [],
-      finished_at: new Date().toISOString(),
-    })
-  } else if (data.sectorKey === 'shipping') {
-    await admin.from('shipping_records').insert({
-      order_event_id: eventId,
-      packaging_type: data.packagingType ?? 'bag',
-      packaging_quantity: data.packagingQuantity ?? 1,
-    })
-  }
 
-  revalidatePath(`/sector/${data.sectorKey}`)
-  return { success: true, data: undefined }
+    revalidatePath(`/sector/${data.sectorKey}`)
+    return { success: true, data: undefined }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : 'Erro desconhecido' }
+  }
 }

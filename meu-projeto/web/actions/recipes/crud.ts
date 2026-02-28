@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireUnitAccess } from '@/lib/auth/guards'
 import { z } from 'zod'
 import type { Recipe, PieceType } from '@/types/recipe'
 
@@ -21,6 +22,7 @@ const recipeSchema = z.object({
 })
 
 export async function listRecipes(unitId: string, pieceType?: PieceType): Promise<Recipe[]> {
+  await requireUnitAccess(unitId, ['unit_manager', 'operator'])
   const supabase = createAdminClient()
   let query = supabase
     .from('recipes')
@@ -40,6 +42,7 @@ export async function listRecipes(unitId: string, pieceType?: PieceType): Promis
 }
 
 export async function listActiveRecipes(unitId: string, pieceType: PieceType): Promise<Recipe[]> {
+  await requireUnitAccess(unitId, ['unit_manager', 'operator'])
   const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('recipes')
@@ -57,6 +60,7 @@ export async function createRecipe(
   unitId: string,
   formData: FormData
 ): Promise<ActionResult<Recipe>> {
+  await requireUnitAccess(unitId, ['unit_manager', 'operator'])
   const raw = {
     name: formData.get('name'),
     piece_type: formData.get('piece_type'),
@@ -89,6 +93,7 @@ export async function updateRecipe(
   unitId: string,
   formData: FormData
 ): Promise<ActionResult<Recipe>> {
+  await requireUnitAccess(unitId, ['unit_manager', 'operator'])
   const raw = {
     name: formData.get('name'),
     piece_type: formData.get('piece_type'),
@@ -122,6 +127,7 @@ export async function toggleRecipeActive(
   unitId: string,
   active: boolean
 ): Promise<ActionResult> {
+  await requireUnitAccess(unitId, ['unit_manager', 'operator'])
   const admin = createAdminClient()
   const { error } = await admin
     .from('recipes')

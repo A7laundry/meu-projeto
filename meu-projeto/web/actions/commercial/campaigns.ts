@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireRole } from '@/lib/auth/guards'
 import { differenceInDays, getMonth, getDate, format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -25,12 +26,16 @@ export interface Campaign {
 }
 
 export async function getCampaign(id: string): Promise<Campaign | null> {
+  await requireRole(['unit_manager', 'director'])
+
   const supabase = createAdminClient()
   const { data } = await supabase.from('campaigns').select('*').eq('id', id).single()
   return (data as Campaign) ?? null
 }
 
 export async function updateCampaign(id: string, formData: FormData) {
+  await requireRole(['unit_manager', 'director'])
+
   const supabase = createAdminClient()
   await supabase.from('campaigns').update({
     name:             formData.get('name') as string,
@@ -47,6 +52,8 @@ export async function updateCampaign(id: string, formData: FormData) {
 }
 
 export async function listCampaigns(): Promise<Campaign[]> {
+  await requireRole(['unit_manager', 'director'])
+
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('campaigns')
@@ -56,6 +63,8 @@ export async function listCampaigns(): Promise<Campaign[]> {
 }
 
 export async function createCampaign(formData: FormData) {
+  await requireRole(['unit_manager', 'director'])
+
   const supabase = createAdminClient()
   const { error } = await supabase.from('campaigns').insert({
     name: formData.get('name') as string,
@@ -70,18 +79,24 @@ export async function createCampaign(formData: FormData) {
 }
 
 export async function updateCampaignStatus(id: string, status: CampaignStatus) {
+  await requireRole(['unit_manager', 'director'])
+
   const supabase = createAdminClient()
   await supabase.from('campaigns').update({ status }).eq('id', id)
   revalidatePath('/commercial/campaigns')
 }
 
 export async function updateCampaignSpent(id: string, spent: number) {
+  await requireRole(['unit_manager', 'director'])
+
   const supabase = createAdminClient()
   await supabase.from('campaigns').update({ spent }).eq('id', id)
   revalidatePath('/commercial/campaigns')
 }
 
 export async function incrementLeadsGenerated(id: string) {
+  await requireRole(['unit_manager', 'director'])
+
   const supabase = createAdminClient()
   const { data } = await supabase.from('campaigns').select('leads_generated').eq('id', id).single()
   if (data) {
@@ -115,6 +130,8 @@ export interface BehaviorCampaignData {
 }
 
 export async function getBehaviorCampaigns(unitId: string): Promise<BehaviorCampaignData> {
+  await requireRole(['unit_manager', 'director'])
+
   const supabase = createAdminClient()
   const now = new Date()
 

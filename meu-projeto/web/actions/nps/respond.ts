@@ -1,6 +1,7 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireRole } from '@/lib/auth/guards'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -40,6 +41,7 @@ export async function submitNpsResponse(formData: FormData): Promise<NpsRespondR
 }
 
 export async function createNpsSurvey(unitId: string, clientId?: string): Promise<{ id: string } | null> {
+  await requireRole(['director', 'unit_manager'])
   const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('nps_surveys')

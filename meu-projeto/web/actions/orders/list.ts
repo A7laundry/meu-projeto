@@ -1,6 +1,7 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireAuth, requireUnitAccess } from '@/lib/auth/guards'
 import type { Order } from '@/types/order'
 
 export type OrderFilters = {
@@ -14,6 +15,8 @@ export async function listOrders(
   unitId: string,
   filters?: OrderFilters
 ): Promise<Order[]> {
+  await requireUnitAccess(unitId, ['operator', 'unit_manager', 'director', 'store'])
+
   const supabase = createAdminClient()
 
   let query = supabase
@@ -46,6 +49,8 @@ export async function listOrders(
 }
 
 export async function getOrder(orderId: string): Promise<Order | null> {
+  await requireAuth()
+
   const supabase = createAdminClient()
 
   const { data, error } = await supabase

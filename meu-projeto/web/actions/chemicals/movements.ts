@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireUnitAccess } from '@/lib/auth/guards'
 import { z } from 'zod'
 import type { ChemicalMovement } from '@/types/chemical'
 
@@ -20,6 +21,7 @@ export async function listMovements(
   productId: string,
   limit = 30
 ): Promise<ChemicalMovement[]> {
+  await requireUnitAccess(unitId, ['unit_manager', 'operator'])
   const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('chemical_movements')
@@ -38,6 +40,7 @@ export async function registerMovement(
   unitId: string,
   formData: FormData
 ): Promise<ActionResult<ChemicalMovement>> {
+  await requireUnitAccess(unitId, ['unit_manager', 'operator'])
   const raw = {
     movement_type: formData.get('movement_type'),
     quantity: formData.get('quantity'),

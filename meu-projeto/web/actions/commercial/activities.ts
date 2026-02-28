@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { getUser } from '@/lib/auth/get-user'
+import { requireRole } from '@/lib/auth/guards'
 
 export type ActivityType = 'note' | 'call' | 'whatsapp' | 'email' | 'meeting' | 'proposal'
 
@@ -17,6 +17,8 @@ export interface LeadActivity {
 }
 
 export async function listActivities(leadId: string): Promise<LeadActivity[]> {
+  await requireRole(['sdr', 'closer', 'unit_manager', 'director'])
+
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('lead_activities')
@@ -27,14 +29,13 @@ export async function listActivities(leadId: string): Promise<LeadActivity[]> {
 }
 
 export async function createActivity(formData: FormData) {
-  const user = await getUser()
-  if (!user) throw new Error('Não autenticado')
+  const { profile } = await requireRole(['sdr', 'closer', 'unit_manager', 'director'])
 
   const leadId = formData.get('lead_id') as string
   const supabase = createAdminClient()
   const { error } = await supabase.from('lead_activities').insert({
     lead_id: leadId,
-    user_id: user.id,
+    user_id: profile.id,
     type: formData.get('type') as ActivityType,
     description: formData.get('description') as string,
   })

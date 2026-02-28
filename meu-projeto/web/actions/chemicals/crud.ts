@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireUnitAccess } from '@/lib/auth/guards'
 import { z } from 'zod'
 import type { ChemicalProduct } from '@/types/chemical'
 
@@ -22,6 +23,7 @@ const productSchema = z.object({
 })
 
 export async function listChemicalProducts(unitId: string): Promise<ChemicalProduct[]> {
+  await requireUnitAccess(unitId, ['unit_manager', 'operator'])
   const supabase = createAdminClient()
   const { data: products, error } = await supabase
     .from('chemical_products')
@@ -55,6 +57,7 @@ export async function createChemicalProduct(
   unitId: string,
   formData: FormData
 ): Promise<ActionResult<ChemicalProduct>> {
+  await requireUnitAccess(unitId, ['unit_manager', 'operator'])
   const raw = {
     name: formData.get('name'),
     category: formData.get('category'),
@@ -87,6 +90,7 @@ export async function updateChemicalProduct(
   unitId: string,
   formData: FormData
 ): Promise<ActionResult<ChemicalProduct>> {
+  await requireUnitAccess(unitId, ['unit_manager', 'operator'])
   const raw = {
     name: formData.get('name'),
     category: formData.get('category'),

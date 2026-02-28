@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireUnitAccess } from '@/lib/auth/guards'
 import type { LogisticsRoute, RouteStop } from '@/types/logistics'
 
 type ActionResult<T = void> =
@@ -17,6 +18,7 @@ const routeSchema = z.object({
 })
 
 export async function listRoutes(unitId: string): Promise<LogisticsRoute[]> {
+  await requireUnitAccess(unitId, ['unit_manager', 'director'])
   const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('logistics_routes')
@@ -55,6 +57,7 @@ export async function createRoute(
   unitId: string,
   formData: FormData,
 ): Promise<ActionResult<LogisticsRoute>> {
+  await requireUnitAccess(unitId, ['unit_manager', 'director'])
   const weekdaysRaw = formData.getAll('weekdays').map(Number)
 
   const raw = {
@@ -87,6 +90,7 @@ export async function updateRoute(
   unitId: string,
   formData: FormData,
 ): Promise<ActionResult<LogisticsRoute>> {
+  await requireUnitAccess(unitId, ['unit_manager', 'director'])
   const weekdaysRaw = formData.getAll('weekdays').map(Number)
 
   const raw = {
@@ -121,6 +125,7 @@ export async function toggleRouteActive(
   unitId: string,
   active: boolean,
 ): Promise<ActionResult> {
+  await requireUnitAccess(unitId, ['unit_manager', 'director'])
   const supabase = createAdminClient()
   const { error } = await supabase
     .from('logistics_routes')
@@ -139,6 +144,7 @@ export async function addRouteStop(
   unitId: string,
   clientId: string,
 ): Promise<ActionResult<RouteStop>> {
+  await requireUnitAccess(unitId, ['unit_manager', 'director'])
   const supabase = createAdminClient()
 
   // Determina próxima posição
@@ -167,6 +173,7 @@ export async function removeRouteStop(
   stopId: string,
   unitId: string,
 ): Promise<ActionResult> {
+  await requireUnitAccess(unitId, ['unit_manager', 'director'])
   const supabase = createAdminClient()
   const { error } = await supabase
     .from('route_stops')

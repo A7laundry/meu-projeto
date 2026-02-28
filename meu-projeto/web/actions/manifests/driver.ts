@@ -2,12 +2,11 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { getUser } from '@/lib/auth/get-user'
+import { requireRole } from '@/lib/auth/guards'
 import type { DailyManifest } from '@/types/manifest'
 
 export async function getDriverManifestsToday(): Promise<DailyManifest[]> {
-  const user = await getUser()
-  if (!user || user.role !== 'driver') return []
+  const { user, profile } = await requireRole(['driver'])
 
   const today = new Date().toISOString().split('T')[0]
   const supabase = createAdminClient()
@@ -22,7 +21,7 @@ export async function getDriverManifestsToday(): Promise<DailyManifest[]> {
         client:clients(id, name, address_street, address_number, address_city)
       )
     `)
-    .eq('driver_id', user.id)
+    .eq('driver_id', profile.id)
     .eq('date', today)
     .order('created_at')
 
@@ -32,7 +31,7 @@ export async function getDriverManifestsToday(): Promise<DailyManifest[]> {
     ...m,
     route_name: m.route?.name ?? null,
     route_shift: m.route?.shift ?? null,
-    driver_name: user.full_name,
+    driver_name: profile.full_name,
     stops: (m.stops ?? [])
       .sort((a: { position: number }, b: { position: number }) => a.position - b.position)
       .map((s: {
@@ -65,7 +64,19 @@ export async function markStopVisited(
   stopId: string,
   status: 'visited' | 'skipped' = 'visited',
 ): Promise<{ success: boolean; error?: string }> {
+  const { profile } = await requireRole(['driver'])
   const supabase = createAdminClient()
+
+  // Verificar que o stop pertence a um manifesto do motorista logado
+  const { data: stop } = await supabase
+    .from('manifest_stops')
+    .select('manifest_id, manifest:daily_manifests(driver_id)')
+    .eq('id', stopId)
+    .single()
+
+  if (!stop || (stop.manifest as unknown as { driver_id: string })?.driver_id !== profile.id) {
+    return { success: false, error: 'Parada não pertence a um romaneio seu' }
+  }
   const { error } = await supabase
     .from('manifest_stops')
     .update({

@@ -1,12 +1,14 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireRole } from '@/lib/auth/guards'
 import { calcNps, type UnitNpsScore } from '@/types/nps'
 
 export async function getNpsScoreByUnit(
   units: Array<{ id: string; name: string }>,
   daysBack = 90,
 ): Promise<UnitNpsScore[]> {
+  await requireRole(['director'])
   if (units.length === 0) return []
 
   const supabase = createAdminClient()
@@ -42,6 +44,7 @@ export async function getNpsScoreByUnit(
 }
 
 export async function getRecentNpsSurveys(unitIds: string[], limit = 20) {
+  await requireRole(['director'])
   const supabase = createAdminClient()
 
   const { data } = await supabase

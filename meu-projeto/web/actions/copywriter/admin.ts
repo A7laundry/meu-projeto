@@ -1,15 +1,12 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
-import { getUser } from '@/lib/auth/get-user'
+import { requireRole } from '@/lib/auth/guards'
 import { getWriterLevel } from '@/lib/gamification'
 import type { CopywriterProfile, Submission } from '@/types/copywriter'
 
 export async function listWriters(): Promise<(CopywriterProfile & { profile: { full_name: string } })[]> {
-  const user = await getUser()
-  if (!user || !['director', 'unit_manager'].includes(user.role)) {
-    throw new Error('Sem permissão')
-  }
+  await requireRole(['director', 'unit_manager'])
 
   const supabase = createAdminClient()
   const { data } = await supabase
@@ -20,10 +17,7 @@ export async function listWriters(): Promise<(CopywriterProfile & { profile: { f
 }
 
 export async function getDashboardStats() {
-  const user = await getUser()
-  if (!user || !['director', 'unit_manager'].includes(user.role)) {
-    throw new Error('Sem permissão')
-  }
+  await requireRole(['director', 'unit_manager'])
 
   const supabase = createAdminClient()
 
@@ -55,10 +49,7 @@ export async function getDashboardStats() {
 }
 
 export async function getReviewQueue(): Promise<Submission[]> {
-  const user = await getUser()
-  if (!user || !['director', 'unit_manager'].includes(user.role)) {
-    throw new Error('Sem permissão')
-  }
+  await requireRole(['director', 'unit_manager'])
 
   const supabase = createAdminClient()
   const { data } = await supabase
@@ -70,6 +61,8 @@ export async function getReviewQueue(): Promise<Submission[]> {
 }
 
 export async function getAllSubmissionsForBriefing(briefingId: string): Promise<Submission[]> {
+  await requireRole(['director', 'unit_manager'])
+
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('submissions')
@@ -80,6 +73,8 @@ export async function getAllSubmissionsForBriefing(briefingId: string): Promise<
 }
 
 export async function getWriterDetail(writerId: string) {
+  await requireRole(['director', 'unit_manager'])
+
   const supabase = createAdminClient()
 
   const { data: profile } = await supabase

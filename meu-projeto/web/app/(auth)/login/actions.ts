@@ -4,7 +4,13 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { z } from 'zod'
 import type { UserRole } from '@/types/auth'
+
+const loginSchema = z.object({
+  email: z.string().email('Email invalido'),
+  password: z.string().min(6, 'Senha deve ter no minimo 6 caracteres'),
+})
 
 function getRedirectPath(role: UserRole, unitId?: string | null, sector?: string | null): string {
   switch (role) {
@@ -17,6 +23,7 @@ function getRedirectPath(role: UserRole, unitId?: string | null, sector?: string
     case 'driver':
       return '/driver/route'
     case 'store':
+      return '/store/pdv'
     case 'customer':
       return '/client/orders'
     case 'sdr':
@@ -32,6 +39,13 @@ export async function login(formData: FormData) {
 
   const email = String(formData.get('email') || '')
   const password = String(formData.get('password') || '')
+
+  // Validação de input
+  const parsed = loginSchema.safeParse({ email, password })
+  if (!parsed.success) {
+    const errorMsg = parsed.error.issues[0].message
+    redirect(`/login?error=${encodeURIComponent(errorMsg)}`)
+  }
 
   const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 

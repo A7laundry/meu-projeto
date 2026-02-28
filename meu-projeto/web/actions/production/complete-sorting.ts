@@ -2,8 +2,10 @@
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
-import type { ActionResult } from '@/actions/staff/invite'
-import type { PieceType } from '@/types/order'
+import { requireRole } from '@/lib/auth/guards'
+import { validateTransition } from '@/lib/auth/order-machine'
+import type { ActionResult } from '@/lib/auth/action-result'
+import type { PieceType, OrderStatus } from '@/types/order'
 
 export interface SortingItem {
   itemId: string
@@ -23,59 +25,78 @@ export async function completeSorting(
   notes?: string,
   extraItems?: ExtraItem[]
 ): Promise<ActionResult> {
-  const admin = createAdminClient()
-  const supabase = createAdminClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  try {
+    const { user } = await requireRole(['operator'])
 
-  // Atualizar status da comanda
-  const { error: orderError } = await admin
-    .from('orders')
-    .update({ status: 'washing' })
-    .eq('id', orderId)
-    .eq('unit_id', unitId)
+    const admin = createAdminClient()
 
-  if (orderError) {
-    return { success: false, error: `Erro ao atualizar comanda: ${orderError.message}` }
-  }
+    // Buscar status atual da comanda para validar transição
+    const { data: currentOrder, error: fetchError } = await admin
+      .from('orders')
+      .select('status')
+      .eq('id', orderId)
+      .eq('unit_id', unitId)
+      .single()
 
-  // Atualizar receitas e quantidades dos itens existentes
-  for (const item of items) {
-    const updates: Record<string, unknown> = {}
-    if (item.recipeId) updates.recipe_id = item.recipeId
-    if (item.quantity !== undefined) updates.quantity = item.quantity
-
-    if (Object.keys(updates).length > 0) {
-      await admin
-        .from('order_items')
-        .update(updates)
-        .eq('id', item.itemId)
+    if (fetchError || !currentOrder) {
+      return { success: false, error: 'Comanda não encontrada.' }
     }
+
+    // Validar transição: sorting -> washing (received -> sorting é o entry, aqui é o exit)
+    validateTransition(currentOrder.status as OrderStatus, 'washing' as OrderStatus)
+
+    // Atualizar status da comanda
+    const { error: orderError } = await admin
+      .from('orders')
+      .update({ status: 'washing' })
+      .eq('id', orderId)
+      .eq('unit_id', unitId)
+
+    if (orderError) {
+      return { success: false, error: `Erro ao atualizar comanda: ${orderError.message}` }
+    }
+
+    // Atualizar receitas e quantidades dos itens existentes
+    for (const item of items) {
+      const updates: Record<string, unknown> = {}
+      if (item.recipeId) updates.recipe_id = item.recipeId
+      if (item.quantity !== undefined) updates.quantity = item.quantity
+
+      if (Object.keys(updates).length > 0) {
+        await admin
+          .from('order_items')
+          .update(updates)
+          .eq('id', item.itemId)
+      }
+    }
+
+    // Inserir itens extras
+    if (extraItems && extraItems.length > 0) {
+      await admin.from('order_items').insert(
+        extraItems.map((e) => ({
+          order_id: orderId,
+          piece_type: e.piece_type,
+          piece_type_label: null,
+          quantity: e.quantity,
+          recipe_id: null,
+          notes: null,
+        }))
+      )
+    }
+
+    // Registrar evento
+    await admin.from('order_events').insert({
+      order_id: orderId,
+      unit_id: unitId,
+      sector: 'sorting',
+      event_type: 'exit',
+      operator_id: user.id,
+      notes: notes || 'Triagem concluída — enviado para Lavagem',
+    })
+
+    revalidatePath(`/sector/sorting`)
+    return { success: true, data: undefined }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : 'Erro desconhecido' }
   }
-
-  // Inserir itens extras
-  if (extraItems && extraItems.length > 0) {
-    await admin.from('order_items').insert(
-      extraItems.map((e) => ({
-        order_id: orderId,
-        piece_type: e.piece_type,
-        piece_type_label: null,
-        quantity: e.quantity,
-        recipe_id: null,
-        notes: null,
-      }))
-    )
-  }
-
-  // Registrar evento
-  await admin.from('order_events').insert({
-    order_id: orderId,
-    unit_id: unitId,
-    sector: 'sorting',
-    event_type: 'exit',
-    operator_id: user?.id ?? null,
-    notes: notes || 'Triagem concluída — enviado para Lavagem',
-  })
-
-  revalidatePath(`/sector/sorting`)
-  return { success: true, data: undefined }
 }

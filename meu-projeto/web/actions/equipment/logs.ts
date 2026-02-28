@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireRole } from '@/lib/auth/guards'
 import { z } from 'zod'
 import type { EquipmentLog } from '@/types/equipment-log'
 
@@ -19,6 +20,7 @@ const logSchema = z.object({
 })
 
 export async function listEquipmentLogs(equipmentId: string): Promise<EquipmentLog[]> {
+  await requireRole(['unit_manager', 'operator'])
   const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('equipment_logs')
@@ -32,6 +34,7 @@ export async function listEquipmentLogs(equipmentId: string): Promise<EquipmentL
 }
 
 export async function getTotalCycles(equipmentId: string): Promise<number> {
+  await requireRole(['unit_manager', 'operator'])
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('equipment_logs')
@@ -49,6 +52,7 @@ export async function createEquipmentLog(
   formData: FormData,
   operatorName: string | null
 ): Promise<ActionResult<EquipmentLog>> {
+  await requireRole(['unit_manager', 'operator'])
   const raw = {
     log_type: formData.get('log_type'),
     cycles: formData.get('cycles') || null,

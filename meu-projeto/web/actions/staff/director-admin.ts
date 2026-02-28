@@ -1,6 +1,7 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireRole } from '@/lib/auth/guards'
 import { revalidatePath } from 'next/cache'
 import type { UserRole } from '@/types/auth'
 
@@ -20,6 +21,7 @@ export async function listAllUsers(filters?: {
   unit_id?: string
   active?: boolean
 }): Promise<UserWithUnit[]> {
+  await requireRole(['director'])
   const supabase = createAdminClient()
   let q = supabase
     .from('profiles')
@@ -36,6 +38,7 @@ export async function listAllUsers(filters?: {
 }
 
 export async function createUserDirector(formData: FormData): Promise<void> {
+  await requireRole(['director'])
   const supabase = createAdminClient()
 
   const email     = formData.get('email') as string
@@ -67,6 +70,7 @@ export async function updateUserDirector(
   userId: string,
   formData: FormData
 ): Promise<void> {
+  await requireRole(['director'])
   const supabase = createAdminClient()
 
   const { error } = await supabase
@@ -86,6 +90,7 @@ export async function toggleUserDirector(
   userId: string,
   active: boolean
 ): Promise<void> {
+  await requireRole(['director'])
   const supabase = createAdminClient()
 
   const { error } = await supabase

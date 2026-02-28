@@ -2,17 +2,16 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireUnitAccess } from '@/lib/auth/guards'
 import type { DailyManifest, ManifestStatus } from '@/types/manifest'
-
-type ActionResult<T = void> =
-  | { success: true; data: T }
-  | { success: false; error: string }
+import type { ActionResult } from '@/lib/auth/action-result'
 
 export async function listManifests(
   unitId: string,
   date: string,
   shift?: string,
 ): Promise<DailyManifest[]> {
+  await requireUnitAccess(unitId, ['unit_manager', 'director'])
   const supabase = createAdminClient()
 
   const { data, error } = await supabase
@@ -76,6 +75,7 @@ export async function generateManifest(
   routeId: string,
   date: string,
 ): Promise<ActionResult<DailyManifest>> {
+  await requireUnitAccess(unitId, ['unit_manager', 'director'])
   const supabase = createAdminClient()
 
   // Busca rota com paradas
@@ -128,6 +128,7 @@ export async function updateManifestStatus(
   unitId: string,
   status: ManifestStatus,
 ): Promise<ActionResult> {
+  await requireUnitAccess(unitId, ['unit_manager', 'director'])
   const supabase = createAdminClient()
   const { error } = await supabase
     .from('daily_manifests')
@@ -146,6 +147,7 @@ export async function updateStopStatus(
   unitId: string,
   status: 'visited' | 'skipped',
 ): Promise<ActionResult> {
+  await requireUnitAccess(unitId, ['unit_manager', 'director'])
   const supabase = createAdminClient()
   const { error } = await supabase
     .from('manifest_stops')

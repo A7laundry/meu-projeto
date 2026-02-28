@@ -93,7 +93,7 @@ export function WashingForm({
     }
     setMaintError(null)
     startMaintTransition(async () => {
-      const result = await createMaintenanceRequest(unitId, operatorId, {
+      const result = await createMaintenanceRequest(unitId, {
         equipmentId: selectedEquipmentId || null,
         description: maintDescription,
         urgency: maintUrgency,

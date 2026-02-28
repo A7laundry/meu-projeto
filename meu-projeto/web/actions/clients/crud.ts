@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireRole } from '@/lib/auth/guards'
 import type { Client } from '@/types/logistics'
 
 type ActionResult<T = void> =
@@ -28,6 +29,7 @@ const clientSchema = z.object({
 })
 
 export async function listClients(unitId: string): Promise<Client[]> {
+  await requireRole(['unit_manager', 'store', 'director'])
   const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('clients')
@@ -41,6 +43,7 @@ export async function listClients(unitId: string): Promise<Client[]> {
 }
 
 export async function listActiveClients(unitId: string): Promise<Client[]> {
+  await requireRole(['unit_manager', 'store', 'director'])
   const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('clients')
@@ -57,6 +60,8 @@ export async function createClient(
   unitId: string,
   formData: FormData,
 ): Promise<ActionResult<Client>> {
+  await requireRole(['unit_manager', 'store', 'director'])
+
   const raw = {
     name: formData.get('name') as string,
     type: formData.get('type') as string,
@@ -90,6 +95,7 @@ export async function createClient(
   if (error) return { success: false, error: error.message }
 
   revalidatePath(`/unit/${unitId}/clients`)
+  revalidatePath('/store/clients')
   return { success: true, data: data as Client }
 }
 
@@ -98,6 +104,8 @@ export async function updateClient(
   unitId: string,
   formData: FormData,
 ): Promise<ActionResult<Client>> {
+  await requireRole(['unit_manager', 'store', 'director'])
+
   const raw = {
     name: formData.get('name') as string,
     type: formData.get('type') as string,
@@ -133,6 +141,7 @@ export async function updateClient(
   if (error) return { success: false, error: error.message }
 
   revalidatePath(`/unit/${unitId}/clients`)
+  revalidatePath('/store/clients')
   return { success: true, data: data as Client }
 }
 
@@ -141,6 +150,7 @@ export async function toggleClientActive(
   unitId: string,
   active: boolean,
 ): Promise<ActionResult> {
+  await requireRole(['unit_manager', 'store', 'director'])
   const supabase = createAdminClient()
   const { error } = await supabase
     .from('clients')
@@ -151,5 +161,6 @@ export async function toggleClientActive(
   if (error) return { success: false, error: error.message }
 
   revalidatePath(`/unit/${unitId}/clients`)
+  revalidatePath('/store/clients')
   return { success: true, data: undefined }
 }

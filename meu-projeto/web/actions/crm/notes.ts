@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireUnitAccess, requireRole } from '@/lib/auth/guards'
 import type { ClientStats, CrmNote } from '@/types/crm'
 
 export interface ClientOrder {
@@ -24,6 +25,7 @@ const noteSchema = z.object({
 })
 
 export async function listClientNotes(clientId: string, limit = 10): Promise<CrmNote[]> {
+  await requireRole(['unit_manager', 'store', 'sdr', 'closer'])
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('crm_notes')
@@ -43,6 +45,7 @@ export async function createCrmNote(
   unitId: string,
   formData: FormData,
 ): Promise<ActionResult<CrmNote>> {
+  await requireUnitAccess(unitId, ['unit_manager', 'store', 'sdr', 'closer'])
   const raw = {
     category: formData.get('category') as string,
     content: formData.get('content') as string,
@@ -70,6 +73,7 @@ export async function getClientStats(
   clientId: string,
   unitId: string,
 ): Promise<ClientStats> {
+  await requireUnitAccess(unitId, ['unit_manager', 'store', 'sdr', 'closer'])
   const supabase = createAdminClient()
 
   const { data: quotes } = await supabase
@@ -105,6 +109,7 @@ export async function listClientOrders(
   unitId: string,
   limit = 20,
 ): Promise<ClientOrder[]> {
+  await requireUnitAccess(unitId, ['unit_manager', 'store', 'sdr', 'closer'])
   const supabase = createAdminClient()
 
   const [ordersRes, pricesRes] = await Promise.all([

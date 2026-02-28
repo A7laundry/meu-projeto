@@ -1,7 +1,7 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
-import { getUser } from '@/lib/auth/get-user'
+import { requireAuth } from '@/lib/auth/guards'
 
 export type NotificationType = 'new_lead' | 'follow_up' | 'ready_order'
 
@@ -16,23 +16,29 @@ export interface NotificationItem {
 }
 
 export async function getNotifications(): Promise<NotificationItem[]> {
+  const { profile } = await requireAuth()
   const supabase = createAdminClient()
-  const user = await getUser()
-  if (!user) return []
 
   const notifications: NotificationItem[] = []
-  const isCommercial = ['sdr', 'closer', 'director', 'unit_manager'].includes(user.role)
-  const isOperations = ['director', 'unit_manager'].includes(user.role)
+  const isCommercial = ['sdr', 'closer', 'director', 'unit_manager'].includes(profile.role)
+  const isOperations = ['director', 'unit_manager'].includes(profile.role)
+  const isDirector = profile.role === 'director'
 
   if (isCommercial) {
     // Leads novos nas últimas 24h
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-    const { data: newLeads } = await supabase
+    let leadsQuery = supabase
       .from('leads')
       .select('id, name, source, created_at')
       .gte('created_at', yesterday)
       .order('created_at', { ascending: false })
       .limit(5)
+
+    if (!isDirector && profile.unit_id) {
+      leadsQuery = leadsQuery.eq('unit_id', profile.unit_id)
+    }
+
+    const { data: newLeads } = await leadsQuery
 
     for (const lead of newLeads ?? []) {
       notifications.push({
@@ -48,13 +54,19 @@ export async function getNotifications(): Promise<NotificationItem[]> {
 
     // Propostas sem resposta há 3+ dias
     const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-    const { data: staleProposals } = await supabase
+    let staleQuery = supabase
       .from('leads')
       .select('id, name, updated_at')
       .eq('stage', 'proposal')
       .lte('updated_at', threeDaysAgo)
       .order('updated_at', { ascending: true })
       .limit(5)
+
+    if (!isDirector && profile.unit_id) {
+      staleQuery = staleQuery.eq('unit_id', profile.unit_id)
+    }
+
+    const { data: staleProposals } = await staleQuery
 
     for (const lead of staleProposals ?? []) {
       notifications.push({
@@ -71,12 +83,18 @@ export async function getNotifications(): Promise<NotificationItem[]> {
 
   if (isOperations) {
     // Comandas prontas para entrega
-    const { data: readyOrders } = await supabase
+    let ordersQuery = supabase
       .from('orders')
       .select('id, order_number, client:clients(name), unit_id, updated_at')
       .eq('status', 'ready')
       .order('updated_at', { ascending: true })
       .limit(5)
+
+    if (!isDirector && profile.unit_id) {
+      ordersQuery = ordersQuery.eq('unit_id', profile.unit_id)
+    }
+
+    const { data: readyOrders } = await ordersQuery
 
     for (const order of readyOrders ?? []) {
       const clientName = Array.isArray(order.client)

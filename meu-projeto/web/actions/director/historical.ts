@@ -1,6 +1,7 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireRole } from '@/lib/auth/guards'
 
 export interface DayKpi {
   date: string
@@ -14,6 +15,7 @@ export async function getHistoricalKpis(
   unitIds: string[],
   days: number,
 ): Promise<DayKpi[]> {
+  await requireRole(['director'])
   if (unitIds.length === 0) return []
 
   const supabase = createAdminClient()

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireUnitAccess } from '@/lib/auth/guards'
 import { z } from 'zod'
 import type { Equipment, EquipmentStatus } from '@/types/equipment'
 
@@ -20,6 +21,7 @@ const equipmentSchema = z.object({
 })
 
 export async function listEquipment(unitId: string): Promise<Equipment[]> {
+  await requireUnitAccess(unitId, ['unit_manager', 'operator', 'director'])
   const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('equipment')
@@ -36,6 +38,7 @@ export async function createEquipment(
   unitId: string,
   formData: FormData
 ): Promise<ActionResult<Equipment>> {
+  await requireUnitAccess(unitId, ['unit_manager', 'operator', 'director'])
   const raw = {
     name: formData.get('name'),
     type: formData.get('type'),
@@ -69,6 +72,7 @@ export async function updateEquipment(
   unitId: string,
   formData: FormData
 ): Promise<ActionResult<Equipment>> {
+  await requireUnitAccess(unitId, ['unit_manager', 'operator', 'director'])
   const raw = {
     name: formData.get('name'),
     type: formData.get('type'),
@@ -103,6 +107,7 @@ export async function updateEquipmentStatus(
   unitId: string,
   status: EquipmentStatus
 ): Promise<ActionResult> {
+  await requireUnitAccess(unitId, ['unit_manager', 'operator', 'director'])
   const admin = createAdminClient()
   const { error } = await admin
     .from('equipment')

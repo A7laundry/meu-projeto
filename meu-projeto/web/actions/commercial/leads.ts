@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { getUser } from '@/lib/auth/get-user'
+import { requireRole } from '@/lib/auth/guards'
 
 export type LeadStage = 'prospect' | 'contacted' | 'qualified' | 'proposal' | 'won' | 'lost'
 export type LeadSource = 'instagram' | 'google' | 'referral' | 'cold_call' | 'whatsapp' | 'form' | 'manual'
@@ -28,6 +28,8 @@ export interface Lead {
 }
 
 export async function listLeads(): Promise<Lead[]> {
+  await requireRole(['sdr', 'closer', 'unit_manager', 'director'])
+
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('leads')
@@ -37,6 +39,8 @@ export async function listLeads(): Promise<Lead[]> {
 }
 
 export async function getLead(id: string): Promise<Lead | null> {
+  await requireRole(['sdr', 'closer', 'unit_manager', 'director'])
+
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('leads')
@@ -47,8 +51,7 @@ export async function getLead(id: string): Promise<Lead | null> {
 }
 
 export async function createLead(formData: FormData) {
-  const user = await getUser()
-  if (!user) throw new Error('Não autenticado')
+  const { profile } = await requireRole(['sdr', 'closer', 'unit_manager', 'director'])
 
   const supabase = createAdminClient()
   const { error } = await supabase.from('leads').insert({
@@ -60,8 +63,8 @@ export async function createLead(formData: FormData) {
     source: formData.get('source') as LeadSource || 'manual',
     estimated_monthly_value: Number(formData.get('estimated_monthly_value') ?? 0),
     notes: formData.get('notes') as string || null,
-    assigned_to: user.id,
-    unit_id: user.unit_id,
+    assigned_to: profile.id,
+    unit_id: profile.unit_id,
   })
   if (error) throw new Error(error.message)
 
@@ -69,6 +72,8 @@ export async function createLead(formData: FormData) {
 }
 
 export async function updateLead(id: string, formData: FormData) {
+  await requireRole(['sdr', 'closer', 'unit_manager', 'director'])
+
   const supabase = createAdminClient()
   const { error } = await supabase.from('leads').update({
     name: formData.get('name') as string,
@@ -87,8 +92,7 @@ export async function updateLead(id: string, formData: FormData) {
 }
 
 export async function moveLeadStage(id: string, stage: LeadStage, lostReason?: string) {
-  const user = await getUser()
-  if (!user) throw new Error('Não autenticado')
+  const { profile } = await requireRole(['sdr', 'closer', 'unit_manager', 'director'])
 
   const supabase = createAdminClient()
   const { error } = await supabase.from('leads').update({
@@ -100,7 +104,7 @@ export async function moveLeadStage(id: string, stage: LeadStage, lostReason?: s
   // Registrar mudança de estágio como atividade
   await supabase.from('lead_activities').insert({
     lead_id: id,
-    user_id: user.id,
+    user_id: profile.id,
     type: 'stage_change',
     description: `Estágio alterado para: ${stage}${lostReason ? ` — Motivo: ${lostReason}` : ''}`,
   })
@@ -111,8 +115,7 @@ export async function moveLeadStage(id: string, stage: LeadStage, lostReason?: s
 }
 
 export async function convertLeadToClient(leadId: string) {
-  const user = await getUser()
-  if (!user) throw new Error('Não autenticado')
+  const { profile } = await requireRole(['sdr', 'closer', 'unit_manager', 'director'])
 
   const supabase = createAdminClient()
 
@@ -138,7 +141,7 @@ export async function convertLeadToClient(leadId: string) {
   // Registra atividade
   await supabase.from('lead_activities').insert({
     lead_id: leadId,
-    user_id: user.id,
+    user_id: profile.id,
     type: 'stage_change',
     description: `Lead convertido em cliente`,
   })
@@ -149,6 +152,8 @@ export async function convertLeadToClient(leadId: string) {
 }
 
 export async function deleteLead(id: string) {
+  await requireRole(['sdr', 'closer', 'unit_manager', 'director'])
+
   const supabase = createAdminClient()
   await supabase.from('leads').delete().eq('id', id)
   revalidatePath('/commercial/leads')

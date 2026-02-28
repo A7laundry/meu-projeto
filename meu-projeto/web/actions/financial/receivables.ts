@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireRole } from '@/lib/auth/guards'
 import type { Receivable } from '@/types/financial'
 
 type ActionResult<T = void> =
@@ -9,6 +10,7 @@ type ActionResult<T = void> =
   | { success: false; error: string }
 
 export async function listReceivables(unitId: string): Promise<Receivable[]> {
+  await requireRole(['unit_manager', 'director', 'store'])
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('receivables')
@@ -26,6 +28,7 @@ export async function markReceivablePaid(
   id: string,
   unitId: string,
 ): Promise<ActionResult> {
+  await requireRole(['unit_manager', 'director', 'store'])
   const supabase = createAdminClient()
   const { error } = await supabase
     .from('receivables')
@@ -36,6 +39,7 @@ export async function markReceivablePaid(
   if (error) return { success: false, error: error.message }
 
   revalidatePath(`/unit/${unitId}/financial`)
+  revalidatePath('/store/financeiro')
   return { success: true, data: undefined }
 }
 
@@ -47,6 +51,7 @@ export async function createReceivableFromQuote(
   amount: number,
   dueDate: string,
 ): Promise<ActionResult<Receivable>> {
+  await requireRole(['unit_manager', 'director', 'store'])
   const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('receivables')

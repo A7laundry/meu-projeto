@@ -1,6 +1,7 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireUnitAccess, requireRole } from '@/lib/auth/guards'
 import type { Order } from '@/types/order'
 
 export interface HistoryFilters {
@@ -24,6 +25,7 @@ export async function getOrderHistory(
   unitId: string,
   filters: HistoryFilters = {}
 ): Promise<HistoryResult> {
+  await requireUnitAccess(unitId, ['unit_manager', 'operator', 'director', 'store'])
   const supabase = createAdminClient()
   const page = Math.max(1, filters.page ?? 1)
   const offset = (page - 1) * PAGE_SIZE
@@ -71,6 +73,7 @@ export async function getOrderHistory(
 }
 
 export async function getOrderWithEvents(orderId: string): Promise<Order | null> {
+  await requireRole(['unit_manager', 'operator', 'director', 'store'])
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('orders')

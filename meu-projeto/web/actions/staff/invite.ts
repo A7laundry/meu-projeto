@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireRole } from '@/lib/auth/guards'
 import { z } from 'zod'
 import type { UserProfile } from '@/types/auth'
 
@@ -17,6 +18,7 @@ const inviteSchema = z.object({
 })
 
 export async function listStaff(unitId: string): Promise<UserProfile[]> {
+  await requireRole(['director', 'unit_manager'])
   const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('profiles')
@@ -32,6 +34,7 @@ export async function inviteStaff(
   unitId: string,
   formData: FormData
 ): Promise<ActionResult> {
+  await requireRole(['director', 'unit_manager'])
   const raw = {
     email: formData.get('email'),
     full_name: formData.get('full_name'),
@@ -76,6 +79,7 @@ export async function toggleStaffStatus(
   unitId: string,
   active: boolean
 ): Promise<ActionResult> {
+  await requireRole(['director', 'unit_manager'])
   const admin = createAdminClient()
   const { error } = await admin
     .from('profiles')

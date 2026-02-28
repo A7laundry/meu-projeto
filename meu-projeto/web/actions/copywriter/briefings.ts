@@ -2,12 +2,11 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { getUser } from '@/lib/auth/get-user'
+import { requireRole } from '@/lib/auth/guards'
 import type { Briefing, BriefingStatus, ContentType, BriefingDifficulty } from '@/types/copywriter'
 
 export async function listBriefings(status?: BriefingStatus): Promise<Briefing[]> {
-  const user = await getUser()
-  if (!user) throw new Error('Não autenticado')
+  const { profile } = await requireRole(['director', 'unit_manager', 'copywriter'])
 
   const supabase = createAdminClient()
   let query = supabase
@@ -17,7 +16,7 @@ export async function listBriefings(status?: BriefingStatus): Promise<Briefing[]
 
   if (status) {
     query = query.eq('status', status)
-  } else if (user.role === 'copywriter') {
+  } else if (profile.role === 'copywriter') {
     query = query.neq('status', 'draft')
   }
 
@@ -26,6 +25,8 @@ export async function listBriefings(status?: BriefingStatus): Promise<Briefing[]
 }
 
 export async function getBriefing(id: string): Promise<Briefing | null> {
+  await requireRole(['director', 'unit_manager', 'copywriter'])
+
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('briefings')
@@ -36,10 +37,7 @@ export async function getBriefing(id: string): Promise<Briefing | null> {
 }
 
 export async function createBriefing(formData: FormData) {
-  const user = await getUser()
-  if (!user || !['director', 'unit_manager'].includes(user.role)) {
-    throw new Error('Sem permissão')
-  }
+  const { profile } = await requireRole(['director', 'unit_manager'])
 
   const supabase = createAdminClient()
   const { error } = await supabase.from('briefings').insert({
@@ -53,7 +51,7 @@ export async function createBriefing(formData: FormData) {
     deadline: formData.get('deadline') as string || null,
     reference_links: (formData.get('reference_links') as string || '').split('\n').filter(Boolean),
     status: 'draft',
-    created_by: user.id,
+    created_by: profile.id,
   })
   if (error) throw new Error(error.message)
 
@@ -61,10 +59,7 @@ export async function createBriefing(formData: FormData) {
 }
 
 export async function updateBriefing(id: string, formData: FormData) {
-  const user = await getUser()
-  if (!user || !['director', 'unit_manager'].includes(user.role)) {
-    throw new Error('Sem permissão')
-  }
+  await requireRole(['director', 'unit_manager'])
 
   const supabase = createAdminClient()
   const { error } = await supabase.from('briefings').update({
@@ -84,10 +79,7 @@ export async function updateBriefing(id: string, formData: FormData) {
 }
 
 export async function publishBriefing(id: string) {
-  const user = await getUser()
-  if (!user || !['director', 'unit_manager'].includes(user.role)) {
-    throw new Error('Sem permissão')
-  }
+  await requireRole(['director', 'unit_manager'])
 
   const supabase = createAdminClient()
   const { error } = await supabase

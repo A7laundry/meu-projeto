@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireUnitAccess } from '@/lib/auth/guards'
 import type { PriceTableEntry } from '@/types/pricing'
 
 type ActionResult<T = void> =
@@ -18,6 +19,7 @@ const priceSchema = z.object({
 })
 
 export async function listPriceTable(unitId: string): Promise<PriceTableEntry[]> {
+  await requireUnitAccess(unitId, ['unit_manager', 'director'])
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('price_table')
@@ -32,6 +34,7 @@ export async function upsertPrice(
   unitId: string,
   formData: FormData,
 ): Promise<ActionResult<PriceTableEntry>> {
+  await requireUnitAccess(unitId, ['unit_manager', 'director'])
   const raw = {
     piece_type: formData.get('piece_type') as string,
     item_name: (formData.get('item_name') as string) ?? '',
@@ -66,6 +69,7 @@ export async function getEffectivePrice(
   clientId: string,
   pieceType: string,
 ): Promise<number | null> {
+  await requireUnitAccess(unitId, ['unit_manager', 'director'])
   const supabase = createAdminClient()
 
   // Verifica preço especial do cliente

@@ -1,6 +1,7 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireRole } from '@/lib/auth/guards'
 
 export interface CashflowWeek {
   week: number
@@ -23,6 +24,7 @@ export async function getCashflowData(
   year: number,
   month: number,
 ): Promise<{ weeks: CashflowWeek[]; totalInflows: number; totalOutflows: number; net: number }> {
+  await requireRole(['unit_manager', 'director', 'store'])
   const supabase = createAdminClient()
 
   const startDate = `${year}-${String(month).padStart(2, '0')}-01`
@@ -89,6 +91,7 @@ export async function getDreData(
   year: number,
   month: number,
 ): Promise<DreRow[]> {
+  await requireRole(['unit_manager', 'director', 'store'])
   const supabase = createAdminClient()
 
   const startDate = `${year}-${String(month).padStart(2, '0')}-01`

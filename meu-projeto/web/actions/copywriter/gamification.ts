@@ -1,44 +1,43 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
-import { getUser } from '@/lib/auth/get-user'
+import { requireRole } from '@/lib/auth/guards'
 import { getWriterLevel, getXpProgress } from '@/lib/gamification'
 import type { WriterStats, LeaderboardEntry, WriterXpLog, WriterBadge, CopywriterProfile } from '@/types/copywriter'
 
 export async function getWriterStats(): Promise<WriterStats | null> {
-  const user = await getUser()
-  if (!user) return null
+  const { profile: authProfile } = await requireRole(['copywriter'])
 
   const supabase = createAdminClient()
 
   // Upsert profile se não existe
-  await supabase.from('copywriter_profiles').upsert({ id: user.id }, { onConflict: 'id' })
+  await supabase.from('copywriter_profiles').upsert({ id: authProfile.id }, { onConflict: 'id' })
 
-  const { data: profile } = await supabase
+  const { data: writerProfile } = await supabase
     .from('copywriter_profiles')
     .select('*')
-    .eq('id', user.id)
+    .eq('id', authProfile.id)
     .single()
-  if (!profile) return null
+  if (!writerProfile) return null
 
   const { data: badges } = await supabase
     .from('writer_badges')
     .select('*, badge:badge_definitions(*)')
-    .eq('writer_id', user.id)
+    .eq('writer_id', authProfile.id)
     .order('awarded_at', { ascending: false })
 
   const { data: recentXp } = await supabase
     .from('writer_xp_log')
     .select('*')
-    .eq('writer_id', user.id)
+    .eq('writer_id', authProfile.id)
     .order('created_at', { ascending: false })
     .limit(10)
 
-  const { level, title } = getWriterLevel(profile.total_xp)
-  const xp = getXpProgress(profile.total_xp)
+  const { level, title } = getWriterLevel(writerProfile.total_xp)
+  const xp = getXpProgress(writerProfile.total_xp)
 
   return {
-    profile: profile as CopywriterProfile,
+    profile: writerProfile as CopywriterProfile,
     level,
     levelTitle: title,
     xpToNext: xp.next - xp.current,
@@ -49,6 +48,8 @@ export async function getWriterStats(): Promise<WriterStats | null> {
 }
 
 export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
+  await requireRole(['copywriter', 'director', 'unit_manager'])
+
   const supabase = createAdminClient()
   const { data: profiles } = await supabase
     .from('copywriter_profiles')
@@ -86,28 +87,26 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
 }
 
 export async function getMyProfile(): Promise<CopywriterProfile | null> {
-  const user = await getUser()
-  if (!user) return null
+  const { profile: authProfile } = await requireRole(['copywriter'])
 
   const supabase = createAdminClient()
-  await supabase.from('copywriter_profiles').upsert({ id: user.id }, { onConflict: 'id' })
+  await supabase.from('copywriter_profiles').upsert({ id: authProfile.id }, { onConflict: 'id' })
 
   const { data } = await supabase
     .from('copywriter_profiles')
     .select('*, profile:profiles!copywriter_profiles_id_fkey(full_name, role)')
-    .eq('id', user.id)
+    .eq('id', authProfile.id)
     .single()
   return data as CopywriterProfile | null
 }
 
 export async function updateMyProfile(bio: string, specialties: string[]) {
-  const user = await getUser()
-  if (!user) throw new Error('Não autenticado')
+  const { profile } = await requireRole(['copywriter'])
 
   const supabase = createAdminClient()
   const { error } = await supabase
     .from('copywriter_profiles')
     .update({ bio, specialties })
-    .eq('id', user.id)
+    .eq('id', profile.id)
   if (error) throw new Error(error.message)
 }

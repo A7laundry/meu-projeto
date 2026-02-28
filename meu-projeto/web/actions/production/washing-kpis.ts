@@ -1,6 +1,7 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireUnitAccess } from '@/lib/auth/guards'
 
 export interface WashingKpis {
   ordersWashed: number
@@ -24,6 +25,8 @@ export async function getWashingKpis(
   unitId: string,
   operatorId: string
 ): Promise<WashingKpis> {
+  await requireUnitAccess(unitId, ['operator', 'unit_manager'])
+
   const admin = createAdminClient()
 
   const todayStart = new Date()

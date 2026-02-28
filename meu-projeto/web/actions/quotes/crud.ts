@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireUnitAccess } from '@/lib/auth/guards'
 import type { Quote, QuoteItem, QuoteStatus } from '@/types/pricing'
 
 type ActionResult<T = void> =
@@ -16,6 +17,7 @@ const quoteItemSchema = z.object({
 })
 
 export async function listQuotes(unitId: string): Promise<Quote[]> {
+  await requireUnitAccess(unitId, ['unit_manager', 'store', 'director'])
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('quotes')
@@ -38,6 +40,7 @@ export async function createQuote(
   unitId: string,
   formData: FormData,
 ): Promise<ActionResult<Quote>> {
+  await requireUnitAccess(unitId, ['unit_manager', 'store', 'director'])
   const clientId = formData.get('client_id') as string
   const notes = formData.get('notes') as string
 
@@ -97,6 +100,7 @@ export async function updateQuoteStatus(
   unitId: string,
   status: QuoteStatus,
 ): Promise<ActionResult<{ orderId?: string }>> {
+  await requireUnitAccess(unitId, ['unit_manager', 'store', 'director'])
   const supabase = createAdminClient()
 
   if (status === 'approved') {

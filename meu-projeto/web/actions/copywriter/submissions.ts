@@ -2,13 +2,12 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { getUser } from '@/lib/auth/get-user'
+import { requireRole } from '@/lib/auth/guards'
 import { calculateQualityBonus } from '@/lib/gamification'
 import type { Submission, SubmissionComment } from '@/types/copywriter'
 
 export async function claimBriefing(briefingId: string) {
-  const user = await getUser()
-  if (!user) throw new Error('Não autenticado')
+  const { profile } = await requireRole(['copywriter'])
 
   const supabase = createAdminClient()
 
@@ -28,7 +27,7 @@ export async function claimBriefing(briefingId: string) {
 
   const { error } = await supabase.from('submissions').insert({
     briefing_id: briefingId,
-    writer_id: user.id,
+    writer_id: profile.id,
     status: 'claimed',
   })
   if (error) {
@@ -40,15 +39,14 @@ export async function claimBriefing(briefingId: string) {
   await supabase.from('briefings').update({ status: 'in_progress' }).eq('id', briefingId)
 
   // Garantir que copywriter_profile existe
-  await supabase.from('copywriter_profiles').upsert({ id: user.id }, { onConflict: 'id' })
+  await supabase.from('copywriter_profiles').upsert({ id: profile.id }, { onConflict: 'id' })
 
   revalidatePath(`/copywriter/missions/${briefingId}`)
   revalidatePath('/copywriter/missions')
 }
 
 export async function submitForReview(submissionId: string, content: string) {
-  const user = await getUser()
-  if (!user) throw new Error('Não autenticado')
+  const { profile } = await requireRole(['copywriter'])
 
   const wordCount = content.trim().split(/\s+/).filter(Boolean).length
 
@@ -62,7 +60,7 @@ export async function submitForReview(submissionId: string, content: string) {
       submitted_at: new Date().toISOString(),
     })
     .eq('id', submissionId)
-    .eq('writer_id', user.id)
+    .eq('writer_id', profile.id)
   if (error) throw new Error(error.message)
 
   revalidatePath('/copywriter/missions')
@@ -74,10 +72,7 @@ export async function reviewSubmission(
   verdict: 'approved' | 'revision' | 'rejected',
   score: number
 ) {
-  const user = await getUser()
-  if (!user || !['director', 'unit_manager'].includes(user.role)) {
-    throw new Error('Sem permissão')
-  }
+  const { profile } = await requireRole(['director', 'unit_manager'])
 
   const supabase = createAdminClient()
 
@@ -93,7 +88,7 @@ export async function reviewSubmission(
   const { error } = await supabase.from('submissions').update({
     status: verdict,
     score,
-    reviewer_id: user.id,
+    reviewer_id: profile.id,
     reviewed_at: new Date().toISOString(),
   }).eq('id', submissionId)
   if (error) throw new Error(error.message)
@@ -113,29 +108,29 @@ export async function reviewSubmission(
     })
 
     // Atualizar perfil do escritor
-    const { data: profile } = await supabase
+    const { data: writerProfile } = await supabase
       .from('copywriter_profiles')
       .select('*')
       .eq('id', submission.writer_id)
       .single()
 
-    if (profile) {
-      const newMissionsDone = profile.missions_done + 1
-      const newTotalXp = profile.total_xp + totalXp
-      const newAvg = ((profile.avg_score * profile.missions_done) + score) / newMissionsDone
+    if (writerProfile) {
+      const newMissionsDone = writerProfile.missions_done + 1
+      const newTotalXp = writerProfile.total_xp + totalXp
+      const newAvg = ((writerProfile.avg_score * writerProfile.missions_done) + score) / newMissionsDone
 
       // Calcular streak
-      const lastSub = profile.last_submission ? new Date(profile.last_submission) : null
+      const lastSub = writerProfile.last_submission ? new Date(writerProfile.last_submission) : null
       const now = new Date()
       const diffDays = lastSub ? Math.floor((now.getTime() - lastSub.getTime()) / 86400000) : 999
-      const newStreak = diffDays <= 1 ? profile.current_streak + 1 : 1
+      const newStreak = diffDays <= 1 ? writerProfile.current_streak + 1 : 1
 
       await supabase.from('copywriter_profiles').update({
         total_xp: newTotalXp,
         missions_done: newMissionsDone,
         avg_score: Math.round(newAvg * 10) / 10,
         current_streak: newStreak,
-        best_streak: Math.max(profile.best_streak, newStreak),
+        best_streak: Math.max(writerProfile.best_streak, newStreak),
         last_submission: now.toISOString(),
       }).eq('id', submission.writer_id)
 
@@ -209,13 +204,12 @@ async function checkAndAwardBadges(
 }
 
 export async function addComment(submissionId: string, content: string) {
-  const user = await getUser()
-  if (!user) throw new Error('Não autenticado')
+  const { profile } = await requireRole(['copywriter'])
 
   const supabase = createAdminClient()
   const { error } = await supabase.from('submission_comments').insert({
     submission_id: submissionId,
-    author_id: user.id,
+    author_id: profile.id,
     content,
   })
   if (error) throw new Error(error.message)
@@ -225,6 +219,8 @@ export async function addComment(submissionId: string, content: string) {
 }
 
 export async function getSubmissionComments(submissionId: string): Promise<SubmissionComment[]> {
+  await requireRole(['copywriter', 'director', 'unit_manager'])
+
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('submission_comments')
@@ -235,28 +231,26 @@ export async function getSubmissionComments(submissionId: string): Promise<Submi
 }
 
 export async function listMySubmissions(): Promise<Submission[]> {
-  const user = await getUser()
-  if (!user) throw new Error('Não autenticado')
+  const { profile } = await requireRole(['copywriter'])
 
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('submissions')
     .select('*, briefing:briefings(*)')
-    .eq('writer_id', user.id)
+    .eq('writer_id', profile.id)
     .order('created_at', { ascending: false })
   return (data ?? []) as Submission[]
 }
 
 export async function getSubmission(briefingId: string): Promise<Submission | null> {
-  const user = await getUser()
-  if (!user) throw new Error('Não autenticado')
+  const { profile } = await requireRole(['copywriter'])
 
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('submissions')
     .select('*, writer:profiles!submissions_writer_id_fkey(full_name)')
     .eq('briefing_id', briefingId)
-    .eq('writer_id', user.id)
+    .eq('writer_id', profile.id)
     .maybeSingle()
   return data as Submission | null
 }

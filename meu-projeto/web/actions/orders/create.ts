@@ -2,8 +2,11 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireRole, requireUnitAccess, requireAuth } from '@/lib/auth/guards'
+import { validateTransition } from '@/lib/auth/order-machine'
 import { z } from 'zod'
-import type { ActionResult } from '@/actions/staff/invite'
+import type { ActionResult } from '@/lib/auth/action-result'
+import type { OrderStatus } from '@/types/order'
 
 // ──────────────────────────────────────────────────────────────
 // Schemas
@@ -57,64 +60,68 @@ export async function createOrder(
   unitSlug: string,
   input: CreateOrderInput
 ): Promise<ActionResult<{ orderId: string; orderNumber: string }>> {
-  const parsed = createOrderSchema.safeParse(input)
-  if (!parsed.success) {
-    return { success: false, error: parsed.error.issues[0].message }
-  }
+  try {
+    const { user } = await requireRole(['operator', 'unit_manager', 'store'])
 
-  const supabase = createAdminClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  const admin = createAdminClient()
+    const parsed = createOrderSchema.safeParse(input)
+    if (!parsed.success) {
+      return { success: false, error: parsed.error.issues[0].message }
+    }
 
-  const orderNumber = await generateOrderNumber(unitId, unitSlug)
+    const admin = createAdminClient()
 
-  const { data: order, error: orderError } = await admin
-    .from('orders')
-    .insert({
+    const orderNumber = await generateOrderNumber(unitId, unitSlug)
+
+    const { data: order, error: orderError } = await admin
+      .from('orders')
+      .insert({
+        unit_id: unitId,
+        client_id: parsed.data.client_id ?? null,
+        client_name: parsed.data.client_name,
+        order_number: orderNumber,
+        status: 'received',
+        promised_at: parsed.data.promised_at,
+        notes: parsed.data.notes ?? null,
+        created_by: user.id,
+      })
+      .select('id, order_number')
+      .single()
+
+    if (orderError || !order) {
+      return { success: false, error: `Erro ao criar comanda: ${orderError?.message}` }
+    }
+
+    const itemsToInsert = parsed.data.items.map((item) => ({
+      order_id: order.id,
+      piece_type: item.piece_type,
+      piece_type_label: item.piece_type_label ?? null,
+      quantity: item.quantity,
+      recipe_id: item.recipe_id ?? null,
+      notes: item.notes ?? null,
+    }))
+
+    const { error: itemsError } = await admin.from('order_items').insert(itemsToInsert)
+
+    if (itemsError) {
+      await admin.from('orders').delete().eq('id', order.id)
+      return { success: false, error: `Erro ao salvar itens: ${itemsError.message}` }
+    }
+
+    // Evento inicial: entrada na unidade
+    await admin.from('order_events').insert({
+      order_id: order.id,
       unit_id: unitId,
-      client_id: parsed.data.client_id ?? null,
-      client_name: parsed.data.client_name,
-      order_number: orderNumber,
-      status: 'received',
-      promised_at: parsed.data.promised_at,
-      notes: parsed.data.notes ?? null,
-      created_by: user?.id ?? null,
+      sector: 'received',
+      event_type: 'entry',
+      operator_id: user.id,
+      notes: 'Comanda criada — peças recebidas',
     })
-    .select('id, order_number')
-    .single()
 
-  if (orderError || !order) {
-    return { success: false, error: `Erro ao criar comanda: ${orderError?.message}` }
+    revalidatePath(`/unit/${unitId}/production/orders`)
+    return { success: true, data: { orderId: order.id, orderNumber: order.order_number } }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : 'Erro desconhecido' }
   }
-
-  const itemsToInsert = parsed.data.items.map((item) => ({
-    order_id: order.id,
-    piece_type: item.piece_type,
-    piece_type_label: item.piece_type_label ?? null,
-    quantity: item.quantity,
-    recipe_id: item.recipe_id ?? null,
-    notes: item.notes ?? null,
-  }))
-
-  const { error: itemsError } = await admin.from('order_items').insert(itemsToInsert)
-
-  if (itemsError) {
-    await admin.from('orders').delete().eq('id', order.id)
-    return { success: false, error: `Erro ao salvar itens: ${itemsError.message}` }
-  }
-
-  // Evento inicial: entrada na unidade
-  await admin.from('order_events').insert({
-    order_id: order.id,
-    unit_id: unitId,
-    sector: 'received',
-    event_type: 'entry',
-    operator_id: user?.id ?? null,
-    notes: 'Comanda criada — peças recebidas',
-  })
-
-  revalidatePath(`/unit/${unitId}/production/orders`)
-  return { success: true, data: { orderId: order.id, orderNumber: order.order_number } }
 }
 
 export async function updateOrderStatus(
@@ -125,30 +132,46 @@ export async function updateOrderStatus(
   eventType: 'entry' | 'exit' | 'alert' = 'entry',
   notes?: string
 ): Promise<ActionResult> {
-  const admin = createAdminClient()
-  const supabase = createAdminClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  try {
+    const { user } = await requireUnitAccess(unitId, ['operator', 'unit_manager'])
 
-  const { error } = await admin
-    .from('orders')
-    .update({ status })
-    .eq('id', orderId)
-    .eq('unit_id', unitId)
+    const admin = createAdminClient()
 
-  if (error) return { success: false, error: `Erro ao atualizar status: ${error.message}` }
+    // Buscar status atual para validar transição
+    const { data: currentOrder } = await admin
+      .from('orders')
+      .select('status')
+      .eq('id', orderId)
+      .eq('unit_id', unitId)
+      .single()
 
-  await admin.from('order_events').insert({
-    order_id: orderId,
-    unit_id: unitId,
-    sector,
-    event_type: eventType,
-    operator_id: user?.id ?? null,
-    notes: notes ?? null,
-  })
+    if (currentOrder) {
+      validateTransition(currentOrder.status as OrderStatus, status as OrderStatus)
+    }
 
-  revalidatePath(`/unit/${unitId}/production/orders`)
-  revalidatePath(`/unit/${unitId}/production/orders/${orderId}`)
-  return { success: true, data: undefined }
+    const { error } = await admin
+      .from('orders')
+      .update({ status })
+      .eq('id', orderId)
+      .eq('unit_id', unitId)
+
+    if (error) return { success: false, error: `Erro ao atualizar status: ${error.message}` }
+
+    await admin.from('order_events').insert({
+      order_id: orderId,
+      unit_id: unitId,
+      sector,
+      event_type: eventType,
+      operator_id: user.id,
+      notes: notes ?? null,
+    })
+
+    revalidatePath(`/unit/${unitId}/production/orders`)
+    revalidatePath(`/unit/${unitId}/production/orders/${orderId}`)
+    return { success: true, data: undefined }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : 'Erro desconhecido' }
+  }
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -156,6 +179,8 @@ export async function updateOrderStatus(
 // ──────────────────────────────────────────────────────────────
 
 export async function searchClients(unitId: string, query: string) {
+  await requireUnitAccess(unitId, ['operator', 'unit_manager', 'store'])
+
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('clients')
@@ -178,22 +203,27 @@ export async function createOrderEvent(
   event: {
     sector: string
     event_type: 'entry' | 'exit' | 'alert'
-    operator_id: string | null
     notes?: string
   }
 ): Promise<ActionResult> {
-  const admin = createAdminClient()
-  const { error } = await admin.from('order_events').insert({
-    order_id: orderId,
-    unit_id: unitId,
-    sector: event.sector,
-    event_type: event.event_type,
-    operator_id: event.operator_id,
-    notes: event.notes ?? null,
-  })
+  try {
+    const { user } = await requireUnitAccess(unitId, ['operator', 'unit_manager'])
 
-  if (error) return { success: false, error: `Erro ao registrar evento: ${error.message}` }
+    const admin = createAdminClient()
+    const { error } = await admin.from('order_events').insert({
+      order_id: orderId,
+      unit_id: unitId,
+      sector: event.sector,
+      event_type: event.event_type,
+      operator_id: user.id,
+      notes: event.notes ?? null,
+    })
 
-  revalidatePath(`/unit/${unitId}/alerts`)
-  return { success: true, data: undefined }
+    if (error) return { success: false, error: `Erro ao registrar evento: ${error.message}` }
+
+    revalidatePath(`/unit/${unitId}/alerts`)
+    return { success: true, data: undefined }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : 'Erro desconhecido' }
+  }
 }

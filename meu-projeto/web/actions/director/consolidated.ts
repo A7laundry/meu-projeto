@@ -1,6 +1,7 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireRole } from '@/lib/auth/guards'
 import { getSlaAlerts } from '@/lib/queries/sla-alerts'
 
 export interface UnitFinancial {
@@ -28,6 +29,7 @@ export interface NetworkFinancial {
 }
 
 export async function getNetworkFinancial(unitIds: string[]): Promise<NetworkFinancial> {
+  await requireRole(['director'])
   if (unitIds.length === 0) return { totalReceivable: 0, totalPayable: 0, balance: 0 }
 
   const supabase = createAdminClient()
@@ -51,6 +53,7 @@ export async function getNetworkFinancial(unitIds: string[]): Promise<NetworkFin
 }
 
 export async function getNetworkSlaAlerts(unitIds: string[]): Promise<UnitSlaCount[]> {
+  await requireRole(['director'])
   const results = await Promise.all(
     unitIds.map(async (unitId) => {
       const alerts = await getSlaAlerts(unitId)
@@ -61,6 +64,7 @@ export async function getNetworkSlaAlerts(unitIds: string[]): Promise<UnitSlaCou
 }
 
 export async function getNetworkManifests(unitIds: string[]): Promise<UnitManifestSummary[]> {
+  await requireRole(['director'])
   if (unitIds.length === 0) return []
 
   const supabase = createAdminClient()
@@ -86,6 +90,7 @@ export async function exportNetworkKpisCsv(
   units: Array<{ id: string; name: string }>,
   days = 0,
 ): Promise<string> {
+  await requireRole(['director'])
   void days // parâmetro reservado para filtro futuro por período
   const supabase = createAdminClient()
   const today = new Date().toISOString().split('T')[0]

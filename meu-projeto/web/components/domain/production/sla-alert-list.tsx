@@ -36,7 +36,6 @@ export function SlaAlertList({ alerts, unitId, operatorId }: SlaAlertListProps) 
       await createOrderEvent(orderId, unitId, {
         sector: 'alert',
         event_type: 'alert',
-        operator_id: operatorId,
         notes: 'SLA excedido — ciente',
       })
     })

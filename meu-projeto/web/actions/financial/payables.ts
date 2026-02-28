@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireRole } from '@/lib/auth/guards'
 import type { Payable } from '@/types/financial'
 
 type ActionResult<T = void> =
@@ -19,6 +20,7 @@ const payableSchema = z.object({
 })
 
 export async function listPayables(unitId: string): Promise<Payable[]> {
+  await requireRole(['unit_manager', 'director'])
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('payables')
@@ -33,6 +35,8 @@ export async function createPayable(
   unitId: string,
   formData: FormData,
 ): Promise<ActionResult<Payable>> {
+  await requireRole(['unit_manager', 'director'])
+
   const raw = {
     description: formData.get('description') as string,
     supplier: formData.get('supplier') as string,
@@ -57,6 +61,7 @@ export async function createPayable(
   if (error) return { success: false, error: error.message }
 
   revalidatePath(`/unit/${unitId}/financial`)
+  revalidatePath('/store/financeiro')
   return { success: true, data: data as Payable }
 }
 
@@ -64,6 +69,7 @@ export async function markPayablePaid(
   id: string,
   unitId: string,
 ): Promise<ActionResult> {
+  await requireRole(['unit_manager', 'director'])
   const supabase = createAdminClient()
   const { error } = await supabase
     .from('payables')
@@ -74,5 +80,6 @@ export async function markPayablePaid(
   if (error) return { success: false, error: error.message }
 
   revalidatePath(`/unit/${unitId}/financial`)
+  revalidatePath('/store/financeiro')
   return { success: true, data: undefined }
 }
