@@ -1,0 +1,20 @@
+schema: 1
+story: 'E1.2'
+gate: CONCERNS
+status_reason: '8/9 ACs met. JWT hook (AC5) requires manual Supabase config. Service role key used in Edge Runtime middleware is a known trade-off.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'SEC-001'
+    severity: medium
+    finding: 'Middleware getProfileFromAdmin() does not validate userId as UUID before URL interpolation'
+    suggested_action: 'Add UUID regex validation as defense-in-depth'
+  - id: 'SEC-002'
+    severity: medium
+    finding: 'SUPABASE_SERVICE_ROLE_KEY exposed in Edge Runtime on every authenticated request'
+    suggested_action: 'Configure JWT hook (AC5) to read role from claims and eliminate service-role fetch'
+  - id: 'AUTH-002'
+    severity: low
+    finding: 'Duplicate error pages at (auth)/error/ and (auth)/auth/error/'
+    suggested_action: 'Remove dead code error page'
+waiver: { active: false }

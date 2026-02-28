@@ -1,0 +1,16 @@
+schema: 1
+story: 'E8.1'
+gate: CONCERNS
+status_reason: '5/6 ACs met. Alert thresholds, evaluateKpiAlerts, ExecutiveAlerts component, and historical reports with CSV all working. Breakage threshold value diverges from AC spec.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E8.1-01'
+    severity: medium
+    finding: 'Breakage warning threshold is 10% in code vs 15% specified in AC1'
+    suggested_action: 'Align threshold with AC specification or document the intentional change'
+  - id: 'QA-E8.1-02'
+    severity: low
+    finding: 'Export CSV endpoint auth gap FIXED — requireRole(director) added to /api/director/export-kpis'
+    suggested_action: 'Resolved'
+waiver: { active: false }

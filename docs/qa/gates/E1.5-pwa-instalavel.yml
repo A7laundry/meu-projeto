@@ -1,0 +1,16 @@
+schema: 1
+story: 'E1.5'
+gate: CONCERNS
+status_reason: 'All 8 ACs met. PWA infrastructure solid with next-pwa, offline queue via IndexedDB, network status hook. Minor spec deviations in manifest.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'PWA-001'
+    severity: medium
+    finding: 'manifest.json uses A7x branding, portrait orientation, and /client/orders start_url instead of spec values'
+    suggested_action: 'Review multi-profile PWA strategy and update manifest accordingly'
+  - id: 'PWA-004'
+    severity: low
+    finding: 'Offline queue has no max retry limit — could cause infinite retry loops'
+    suggested_action: 'Add retry cap (e.g. 5 retries) to drainQueue function'
+waiver: { active: false }

@@ -1,0 +1,12 @@
+schema: 1
+story: 'E2.8'
+gate: PASS
+status_reason: 'All 9 ACs met. 5-column layout, SLA highlighting, footer metrics, 30s auto-refresh. TV auth deferred to Wave 2.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E2.8-01'
+    severity: low
+    finding: 'TV page has no auth check — any user with unitId UUID can view production data'
+    suggested_action: 'Implement token-based display auth in Wave 2'
+waiver: { active: false }

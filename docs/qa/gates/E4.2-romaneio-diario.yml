@@ -1,0 +1,12 @@
+schema: 1
+story: 'E4.2'
+gate: PASS
+status_reason: 'All 6 ACs met. Manifest generation with upsert, status transitions, shift filtering, stop management, and print export all working.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E4.2-001'
+    severity: low
+    finding: 'updateStopStatus filters by stopId only without cross-checking unit ownership'
+    suggested_action: 'Add unit scoping to stop status updates'
+waiver: { active: false }

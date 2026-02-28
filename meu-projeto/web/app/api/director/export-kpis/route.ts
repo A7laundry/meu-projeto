@@ -1,8 +1,15 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { exportNetworkKpisCsv } from '@/actions/director/consolidated'
+import { requireRole } from '@/lib/auth/guards'
 
 export async function GET(request: NextRequest) {
+  try {
+    await requireRole(['director'])
+  } catch {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
   const { searchParams } = new URL(request.url)
   const days = Number(searchParams.get('days') ?? 0)
 

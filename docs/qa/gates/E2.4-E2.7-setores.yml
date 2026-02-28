@@ -1,0 +1,20 @@
+schema: 1
+story: 'E2.4-E2.7'
+gate: CONCERNS
+status_reason: 'Unified GenericSectorForm pattern well-designed. Equipment selection and shift counters deferred per dev notes. ~18/24 ACs met across 4 sectors.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E2.4-01'
+    severity: medium
+    finding: 'E2.4/E2.5 AC2 (equipment selection + auto start time) not in UI despite backend support'
+    suggested_action: 'Wire equipment picker to GenericSectorForm or defer formally'
+  - id: 'QA-E2.5-01'
+    severity: medium
+    finding: 'E2.5 AC5 (cycle counter per dryer per shift) not implemented'
+    suggested_action: 'Track for Wave 2'
+  - id: 'QA-E2.47-02'
+    severity: low
+    finding: 'completeSector only allows operator role, excluding unit_manager'
+    suggested_action: 'Add unit_manager to allowed roles'
+waiver: { active: false }

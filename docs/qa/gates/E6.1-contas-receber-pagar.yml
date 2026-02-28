@@ -1,0 +1,12 @@
+schema: 1
+story: 'E6.1'
+gate: PASS
+status_reason: 'All 5 ACs met. Receivables/payables CRUD, mark-as-paid, summary card with totals. paid_by workaround in notes field documented.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E6.1-01'
+    severity: low
+    finding: 'paid_by audit trail stored as string in notes field — pending migration for proper column'
+    suggested_action: 'Add paid_by column in next migration batch'
+waiver: { active: false }

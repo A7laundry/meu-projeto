@@ -1,0 +1,12 @@
+schema: 1
+story: 'E4.1'
+gate: PASS
+status_reason: 'All 5 ACs met. Client CRUD, route CRUD, route-stop associations, CPF/CNPJ validation, and comprehensive RLS policies.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E4.1-001'
+    severity: low
+    finding: 'listClients uses requireRole instead of requireUnitAccess — mitigated by query filtering by unit_id'
+    suggested_action: 'Standardize to requireUnitAccess for consistency'
+waiver: { active: false }

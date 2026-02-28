@@ -1,0 +1,8 @@
+schema: 1
+story: 'E2.2'
+gate: PASS
+status_reason: 'All 6 ACs met. Print button extracted to LabelPrintButton client component — runtime issue resolved.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:30:00Z'
+top_issues: []
+waiver: { active: false }

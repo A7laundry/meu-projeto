@@ -1,0 +1,16 @@
+schema: 1
+story: 'E2.11'
+gate: PASS
+status_reason: 'All 6 ACs met. History page with search, filters, pagination, order detail with timeline, and CSV export all functional.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E2.11-01'
+    severity: medium
+    finding: 'Search filter uses string interpolation in PostgREST .or() — special chars could break filter syntax'
+    suggested_action: 'Sanitize search input to remove PostgREST DSL special characters'
+  - id: 'QA-E2.11-02'
+    severity: low
+    finding: 'Debounce in handleSearch does not properly cancel previous timers'
+    suggested_action: 'Use useRef for timeout ID or switch to useDeferredValue'
+waiver: { active: false }

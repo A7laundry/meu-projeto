@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { getOrder } from '@/actions/orders/list'
 import { OrderQRLabel } from '@/components/domain/order/order-qr-label'
+import { LabelPrintButton } from './label-print-button'
 
 export default async function OrderLabelPage({
   params,
@@ -34,12 +35,7 @@ export default async function OrderLabelPage({
       {/* Área de tela (não impressa) */}
       <div className="no-print flex items-center justify-between p-4 border-b bg-white">
         <h1 className="text-sm font-medium text-gray-600">Etiqueta — {order.order_number}</h1>
-        <button
-          onClick={() => window.print()}
-          className="px-4 py-2 bg-gray-900 text-white text-sm rounded-md hover:bg-gray-700"
-        >
-          🖨️ Imprimir
-        </button>
+        <LabelPrintButton />
       </div>
 
       {/* Preview da etiqueta */}

@@ -1,0 +1,12 @@
+schema: 1
+story: 'E5.2'
+gate: PASS
+status_reason: 'All 5 ACs met. Client detail page with stats, CRM notes with categories, last-10 display. Solid implementation.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E5.2-01'
+    severity: low
+    finding: 'createCrmNote does not include author_id — note authorship not tracked'
+    suggested_action: 'Add author_id from authenticated user session to note insert'
+waiver: { active: false }

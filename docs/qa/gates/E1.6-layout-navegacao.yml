@@ -1,0 +1,12 @@
+schema: 1
+story: 'E1.6'
+gate: PASS
+status_reason: 'All 8 ACs met. Five distinct layouts for each profile type. Clean component architecture.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'UX-003'
+    severity: low
+    finding: 'Client layout logout link uses href=/auth/logout (404) instead of Server Action form'
+    suggested_action: 'Replace with form submission consistent with other layouts'
+waiver: { active: false }

@@ -1,0 +1,16 @@
+schema: 1
+story: 'E3.2'
+gate: CONCERNS
+status_reason: 'All 6 ACs met functionally. Missing unit scoping on equipment log queries and status updates.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E3.2-001'
+    severity: medium
+    finding: 'createEquipmentLog status update uses .eq(id) without .eq(unit_id) — cross-tenant mutation risk'
+    suggested_action: 'Add unit_id scoping to equipment status update query'
+  - id: 'QA-E3.2-002'
+    severity: medium
+    finding: 'listEquipmentLogs and getTotalCycles use requireRole instead of requireUnitAccess'
+    suggested_action: 'Switch to requireUnitAccess for proper tenant isolation'
+waiver: { active: false }

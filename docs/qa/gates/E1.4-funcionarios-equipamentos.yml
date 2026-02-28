@@ -1,0 +1,12 @@
+schema: 1
+story: 'E1.4'
+gate: CONCERNS
+status_reason: 'All 7 ACs met. Cross-tenant equipment update risk via missing unit_id scoping on admin client mutations.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'SEC-003'
+    severity: medium
+    finding: 'updateEquipment and updateEquipmentStatus filter by id only, not unit_id, with admin client'
+    suggested_action: 'Add .eq(unit_id, unitId) to equipment update/status queries — one-line fix'
+waiver: { active: false }

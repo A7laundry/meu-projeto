@@ -1,0 +1,16 @@
+schema: 1
+story: 'E2.3'
+gate: CONCERNS
+status_reason: '8/9 ACs met. AC9 offline queue explicitly deferred to Wave 2. Core sorting flow with realtime, QR, and state machine works well.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E2.3-01'
+    severity: medium
+    finding: 'AC9 offline queue not integrated into sorting form (deferred Wave 2)'
+    suggested_action: 'Track for Wave 2 implementation'
+  - id: 'QA-E2.3-02'
+    severity: low
+    finding: 'completeSorting only allows operator role, excluding unit_manager'
+    suggested_action: 'Add unit_manager to allowed roles'
+waiver: { active: false }

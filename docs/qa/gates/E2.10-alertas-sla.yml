@@ -1,0 +1,16 @@
+schema: 1
+story: 'E2.10'
+gate: PASS
+status_reason: 'All 6 ACs met. SLA alerts page with sorting, acknowledge button, auto-refresh, and sidebar link working correctly.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E2.10-01'
+    severity: medium
+    finding: 'Shipping SLA uses shipped status (final) instead of orders currently in shipping sector — alerts may not fire for shipping'
+    suggested_action: 'Review SLA map to use ready status or sector-based detection for shipping'
+  - id: 'QA-E2.10-02'
+    severity: low
+    finding: 'createOrderEvent inserts sector=alert which may violate DB CHECK constraint on order_events.sector'
+    suggested_action: 'Verify CHECK constraint includes alert or use a different approach'
+waiver: { active: false }

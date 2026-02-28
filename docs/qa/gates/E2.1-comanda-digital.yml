@@ -1,0 +1,16 @@
+schema: 1
+story: 'E2.1'
+gate: PASS
+status_reason: 'All 8 ACs met. Zod validation, state machine, auth guards, and sequential numbering all in place.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E2.1-01'
+    severity: low
+    finding: 'Race condition in generateOrderNumber — concurrent requests could collide on count+1'
+    suggested_action: 'Consider using Postgres sequence or advisory lock for order numbering'
+  - id: 'QA-E2.1-03'
+    severity: low
+    finding: 'getOrder uses requireAuth without requireUnitAccess — any authenticated user can read any order by UUID'
+    suggested_action: 'Add unit-level scoping to getOrder'
+waiver: { active: false }

@@ -1,0 +1,20 @@
+schema: 1
+story: 'E3.3'
+gate: CONCERNS
+status_reason: '5/7 ACs met. AC6 (movement history modal) and AC7 (recipe link) not implemented. Cross-tenant mutation pattern continues.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E3.3-001'
+    severity: medium
+    finding: 'AC6 historical movements modal not implemented — backend exists but no UI'
+    suggested_action: 'Implement movements list UI or defer to Wave 2 formally'
+  - id: 'QA-E3.3-002'
+    severity: medium
+    finding: 'AC7 recipe_chemicals linking not implemented — DB table exists but no UI/actions'
+    suggested_action: 'Implement recipe-chemical linking or defer formally'
+  - id: 'QA-E3.3-004'
+    severity: medium
+    finding: 'updateChemicalProduct missing unit_id scoping with admin client'
+    suggested_action: 'Add .eq(unit_id, unitId) to update query'
+waiver: { active: false }

@@ -1,0 +1,20 @@
+schema: 1
+story: 'E2.9'
+gate: CONCERNS
+status_reason: '8/12 ACs met. Core KPIs and charts functional. AC4 (cycle time), AC9 (period filters), AC11 (trends) deferred. Director dashboard partially meets AC8.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E2.9-01'
+    severity: medium
+    finding: 'AC4 average cycle time not implemented — requires complex JOIN queries'
+    suggested_action: 'Implement with materialized view or scheduled aggregation'
+  - id: 'QA-E2.9-02'
+    severity: medium
+    finding: 'AC9 period filters (today/week/month/custom) not implemented'
+    suggested_action: 'Add date range filter component to dashboard'
+  - id: 'QA-E2.9-05'
+    severity: low
+    finding: 'getProductionKpis fetches all daily orders and processes in JS instead of aggregate queries'
+    suggested_action: 'Optimize with SQL aggregates for high-volume units'
+waiver: { active: false }

@@ -1,0 +1,20 @@
+schema: 1
+story: 'E4.3'
+gate: CONCERNS
+status_reason: 'All 5 ACs met in UI structure. Critical role mismatch: driver page calls manager-scoped actions instead of driver.ts functions. Driver users likely cannot update stop statuses.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E4.3-001'
+    severity: medium
+    finding: 'Driver manifest page queries Supabase directly with no driver-level authorization check'
+    suggested_action: 'Use getDriverManifestsToday() server action from driver.ts instead'
+  - id: 'QA-E4.3-002'
+    severity: medium
+    finding: 'DriverStopCard calls updateStopStatus from crud.ts (requires unit_manager) instead of markStopVisited from driver.ts'
+    suggested_action: 'Wire UI to driver.ts actions: markStopVisited, markStopVisitedWithEvidence, skipStop'
+  - id: 'QA-E4.3-003'
+    severity: medium
+    finding: 'handleComplete calls updateManifestStatus requiring unit_manager role — driver cannot complete route'
+    suggested_action: 'Create driver-scoped completeManifest action in driver.ts'
+waiver: { active: false }

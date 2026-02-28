@@ -1,0 +1,16 @@
+schema: 1
+story: 'E7.1'
+gate: CONCERNS
+status_reason: 'All 5 ACs met. API route auth gap fixed with requireRole(director). N+1 query pattern in SLA alerts remains as medium concern.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E7.1-01'
+    severity: low
+    finding: 'API route /api/director/export-kpis auth gap FIXED — requireRole(director) added to route handler'
+    suggested_action: 'Resolved'
+  - id: 'QA-E7.1-02'
+    severity: medium
+    finding: 'getNetworkSlaAlerts has N+1 query pattern — one getSlaAlerts call per unit'
+    suggested_action: 'Consolidate into single query with unit grouping'
+waiver: { active: false }

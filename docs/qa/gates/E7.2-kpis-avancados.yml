@@ -1,0 +1,16 @@
+schema: 1
+story: 'E7.2'
+gate: CONCERNS
+status_reason: '5/6 ACs met. Equipment efficiency KPI (AC4) marked done but not present in implementation. 4 of 5 expected KPI cards implemented.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E7.2-01'
+    severity: medium
+    finding: 'AC4 equipment efficiency KPI not implemented — grid shows 4 KPIs instead of 5'
+    suggested_action: 'Implement equipment efficiency from equipment_logs data or update AC to reflect scope'
+  - id: 'QA-E7.2-02'
+    severity: low
+    finding: 'getNetworkCostPerKg uses large IN clause with all monthly order IDs — may hit SQL limits'
+    suggested_action: 'Use subquery or join instead of fetching order IDs separately'
+waiver: { active: false }

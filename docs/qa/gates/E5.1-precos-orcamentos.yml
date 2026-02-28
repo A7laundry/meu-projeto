@@ -1,0 +1,16 @@
+schema: 1
+story: 'E5.1'
+gate: CONCERNS
+status_reason: 'All 5 ACs met. Price table, client overrides, quotes CRUD, status flow, and auto-order creation working. Non-transactional quote-to-order noted.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E5.1-01'
+    severity: medium
+    finding: 'Overlapping RLS policies — price_table_unit_write uses FOR ALL granting DELETE to operators'
+    suggested_action: 'Verify operator DELETE permission is intentional or restrict to SELECT/INSERT/UPDATE'
+  - id: 'QA-E5.1-02'
+    severity: low
+    finding: 'Quote-to-order creation not wrapped in transaction — inconsistent state if partial failure'
+    suggested_action: 'Use Supabase RPC for atomic quote approval + order creation'
+waiver: { active: false }

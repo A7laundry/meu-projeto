@@ -1,0 +1,12 @@
+schema: 1
+story: 'E6.2'
+gate: PASS
+status_reason: 'All 5 ACs met. Cashflow with weekly breakdown, DRE with revenue/costs/profit, CSV export, month navigation.'
+reviewer: 'Quinn'
+updated: '2026-02-27T22:00:00Z'
+top_issues:
+  - id: 'QA-E6.2-01'
+    severity: low
+    finding: 'Date calculation with toISOString may have off-by-one in negative UTC offset timezones'
+    suggested_action: 'Use date-fns or explicit timezone handling for Brazilian timezone'
+waiver: { active: false }
