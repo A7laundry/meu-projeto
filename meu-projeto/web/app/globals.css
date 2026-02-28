@@ -311,6 +311,51 @@ body {
     background: rgba(59,130,246,0.07);
   }
 
+  /* ── Emerald — Painel da Loja ─────────────────────────── */
+  .card-emerald {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, rgba(52,211,153,0.07) 0%, rgba(0,15,40,0.28) 100%);
+    border: 1px solid rgba(52,211,153,0.12);
+  }
+  .card-emerald::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(52,211,153,0.60) 0%, rgba(52,211,153,0.10) 60%, transparent 100%);
+  }
+  .card-emerald:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(16,185,129,0.18), 0 0 0 1px rgba(52,211,153,0.18);
+  }
+
+  .card-stat-emerald {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, rgba(52,211,153,0.06) 0%, rgba(0,15,40,0.25) 100%);
+    border: 1px solid rgba(52,211,153,0.10);
+  }
+  .card-stat-emerald::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(52,211,153,0.50) 0%, transparent 60%);
+  }
+
+  .btn-emerald {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 8px 24px rgba(16,185,129,0.25);
+    transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
+  }
+  .btn-emerald:hover {
+    filter: brightness(1.10);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 32px rgba(16,185,129,0.35);
+  }
+
   /* Scrollbar dark — azul */
   .scrollbar-dark::-webkit-scrollbar { width: 4px; height: 4px; }
   .scrollbar-dark::-webkit-scrollbar-track { background: transparent; }
@@ -442,6 +487,16 @@ body {
 }
 
 /* ── Portal do Cliente — Animações ──────────────────────── */
+
+@keyframes realtime-flash {
+  0%   { box-shadow: 0 0 0 0 rgba(52,211,153,0.50); }
+  30%  { box-shadow: 0 0 0 4px rgba(52,211,153,0.35), 0 4px 24px rgba(0,0,0,0.30); }
+  100% { box-shadow: 0 4px 24px rgba(0,0,0,0.30); }
+}
+
+.realtime-flash {
+  animation: realtime-flash 1.5s ease-out;
+}
 
 @keyframes pulse-status {
   0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.5); }

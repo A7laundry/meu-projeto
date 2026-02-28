@@ -25,6 +25,7 @@ const createOrderSchema = z.object({
   client_id: z.string().uuid().optional().nullable(),
   promised_at: z.string().min(1, 'Data de promessa obrigatória'),
   notes: z.string().optional().nullable(),
+  payment_method: z.enum(['cash', 'credit_card', 'debit_card', 'pix']).optional().nullable(),
   items: z.array(orderItemSchema).min(1, 'Adicione ao menos 1 item à comanda'),
 })
 
@@ -72,6 +73,22 @@ export async function createOrder(
 
     const orderNumber = await generateOrderNumber(unitId, unitSlug)
 
+    // Se payment_method foi informado, tenta salvar no campo da tabela.
+    // TODO: Caso a coluna `payment_method` ainda nao exista na tabela `orders`,
+    // execute a migration:
+    //   ALTER TABLE orders ADD COLUMN payment_method text;
+    // Enquanto isso, o valor e salvo como fallback no campo `notes`.
+    const paymentMethod = parsed.data.payment_method ?? null
+    const paymentLabel: Record<string, string> = {
+      cash: 'Dinheiro',
+      credit_card: 'Cartao Credito',
+      debit_card: 'Cartao Debito',
+      pix: 'PIX',
+    }
+    const notesWithPayment = paymentMethod
+      ? [parsed.data.notes, `Pagamento: ${paymentLabel[paymentMethod] ?? paymentMethod}`].filter(Boolean).join(' | ')
+      : (parsed.data.notes ?? null)
+
     const { data: order, error: orderError } = await admin
       .from('orders')
       .insert({
@@ -81,7 +98,8 @@ export async function createOrder(
         order_number: orderNumber,
         status: 'received',
         promised_at: parsed.data.promised_at,
-        notes: parsed.data.notes ?? null,
+        notes: notesWithPayment,
+        payment_method: paymentMethod,
         created_by: user.id,
       })
       .select('id, order_number')

@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from 'react'
 import { completeSorting } from '@/actions/production/complete-sorting'
+import { uploadOrderPhotos } from '@/actions/orders/photos'
+import { PhotoCapture } from '@/components/ui/photo-capture'
 import type { Order, PieceType } from '@/types/order'
 import type { Recipe } from '@/types/recipe'
 
@@ -60,6 +62,9 @@ export function SortingForm({ order, unitId, recipes, onComplete, onCancel }: So
     return init
   })
 
+  // Fotos de evidencia
+  const [photos, setPhotos] = useState<File[]>([])
+
   // Itens extras adicionados pelo operador
   const [extraItems, setExtraItems] = useState<Array<{ piece_type: PieceType; quantity: number }>>([])
   const [showAddPiece, setShowAddPiece] = useState(false)
@@ -99,6 +104,14 @@ export function SortingForm({ order, unitId, recipes, onComplete, onCancel }: So
     startTransition(async () => {
       const result = await completeSorting(order.id, unitId, items, notes, extraItems)
       if (result.success) {
+        // Upload fotos de evidencia apos triagem concluida
+        if (photos.length > 0) {
+          const formData = new FormData()
+          for (const photo of photos) {
+            formData.append('photos', photo)
+          }
+          await uploadOrderPhotos(order.id, formData)
+        }
         onComplete()
       } else {
         setError(result.error)
@@ -318,6 +331,14 @@ export function SortingForm({ order, unitId, recipes, onComplete, onCancel }: So
             placeholder="Manchas, danos, instruções especiais..."
           />
         </div>
+
+        {/* Evidências fotográficas */}
+        <PhotoCapture
+          photos={photos}
+          onPhotosChange={setPhotos}
+          maxPhotos={5}
+          label="Evidências fotográficas"
+        />
       </div>
 
       {/* Footer */}

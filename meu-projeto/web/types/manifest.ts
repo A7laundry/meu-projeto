@@ -19,9 +19,12 @@ export interface ManifestStop {
   client_id: string
   client_name?: string | null
   client_address?: string | null
+  /** Full address for GPS navigation (street, number, neighborhood, city, state) */
+  client_address_full?: string | null
   position: number
   status: StopStatus
   notes: string | null
+  photo_url?: string | null
   visited_at: string | null
   created_at: string
 }
