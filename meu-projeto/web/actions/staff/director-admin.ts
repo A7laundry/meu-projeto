@@ -51,16 +51,18 @@ export async function createUserDirector(formData: FormData): Promise<void> {
     email,
     password,
     email_confirm: true,
+    user_metadata: { full_name, role, unit_id },
   })
   if (authErr) throw new Error(authErr.message)
 
-  const { error: profileErr } = await supabase.from('profiles').insert({
+  // Upsert para cobrir caso o trigger já tenha criado o profile
+  const { error: profileErr } = await supabase.from('profiles').upsert({
     id: authData.user.id,
     full_name,
     role,
     unit_id,
     active: true,
-  })
+  }, { onConflict: 'id' })
   if (profileErr) throw new Error(profileErr.message)
 
   revalidatePath('/director/users')
