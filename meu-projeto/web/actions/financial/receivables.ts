@@ -3,11 +3,26 @@
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireRole } from '@/lib/auth/guards'
+import { z } from 'zod'
 import type { Receivable } from '@/types/financial'
 
 type ActionResult<T = void> =
   | { success: true; data: T }
   | { success: false; error: string }
+
+const markPaidSchema = z.object({
+  id: z.string().uuid('ID do recebível inválido'),
+  unitId: z.string().uuid('ID da unidade inválido'),
+})
+
+const createReceivableSchema = z.object({
+  unitId: z.string().uuid('ID da unidade inválido'),
+  quoteId: z.string().uuid('ID do orçamento inválido'),
+  clientId: z.string().uuid('ID do cliente inválido'),
+  clientName: z.string().min(1, 'Nome do cliente é obrigatório'),
+  amount: z.number().positive('Valor deve ser maior que zero'),
+  dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data deve estar no formato YYYY-MM-DD'),
+})
 
 export async function listReceivables(unitId: string): Promise<Receivable[]> {
   await requireRole(['unit_manager', 'director', 'store'])
@@ -28,6 +43,11 @@ export async function markReceivablePaid(
   id: string,
   unitId: string,
 ): Promise<ActionResult> {
+  const parsed = markPaidSchema.safeParse({ id, unitId })
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0].message }
+  }
+
   await requireRole(['unit_manager', 'director', 'store'])
   const supabase = createAdminClient()
   const { error } = await supabase
@@ -51,6 +71,11 @@ export async function createReceivableFromQuote(
   amount: number,
   dueDate: string,
 ): Promise<ActionResult<Receivable>> {
+  const parsed = createReceivableSchema.safeParse({ unitId, quoteId, clientId, clientName, amount, dueDate })
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0].message }
+  }
+
   await requireRole(['unit_manager', 'director', 'store'])
   const supabase = createAdminClient()
   const { data, error } = await supabase

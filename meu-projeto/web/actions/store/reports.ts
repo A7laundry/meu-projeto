@@ -29,11 +29,12 @@ export async function getSalesReport(
   const [{ data: orders }, { data: prices }] = await Promise.all([
     supabase
       .from('orders')
-      .select('id, order_number, client_name, created_at, items:order_items(piece_type, quantity)')
+      .select('id, order_number, client_name, created_at, items:order_items(piece_type, quantity, unit_price)')
       .eq('unit_id', unitId)
       .gte('created_at', from + 'T00:00:00')
       .lte('created_at', to + 'T23:59:59')
       .order('created_at', { ascending: false }),
+    // Price table as fallback for legacy items without unit_price
     supabase
       .from('price_table')
       .select('piece_type, price')
@@ -47,10 +48,14 @@ export async function getSalesReport(
   }
 
   const rows: SalesReportRow[] = (orders ?? []).map(order => {
-    const items = (order.items as { piece_type: string; quantity: number }[] | null) ?? []
+    const items = (order.items as { piece_type: string; quantity: number; unit_price: number | null }[] | null) ?? []
     const pieces = items.reduce((s, i) => s + i.quantity, 0)
     const revenue = items.reduce(
-      (s, i) => s + (priceMap.get(i.piece_type) ?? 0) * i.quantity,
+      (s, i) => {
+        // Prefer stored unit_price (historical); fallback to current price_table for legacy items
+        const price = i.unit_price != null ? Number(i.unit_price) : (priceMap.get(i.piece_type) ?? 0)
+        return s + price * i.quantity
+      },
       0,
     )
     return {

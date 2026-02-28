@@ -3,8 +3,31 @@
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireUnitAccess } from '@/lib/auth/guards'
+import { z } from 'zod'
 import type { DailyManifest, ManifestStatus } from '@/types/manifest'
 import type { ActionResult } from '@/lib/auth/action-result'
+
+const generateManifestSchema = z.object({
+  unitId: z.string().uuid('ID da unidade inválido'),
+  routeId: z.string().uuid('ID da rota inválido'),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data deve estar no formato YYYY-MM-DD'),
+})
+
+const updateManifestStatusSchema = z.object({
+  id: z.string().uuid('ID do romaneio inválido'),
+  unitId: z.string().uuid('ID da unidade inválido'),
+  status: z.enum(['pending', 'in_progress', 'completed'], {
+    message: 'Status inválido',
+  }),
+})
+
+const updateStopStatusSchema = z.object({
+  stopId: z.string().uuid('ID da parada inválido'),
+  unitId: z.string().uuid('ID da unidade inválido'),
+  status: z.enum(['visited', 'skipped'], {
+    message: 'Status inválido',
+  }),
+})
 
 export async function listManifests(
   unitId: string,
@@ -75,6 +98,11 @@ export async function generateManifest(
   routeId: string,
   date: string,
 ): Promise<ActionResult<DailyManifest>> {
+  const parsed = generateManifestSchema.safeParse({ unitId, routeId, date })
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0].message }
+  }
+
   await requireUnitAccess(unitId, ['unit_manager', 'director'])
   const supabase = createAdminClient()
 
@@ -128,6 +156,11 @@ export async function updateManifestStatus(
   unitId: string,
   status: ManifestStatus,
 ): Promise<ActionResult> {
+  const parsed = updateManifestStatusSchema.safeParse({ id, unitId, status })
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0].message }
+  }
+
   await requireUnitAccess(unitId, ['unit_manager', 'director'])
   const supabase = createAdminClient()
   const { error } = await supabase
@@ -147,6 +180,11 @@ export async function updateStopStatus(
   unitId: string,
   status: 'visited' | 'skipped',
 ): Promise<ActionResult> {
+  const parsed = updateStopStatusSchema.safeParse({ stopId, unitId, status })
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0].message }
+  }
+
   await requireUnitAccess(unitId, ['unit_manager', 'director'])
   const supabase = createAdminClient()
   const { error } = await supabase

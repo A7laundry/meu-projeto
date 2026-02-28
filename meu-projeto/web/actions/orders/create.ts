@@ -91,14 +91,52 @@ export async function createOrder(
       return { success: false, error: `Erro ao criar comanda: ${orderError?.message}` }
     }
 
-    const itemsToInsert = parsed.data.items.map((item) => ({
-      order_id: order.id,
-      piece_type: item.piece_type,
-      piece_type_label: item.piece_type_label ?? null,
-      quantity: item.quantity,
-      recipe_id: item.recipe_id ?? null,
-      notes: item.notes ?? null,
-    }))
+    // Resolve unit_price for each item (historical price snapshot)
+    const itemsToInsert = await Promise.all(
+      parsed.data.items.map(async (item) => {
+        let unitPrice: number | null = null
+
+        // 1. Check client-specific price (if client is linked)
+        if (parsed.data.client_id) {
+          const { data: clientPrice } = await admin
+            .from('client_prices')
+            .select('price')
+            .eq('client_id', parsed.data.client_id)
+            .eq('piece_type', item.piece_type)
+            .eq('active', true)
+            .maybeSingle()
+
+          if (clientPrice) {
+            unitPrice = Number(clientPrice.price)
+          }
+        }
+
+        // 2. Fallback to standard price table
+        if (unitPrice === null) {
+          const { data: standardPrice } = await admin
+            .from('price_table')
+            .select('price')
+            .eq('unit_id', unitId)
+            .eq('piece_type', item.piece_type)
+            .eq('active', true)
+            .maybeSingle()
+
+          if (standardPrice) {
+            unitPrice = Number(standardPrice.price)
+          }
+        }
+
+        return {
+          order_id: order.id,
+          piece_type: item.piece_type,
+          piece_type_label: item.piece_type_label ?? null,
+          quantity: item.quantity,
+          unit_price: unitPrice,
+          recipe_id: item.recipe_id ?? null,
+          notes: item.notes ?? null,
+        }
+      })
+    )
 
     const { error: itemsError } = await admin.from('order_items').insert(itemsToInsert)
 

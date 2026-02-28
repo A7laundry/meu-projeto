@@ -23,6 +23,8 @@ export interface OrderItem {
   piece_type: PieceType
   piece_type_label: string | null
   quantity: number
+  unit_price: number | null
+  subtotal: number | null // GENERATED column (quantity * unit_price) — read-only
   recipe_id: string | null
   notes: string | null
 }

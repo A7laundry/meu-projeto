@@ -4,19 +4,31 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import { requireRole } from '@/lib/auth/guards'
 import { validateTransition } from '@/lib/auth/order-machine'
+import { z } from 'zod'
 import type { ActionResult } from '@/lib/auth/action-result'
 import type { PieceType, OrderStatus } from '@/types/order'
 
-export interface SortingItem {
-  itemId: string
-  recipeId: string | null
-  quantity?: number
-}
+const sortingItemSchema = z.object({
+  itemId: z.string().uuid('ID do item inválido'),
+  recipeId: z.string().uuid().nullable(),
+  quantity: z.number().int().min(1).optional(),
+})
 
-export interface ExtraItem {
-  piece_type: PieceType
-  quantity: number
-}
+const extraItemSchema = z.object({
+  piece_type: z.string().min(1, 'Tipo de peça é obrigatório') as z.ZodType<PieceType>,
+  quantity: z.number().int().min(1, 'Quantidade deve ser ao menos 1'),
+})
+
+const completeSortingSchema = z.object({
+  orderId: z.string().uuid('ID da comanda inválido'),
+  unitId: z.string().uuid('ID da unidade inválido'),
+  items: z.array(sortingItemSchema).min(1, 'Ao menos um item é obrigatório'),
+  notes: z.string().optional(),
+  extraItems: z.array(extraItemSchema).optional(),
+})
+
+export type SortingItem = z.infer<typeof sortingItemSchema>
+export type ExtraItem = z.infer<typeof extraItemSchema>
 
 export async function completeSorting(
   orderId: string,
@@ -27,6 +39,11 @@ export async function completeSorting(
 ): Promise<ActionResult> {
   try {
     const { user } = await requireRole(['operator'])
+
+    const parsed = completeSortingSchema.safeParse({ orderId, unitId, items, notes, extraItems })
+    if (!parsed.success) {
+      return { success: false, error: parsed.error.issues[0].message }
+    }
 
     const admin = createAdminClient()
 

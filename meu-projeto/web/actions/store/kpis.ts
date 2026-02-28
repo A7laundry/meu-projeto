@@ -41,17 +41,17 @@ export async function getStoreKpis(unitId: string): Promise<StoreKpis> {
     todayPrices,
     goalResult,
   ] = await Promise.all([
-    // Orders today
+    // Orders today (include unit_price for historical pricing)
     supabase
       .from('orders')
-      .select('id, client_id, items:order_items(piece_type, quantity)')
+      .select('id, client_id, items:order_items(piece_type, quantity, unit_price)')
       .eq('unit_id', unitId)
       .gte('created_at', todayStart),
 
-    // Orders this week
+    // Orders this week (include unit_price for historical pricing)
     supabase
       .from('orders')
-      .select('id, items:order_items(piece_type, quantity)')
+      .select('id, items:order_items(piece_type, quantity, unit_price)')
       .eq('unit_id', unitId)
       .gte('created_at', weekStartStr),
 
@@ -69,7 +69,7 @@ export async function getStoreKpis(unitId: string): Promise<StoreKpis> {
       .eq('unit_id', unitId)
       .eq('status', 'ready'),
 
-    // Price table for revenue calculation
+    // Price table as fallback for legacy items without unit_price
     supabase
       .from('price_table')
       .select('piece_type, price')
@@ -85,7 +85,7 @@ export async function getStoreKpis(unitId: string): Promise<StoreKpis> {
       .single(),
   ])
 
-  // Build price map
+  // Build price map (fallback for legacy items without unit_price)
   const priceMap = new Map<string, number>()
   for (const p of todayPrices.data ?? []) {
     if (!priceMap.has(p.piece_type)) priceMap.set(p.piece_type, Number(p.price))
@@ -94,8 +94,12 @@ export async function getStoreKpis(unitId: string): Promise<StoreKpis> {
   function calculateRevenue(orders: { items: unknown }[] | null) {
     if (!orders) return 0
     return orders.reduce((sum, order) => {
-      const items = (order.items as { piece_type: string; quantity: number }[] | null) ?? []
-      return sum + items.reduce((s, item) => s + (priceMap.get(item.piece_type) ?? 0) * item.quantity, 0)
+      const items = (order.items as { piece_type: string; quantity: number; unit_price: number | null }[] | null) ?? []
+      return sum + items.reduce((s, item) => {
+        // Prefer stored unit_price (historical); fallback to current price_table for legacy items
+        const price = item.unit_price != null ? Number(item.unit_price) : (priceMap.get(item.piece_type) ?? 0)
+        return s + price * item.quantity
+      }, 0)
     }, 0)
   }
 

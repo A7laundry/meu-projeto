@@ -2,6 +2,13 @@
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireRole } from '@/lib/auth/guards'
+import { z } from 'zod'
+
+const cashflowParamsSchema = z.object({
+  unitId: z.string().uuid('ID da unidade inválido'),
+  year: z.number().int().min(2020).max(2100, 'Ano inválido'),
+  month: z.number().int().min(1).max(12, 'Mês inválido'),
+})
 
 export interface CashflowWeek {
   week: number
@@ -24,6 +31,11 @@ export async function getCashflowData(
   year: number,
   month: number,
 ): Promise<{ weeks: CashflowWeek[]; totalInflows: number; totalOutflows: number; net: number }> {
+  const parsed = cashflowParamsSchema.safeParse({ unitId, year, month })
+  if (!parsed.success) {
+    throw new Error(parsed.error.issues[0].message)
+  }
+
   await requireRole(['unit_manager', 'director', 'store'])
   const supabase = createAdminClient()
 
@@ -91,6 +103,11 @@ export async function getDreData(
   year: number,
   month: number,
 ): Promise<DreRow[]> {
+  const parsed = cashflowParamsSchema.safeParse({ unitId, year, month })
+  if (!parsed.success) {
+    throw new Error(parsed.error.issues[0].message)
+  }
+
   await requireRole(['unit_manager', 'director', 'store'])
   const supabase = createAdminClient()
 

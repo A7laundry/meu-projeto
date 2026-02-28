@@ -3,23 +3,33 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import { requireRole } from '@/lib/auth/guards'
+import { z } from 'zod'
 import type { ActionResult } from '@/lib/auth/action-result'
 
-interface MaintenanceRequestData {
-  equipmentId: string | null
-  description: string
-  urgency: 'low' | 'medium' | 'high'
-}
+const maintenanceRequestSchema = z.object({
+  unitId: z.string().uuid('ID da unidade inválido'),
+  equipmentId: z.string().uuid('ID do equipamento inválido').nullable(),
+  description: z.string().min(1, 'Descrição é obrigatória'),
+  urgency: z.enum(['low', 'medium', 'high'], {
+    message: 'Urgência inválida',
+  }),
+})
 
 export async function createMaintenanceRequest(
   unitId: string,
-  data: MaintenanceRequestData
+  data: { equipmentId: string | null; description: string; urgency: 'low' | 'medium' | 'high' }
 ): Promise<ActionResult> {
   try {
     const { user } = await requireRole(['operator'])
 
-    if (!data.description.trim()) {
-      return { success: false, error: 'Descrição é obrigatória.' }
+    const parsed = maintenanceRequestSchema.safeParse({
+      unitId,
+      equipmentId: data.equipmentId,
+      description: data.description,
+      urgency: data.urgency,
+    })
+    if (!parsed.success) {
+      return { success: false, error: parsed.error.issues[0].message }
     }
 
     const admin = createAdminClient()
