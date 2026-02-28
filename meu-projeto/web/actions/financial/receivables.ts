@@ -48,11 +48,30 @@ export async function markReceivablePaid(
     return { success: false, error: parsed.error.issues[0].message }
   }
 
-  await requireRole(['unit_manager', 'director', 'store'])
+  const { user } = await requireRole(['unit_manager', 'director', 'store'])
   const supabase = createAdminClient()
+
+  // TODO: Migração necessária — adicionar coluna `paid_by UUID REFERENCES auth.users(id)` na tabela receivables
+  // Enquanto a coluna não existir, registramos quem pagou no campo notes
+  const { data: existing } = await supabase
+    .from('receivables')
+    .select('notes')
+    .eq('id', id)
+    .eq('unit_id', unitId)
+    .single()
+
+  const paidNote = `[Pago por: ${user.id} em ${new Date().toISOString()}]`
+  const updatedNotes = existing?.notes
+    ? `${existing.notes}\n${paidNote}`
+    : paidNote
+
   const { error } = await supabase
     .from('receivables')
-    .update({ status: 'paid', paid_at: new Date().toISOString() })
+    .update({
+      status: 'paid',
+      paid_at: new Date().toISOString(),
+      notes: updatedNotes,
+    })
     .eq('id', id)
     .eq('unit_id', unitId)
 

@@ -52,6 +52,8 @@ export async function getNetworkFinancial(unitIds: string[]): Promise<NetworkFin
   return { totalReceivable, totalPayable, balance: totalReceivable - totalPayable }
 }
 
+// TODO: refactor to single query to avoid N+1 — getSlaAlerts has internal SLA logic
+// that makes a simple IN-filter refactor non-trivial
 export async function getNetworkSlaAlerts(unitIds: string[]): Promise<UnitSlaCount[]> {
   await requireRole(['director'])
   const results = await Promise.all(
@@ -84,6 +86,18 @@ export async function getNetworkManifests(unitIds: string[]): Promise<UnitManife
       completedManifests: unitManifests.filter((m) => m.status === 'completed').length,
     }
   })
+}
+
+function sanitizeCsvValue(value: string): string {
+  // Protect against CSV/formula injection in Excel
+  if (/^[=+\-@\t\r]/.test(value)) {
+    return `'${value}`
+  }
+  // Escape double quotes and wrap in quotes if contains separator or special chars
+  if (value.includes(';') || value.includes('"') || value.includes('\n')) {
+    return `"${value.replace(/"/g, '""')}"`
+  }
+  return value
 }
 
 export async function exportNetworkKpisCsv(
@@ -119,7 +133,7 @@ export async function exportNetworkKpisCsv(
       const totalP = (payables ?? []).reduce((s, p) => s + Number(p.amount), 0)
 
       rows.push([
-        unit.name,
+        sanitizeCsvValue(unit.name),
         String((orders as unknown as { length: number })?.length ?? 0),
         totalR.toFixed(2),
         totalP.toFixed(2),

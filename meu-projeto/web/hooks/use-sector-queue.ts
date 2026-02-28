@@ -8,7 +8,11 @@ export function useSectorQueue(unitId: string, statuses: OrderStatus[]) {
   const [orders, setOrders] = useState<Order[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
+  // Stabilize statuses array reference to prevent infinite re-render loops
+  const statusesKey = JSON.stringify(statuses)
+
   useEffect(() => {
+    const parsedStatuses: OrderStatus[] = JSON.parse(statusesKey)
     const supabase = createClient()
 
     async function fetchOrders() {
@@ -16,7 +20,7 @@ export function useSectorQueue(unitId: string, statuses: OrderStatus[]) {
         .from('orders')
         .select('*, items:order_items(*)')
         .eq('unit_id', unitId)
-        .in('status', statuses)
+        .in('status', parsedStatuses)
         .order('created_at', { ascending: true })
 
       setOrders((data as Order[]) ?? [])
@@ -27,7 +31,7 @@ export function useSectorQueue(unitId: string, statuses: OrderStatus[]) {
 
     // Realtime subscription
     const channel = supabase
-      .channel(`sector-queue-${unitId}-${statuses.join(',')}`)
+      .channel(`sector-queue-${unitId}-${parsedStatuses.join(',')}`)
       .on(
         'postgres_changes',
         {
@@ -45,7 +49,7 @@ export function useSectorQueue(unitId: string, statuses: OrderStatus[]) {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [unitId, statuses])
+  }, [unitId, statusesKey])
 
   return { orders, isLoading }
 }

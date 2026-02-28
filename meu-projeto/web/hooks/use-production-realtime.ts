@@ -59,7 +59,9 @@ export function useProductionRealtime(unitId: string) {
     // Polling fallback a cada 30s
     const pollingInterval = setInterval(fetchData, 30_000)
 
-    // Auto-refresh completo a cada 6h
+    // TODO: replace reload with proper state cleanup to avoid memory leaks
+    // window.location.reload() is a brute-force solution; consider resetting
+    // state and re-subscribing instead
     const refreshTimeout = setTimeout(() => window.location.reload(), 6 * 3600_000)
 
     return () => {

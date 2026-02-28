@@ -69,11 +69,30 @@ export async function markPayablePaid(
   id: string,
   unitId: string,
 ): Promise<ActionResult> {
-  await requireRole(['unit_manager', 'director'])
+  const { user } = await requireRole(['unit_manager', 'director'])
   const supabase = createAdminClient()
+
+  // TODO: Migração necessária — adicionar coluna `paid_by UUID REFERENCES auth.users(id)` na tabela payables
+  // Enquanto a coluna não existir, registramos quem pagou no campo notes
+  const { data: existing } = await supabase
+    .from('payables')
+    .select('notes')
+    .eq('id', id)
+    .eq('unit_id', unitId)
+    .single()
+
+  const paidNote = `[Pago por: ${user.id} em ${new Date().toISOString()}]`
+  const updatedNotes = existing?.notes
+    ? `${existing.notes}\n${paidNote}`
+    : paidNote
+
   const { error } = await supabase
     .from('payables')
-    .update({ status: 'paid', paid_at: new Date().toISOString() })
+    .update({
+      status: 'paid',
+      paid_at: new Date().toISOString(),
+      notes: updatedNotes,
+    })
     .eq('id', id)
     .eq('unit_id', unitId)
 

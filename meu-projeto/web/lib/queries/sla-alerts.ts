@@ -6,6 +6,9 @@ const SLA_MINUTES: Partial<Record<OrderStatus, number>> = {
   washing: 120,
   drying: 60,
   ironing: 120,
+  // TODO: shipping status not in OrderStatus enum — usando 'shipped' como placeholder
+  // Quando 'shipping' (em trânsito) for adicionado ao enum, trocar 'shipped' por 'shipping'
+  // O status 'shipped' é estado final e não deveria ter SLA de tempo
   shipped: 30,
 }
 
@@ -38,6 +41,7 @@ export async function getSlaAlerts(unitId: string): Promise<SlaAlert[]> {
     .eq('unit_id', unitId)
     .in('status', sectors)
     .order('created_at', { ascending: true })
+    .order('occurred_at', { ascending: true, referencedTable: 'order_events' })
 
   if (!orders) return []
 
