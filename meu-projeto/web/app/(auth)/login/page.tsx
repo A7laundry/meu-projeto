@@ -46,16 +46,11 @@ export default function LoginPage({
 
         {/* Central — headline + features */}
         <div>
-          <p style={{
-            fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase',
-            color: 'rgba(96,165,250,0.70)', marginBottom: 20,
-          }}>
+          <p className="text-overline" style={{ marginBottom: 20 }}>
             Sistema Operacional Inteligente
           </p>
 
-          <h1 style={{
-            fontSize: 'clamp(32px, 3.5vw, 52px)',
-            fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.06,
+          <h1 className="text-hero" style={{
             color: '#fff', marginBottom: 32,
           }}>
             Tudo que sua{' '}
@@ -116,9 +111,8 @@ export default function LoginPage({
         >
           {/* Header */}
           <div style={{ marginBottom: 32 }}>
-            <h2 style={{
-              fontSize: 22, fontWeight: 800, letterSpacing: '-0.03em',
-              color: '#fff', margin: '0 0 6px',
+            <h2 className="text-display-md" style={{
+              color: '#fff', margin: '0 0 8px',
             }}>
               Bem-vindo de volta
             </h2>
@@ -234,11 +228,10 @@ async function LoginForm({
 
       <button
         type="submit"
-        className="btn-gold"
+        className="btn-hero"
         style={{
-          width: '100%', padding: '13px 0', borderRadius: 10,
-          fontSize: 14, fontWeight: 700, marginTop: 4,
-          border: 'none', cursor: 'pointer',
+          width: '100%', padding: '16px 0', borderRadius: 12,
+          fontSize: 15, marginTop: 4,
         }}
       >
         Entrar no Sistema

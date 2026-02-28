@@ -94,12 +94,13 @@ export default async function UnitDashboardPage({
   const gaugeColor = onTimePercent >= 90 ? '#10b981' : onTimePercent >= 70 ? '#f59e0b' : '#f87171'
 
   return (
-    <div className="p-6 space-y-10">
+    <div className="p-6 lg:p-8 space-y-10">
 
       {/* ── Header ─────────────────────────────────────── */}
       <div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">Dashboard de Produção</h1>
-        <p className="text-sm text-white/40 mt-1">Dados de hoje — atualiza a cada 60s</p>
+        <p className="text-overline mb-2">Operacional</p>
+        <h1 className="text-display-lg text-white">Dashboard de Produção</h1>
+        <p className="text-sm text-white/40 mt-2">Dados de hoje — atualiza a cada 60s</p>
       </div>
 
       {/* ── KPIs principais ───────────────────────────── */}

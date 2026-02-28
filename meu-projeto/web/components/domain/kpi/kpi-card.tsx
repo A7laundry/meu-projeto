@@ -49,17 +49,17 @@ export function KpiCard({
       <div className={`rounded-xl p-5 space-y-3 animate-fade-up ${staggerClass} ${cardClass}`}>
         <div className="flex items-start justify-between">
           <div
-            className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
             style={{
               background: iconBg ?? 'rgba(59,130,246,0.12)',
               border: `1px solid ${iconColor ?? '#60a5fa'}25`,
             }}
           >
-            <Icon size={16} style={{ color: iconColor ?? '#60a5fa' }} />
+            <Icon size={18} style={{ color: iconColor ?? '#60a5fa' }} />
           </div>
           {trend !== undefined && trend !== 0 && (
             <span
-              className={`text-xs font-semibold px-1.5 py-0.5 rounded-md ${
+              className={`text-xs font-semibold px-2 py-0.5 rounded-md ${
                 trend > 0 ? 'text-emerald-400 bg-emerald-400/10' : 'text-red-400 bg-red-400/10'
               }`}
             >
@@ -69,12 +69,12 @@ export function KpiCard({
         </div>
         <div>
           <div className="flex items-end gap-2">
-            <span className={`text-3xl font-bold num-stat ${valueColor}`}>
+            <span className={`stat-number stat-number-lg ${valueColor}`}>
               {formatValue(value)}
             </span>
             {unit && <span className="text-sm text-white/40 mb-1">{unit}</span>}
           </div>
-          <p className="section-header mt-1.5">{title}</p>
+          <p className="section-header mt-2">{title}</p>
           {subtitle && <p className="text-xs text-white/30 mt-1">{subtitle}</p>}
         </div>
       </div>
@@ -86,13 +86,13 @@ export function KpiCard({
     <div className={`rounded-xl p-5 space-y-2 animate-fade-up ${staggerClass} ${cardClass}`}>
       <p className="section-header">{title}</p>
       <div className="flex items-end gap-2">
-        <span className={`text-3xl font-bold num-stat ${valueColor}`}>
+        <span className={`stat-number stat-number-lg ${valueColor}`}>
           {formatValue(value)}
         </span>
         {unit && <span className="text-sm text-white/40 mb-1">{unit}</span>}
         {trend !== undefined && trend !== 0 && (
           <span
-            className={`text-xs font-semibold mb-1 px-1.5 py-0.5 rounded-md ${
+            className={`text-xs font-semibold mb-1 px-2 py-0.5 rounded-md ${
               trend > 0 ? 'text-emerald-400 bg-emerald-400/10' : 'text-red-400 bg-red-400/10'
             }`}
           >

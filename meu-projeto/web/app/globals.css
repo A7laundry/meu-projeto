@@ -75,6 +75,63 @@ body {
   background: rgba(59, 130, 246, 0.25);
 }
 
+/* ── Tipografia Hero — Estilo Nike Bold ────────────────── */
+.text-display {
+  font-family: var(--font-playfair), ui-serif, Georgia, serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.text-display-sm {
+  font-family: var(--font-playfair), ui-serif, Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+.text-display-md {
+  font-family: var(--font-playfair), ui-serif, Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.text-display-lg {
+  font-family: var(--font-playfair), ui-serif, Georgia, serif;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+.text-display-xl {
+  font-family: var(--font-playfair), ui-serif, Georgia, serif;
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+.text-display-2xl {
+  font-family: var(--font-playfair), ui-serif, Georgia, serif;
+  font-size: 3.5rem;
+  font-weight: 900;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+.text-hero {
+  font-family: var(--font-playfair), ui-serif, Georgia, serif;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+.text-overline {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(59, 130, 246, 0.65);
+}
+
 /* ── Animações ───────────────────────────────────────────── */
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(12px); }
@@ -230,30 +287,30 @@ body {
 
   /* Seção header padrão */
   .section-header {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: rgba(59,130,246,0.50);
+    color: rgba(59,130,246,0.60);
   }
 
   /* Section title com linha decorativa */
   .section-title {
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-size: 0.65rem;
+    gap: 14px;
+    font-size: 0.7rem;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.45);
+    color: rgba(255,255,255,0.50);
     white-space: nowrap;
   }
   .section-title::after {
     content: '';
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, rgba(59,130,246,0.20) 0%, transparent 100%);
+    background: linear-gradient(90deg, rgba(59,130,246,0.25) 0%, transparent 100%);
   }
 
   /* Badge de count inline */
@@ -299,6 +356,37 @@ body {
     filter: brightness(1.10);
     transform: translateY(-1px);
     box-shadow: 0 12px 32px rgba(59,130,246,0.35);
+  }
+
+  /* Botão Hero — CTA principal estilo Nike */
+  .btn-hero {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 40px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    border: none;
+    cursor: pointer;
+    box-shadow:
+      0 12px 40px rgba(37,99,235,0.35),
+      inset 0 1px 0 rgba(255,255,255,0.15);
+    transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+  }
+  .btn-hero:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 18px 52px rgba(37,99,235,0.45),
+      inset 0 1px 0 rgba(255,255,255,0.20);
+    filter: brightness(1.08);
+  }
+  .btn-hero:active {
+    transform: translateY(0);
+    box-shadow: 0 6px 20px rgba(37,99,235,0.30);
   }
 
   .btn-ghost {
@@ -354,6 +442,41 @@ body {
     filter: brightness(1.10);
     transform: translateY(-1px);
     box-shadow: 0 12px 32px rgba(16,185,129,0.35);
+  }
+
+  /* Número KPI grande — estilo Nike */
+  .stat-number {
+    font-family: var(--font-inter), ui-sans-serif, system-ui;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1, 'ss01' 1;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .stat-number-lg {
+    font-size: 2.25rem;
+  }
+  .stat-number-xl {
+    font-size: 3rem;
+  }
+  .stat-number-2xl {
+    font-size: 4rem;
+  }
+
+  /* Seções com mais respiro */
+  .section-spacer {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+  .section-spacer-lg {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  /* Divider sutil */
+  .divider-subtle {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.15) 30%, rgba(59,130,246,0.15) 70%, transparent 100%);
   }
 
   /* Scrollbar dark — azul */

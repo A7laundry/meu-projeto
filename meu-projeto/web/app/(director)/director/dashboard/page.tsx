@@ -93,13 +93,14 @@ export default async function DirectorDashboardPage() {
   })
 
   return (
-    <div className="p-6 space-y-8">
+    <div className="p-6 lg:p-8 space-y-8">
 
       {/* ── Header ───────────────────────────────────────── */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Dashboard Executivo</h1>
-          <p className="text-sm text-white/40 mt-1">
+          <p className="text-overline mb-2">Painel Executivo</p>
+          <h1 className="text-display-lg text-white">Dashboard Executivo</h1>
+          <p className="text-sm text-white/40 mt-2">
             <span className="text-white/60 font-medium">{unitList.length}</span> unidade{unitList.length !== 1 ? 's' : ''} ativas
             <span className="mx-2 text-white/20">·</span>
             <span className="num-stat text-white/30 text-xs">{timestamp}</span>
@@ -156,15 +157,15 @@ export default async function DirectorDashboardPage() {
 
             {/* Stats adicionais */}
             <div className="col-span-2 grid grid-cols-2 gap-3">
-              <div className="card-stat rounded-xl px-4 py-3 animate-fade-up stagger-3">
-                <p className="text-xs text-white/35 mb-1">Comandas hoje</p>
-                <p className="text-2xl font-bold num-stat text-white">{totalOrders.toLocaleString('pt-BR')}</p>
-                <p className="text-xs text-white/25 mt-0.5">criadas na rede</p>
+              <div className="card-stat rounded-xl px-4 py-4 animate-fade-up stagger-3">
+                <p className="text-xs text-white/35 mb-1.5">Comandas hoje</p>
+                <p className="stat-number stat-number-lg text-white">{totalOrders.toLocaleString('pt-BR')}</p>
+                <p className="text-xs text-white/25 mt-1">criadas na rede</p>
               </div>
-              <div className="card-stat rounded-xl px-4 py-3 animate-fade-up stagger-4">
-                <p className="text-xs text-white/35 mb-1">Em processo</p>
-                <p className="text-2xl font-bold num-stat" style={{ color: '#a78bfa' }}>{totalInQueue.toLocaleString('pt-BR')}</p>
-                <p className="text-xs text-white/25 mt-0.5">todos os setores</p>
+              <div className="card-stat rounded-xl px-4 py-4 animate-fade-up stagger-4">
+                <p className="text-xs text-white/35 mb-1.5">Em processo</p>
+                <p className="stat-number stat-number-lg" style={{ color: '#a78bfa' }}>{totalInQueue.toLocaleString('pt-BR')}</p>
+                <p className="text-xs text-white/25 mt-1">todos os setores</p>
               </div>
               <div className={`col-span-2 rounded-xl px-4 py-3 animate-fade-up stagger-5 ${totalLate > 0 ? 'card-alert' : 'card-stat'}`}>
                 <p className="text-xs text-white/35 mb-1">Atrasadas</p>

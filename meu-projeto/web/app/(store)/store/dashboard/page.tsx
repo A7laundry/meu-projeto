@@ -26,17 +26,14 @@ export default async function StoreDashboardPage() {
   ])
 
   return (
-    <div className="p-4 lg:p-6 space-y-6">
+    <div className="p-4 lg:p-8 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <p
-            className="text-[10px] uppercase tracking-widest font-semibold mb-1"
-            style={{ color: 'rgba(52,211,153,0.40)' }}
-          >
+          <p className="text-overline mb-2" style={{ color: 'rgba(52,211,153,0.55)' }}>
             Dashboard
           </p>
-          <h1 className="text-xl font-bold text-white tracking-tight">Visão Geral da Loja</h1>
+          <h1 className="text-display-lg text-white">Visão Geral da Loja</h1>
         </div>
         <StoreGoalForm unitId={user.unit_id} currentGoal={kpis.dailyGoal} />
       </div>
@@ -100,8 +97,8 @@ export default async function StoreDashboardPage() {
                   <Clock size={16} style={{ color: '#fbbf24' }} />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold num-stat text-white">{kpis.ordersInQueue}</p>
-                  <p className="text-[11px] text-white/40">Na Fila</p>
+                  <p className="stat-number stat-number-lg text-white">{kpis.ordersInQueue}</p>
+                  <p className="text-[11px] text-white/40 mt-1">Na Fila</p>
                 </div>
               </div>
             </div>
@@ -114,8 +111,8 @@ export default async function StoreDashboardPage() {
                   <CheckCircle size={16} style={{ color: '#34d399' }} />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold num-stat" style={{ color: '#34d399' }}>{kpis.ordersReady}</p>
-                  <p className="text-[11px] text-white/40">Prontas</p>
+                  <p className="stat-number stat-number-lg" style={{ color: '#34d399' }}>{kpis.ordersReady}</p>
+                  <p className="text-[11px] text-white/40 mt-1">Prontas</p>
                 </div>
               </div>
             </div>
