@@ -8,6 +8,13 @@ export interface AdvancedKpis {
   piecesPerHourByUnit: PiecesPerHour[]
   deliveryBreakageRate: number
   chemicalPerOrder: number | null
+  equipmentEfficiency: EquipmentEfficiency | null
+}
+
+export interface EquipmentEfficiency {
+  avgCyclesPerEquipment: number
+  totalCycles: number
+  activeEquipmentCount: number
 }
 
 export interface PiecesPerHour {
@@ -158,16 +165,51 @@ export async function getNetworkChemicalPerOrder(unitIds: string[]): Promise<num
   return Math.round((totalOut / orderCount) * 10) / 10
 }
 
+// FR-E7-04b: Eficiência de equipamento = ciclos hoje / equipamentos ativos
+export async function getNetworkEquipmentEfficiency(unitIds: string[]): Promise<EquipmentEfficiency | null> {
+  await requireRole(['director'])
+  if (unitIds.length === 0) return null
+
+  const supabase = createAdminClient()
+  const today = new Date().toISOString().split('T')[0]
+
+  const [{ data: logs }, { data: equipment }] = await Promise.all([
+    supabase
+      .from('equipment_logs')
+      .select('cycles')
+      .in('unit_id', unitIds)
+      .eq('log_type', 'use')
+      .gte('occurred_at', today),
+    supabase
+      .from('equipment')
+      .select('id', { count: 'exact', head: true })
+      .in('unit_id', unitIds)
+      .eq('status', 'active'),
+  ])
+
+  const totalCycles = (logs ?? []).reduce((s, l) => s + (l.cycles ?? 0), 0)
+  const activeEquipmentCount = (equipment as unknown as { count: number } | null)?.count ?? 0
+
+  if (activeEquipmentCount === 0) return null
+
+  return {
+    avgCyclesPerEquipment: Math.round((totalCycles / activeEquipmentCount) * 10) / 10,
+    totalCycles,
+    activeEquipmentCount,
+  }
+}
+
 // Agrega todos os KPIs avançados em uma chamada
 export async function getAdvancedKpis(unitIds: string[]): Promise<AdvancedKpis> {
   await requireRole(['director'])
-  const [costPerKg, piecesPerHourByUnit, deliveryBreakageRate, chemicalPerOrder] =
+  const [costPerKg, piecesPerHourByUnit, deliveryBreakageRate, chemicalPerOrder, equipmentEfficiency] =
     await Promise.all([
       getNetworkCostPerKg(unitIds),
       getNetworkPiecesPerHour(unitIds),
       getNetworkDeliveryBreakage(unitIds),
       getNetworkChemicalPerOrder(unitIds),
+      getNetworkEquipmentEfficiency(unitIds),
     ])
 
-  return { costPerKg, piecesPerHourByUnit, deliveryBreakageRate, chemicalPerOrder }
+  return { costPerKg, piecesPerHourByUnit, deliveryBreakageRate, chemicalPerOrder, equipmentEfficiency }
 }

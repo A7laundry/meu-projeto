@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { ChemicalFormDialog } from '@/components/domain/chemical/chemical-form-dialog'
 import { ChemicalMovementForm } from '@/components/domain/chemical/chemical-movement-form'
+import { ChemicalMovementHistory } from '@/components/domain/chemical/chemical-movement-history'
 import {
   CHEMICAL_CATEGORY_LABELS,
   MEASURE_UNIT_LABELS,
@@ -78,7 +79,9 @@ export function ChemicalList({ unitId, products }: ChemicalListProps) {
               >
                 {isExpanded ? 'Fechar movimentação' : 'Registrar entrada/saída'}
               </button>
-              <span className="text-white/60">·</span>
+              <span className="text-white/8">·</span>
+              <ChemicalMovementHistory product={p} unitId={unitId} />
+              <span className="text-white/8">·</span>
               <ChemicalFormDialog unitId={unitId} mode="edit" product={p} />
             </div>
 

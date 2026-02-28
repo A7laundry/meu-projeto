@@ -1,4 +1,4 @@
-import { DollarSign, Zap, AlertTriangle, FlaskConical } from 'lucide-react'
+import { DollarSign, Zap, AlertTriangle, FlaskConical, Cog } from 'lucide-react'
 import type { AdvancedKpis } from '@/actions/director/kpis-advanced'
 
 interface Props {
@@ -62,8 +62,10 @@ export function KpiAdvancedGrid({ kpis }: Props) {
 
   const breakageColor: ColorKey = kpis.deliveryBreakageRate > 15 ? 'red' : 'orange'
 
+  const eff = kpis.equipmentEfficiency
+
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
       <StatCard
         label="Custo por peça (mês)"
         value={kpis.costPerKg !== null ? `R$ ${fmt(kpis.costPerKg)}` : '—'}
@@ -91,6 +93,13 @@ export function KpiAdvancedGrid({ kpis }: Props) {
         sub="Saídas de químico ÷ comandas"
         colorKey="purple"
         Icon={FlaskConical}
+      />
+      <StatCard
+        label="Ciclos/equip. hoje"
+        value={eff ? fmt(eff.avgCyclesPerEquipment, 1) : '—'}
+        sub={eff ? `${eff.totalCycles} ciclos · ${eff.activeEquipmentCount} equip.` : 'Sem dados'}
+        colorKey="green"
+        Icon={Cog}
       />
     </div>
   )

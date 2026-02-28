@@ -104,37 +104,16 @@ export async function updateQuoteStatus(
   const supabase = createAdminClient()
 
   if (status === 'approved') {
-    // Busca o orçamento com itens e cliente
-    const { data: quote } = await supabase
-      .from('quotes')
-      .select(`*, items:quote_items(*), client:clients(name)`)
-      .eq('id', id)
-      .single()
+    // RPC atômica: cria comanda + aprova orçamento em uma transação
+    const { data: orderId, error: rpcErr } = await supabase.rpc('approve_quote_create_order', {
+      p_quote_id: id,
+      p_unit_id: unitId,
+    })
 
-    if (!quote) return { success: false, error: 'Orçamento não encontrado' }
+    if (rpcErr) return { success: false, error: rpcErr.message }
 
-    // Cria comanda a partir do primeiro item (simplificado para Wave 2)
-    const firstItem = (quote.items ?? [])[0]
-    if (firstItem) {
-      const { data: order, error: orderErr } = await supabase
-        .from('orders')
-        .insert({
-          unit_id: unitId,
-          client_name: quote.client?.name ?? 'Cliente',
-          piece_type: firstItem.piece_type,
-          piece_count: firstItem.quantity,
-          status: 'received',
-          notes: `Gerado do orçamento #${id.slice(0, 8)}`,
-        })
-        .select('id')
-        .single()
-
-      if (!orderErr && order) {
-        await supabase.from('quotes').update({ status, order_id: order.id }).eq('id', id)
-        revalidatePath(`/unit/${unitId}/quotes`)
-        return { success: true, data: { orderId: order.id } }
-      }
-    }
+    revalidatePath(`/unit/${unitId}/quotes`)
+    return { success: true, data: { orderId: orderId as string } }
   }
 
   const { error } = await supabase.from('quotes').update({ status }).eq('id', id).eq('unit_id', unitId)

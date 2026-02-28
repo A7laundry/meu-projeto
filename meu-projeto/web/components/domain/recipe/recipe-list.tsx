@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { RecipeFormDialog } from '@/components/domain/recipe/recipe-form-dialog'
+import { RecipeChemicalsSection } from '@/components/domain/recipe/recipe-chemicals-section'
 import { toggleRecipeActive } from '@/actions/recipes/crud'
 import { PIECE_TYPE_LABELS, type Recipe, type PieceType } from '@/types/recipe'
 
@@ -20,6 +21,7 @@ const PIECE_TYPE_OPTIONS = [
 
 export function RecipeList({ unitId, recipes }: RecipeListProps) {
   const [filter, setFilter] = useState<PieceType | ''>('')
+  const [expanded, setExpanded] = useState<string | null>(null)
   const [, startTransition] = useTransition()
 
   const filtered = filter ? recipes.filter((r) => r.piece_type === filter) : recipes
@@ -65,42 +67,60 @@ export function RecipeList({ unitId, recipes }: RecipeListProps) {
                 </TableCell>
               </TableRow>
             )}
-            {filtered.map((r) => (
-              <TableRow key={r.id} className={!r.active ? 'opacity-50' : ''}>
-                <TableCell className="font-medium">
-                  <div>{r.name}</div>
-                  {r.description && (
-                    <div className="text-xs text-gray-400 truncate max-w-xs">{r.description}</div>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <Badge variant="secondary">{PIECE_TYPE_LABELS[r.piece_type]}</Badge>
-                </TableCell>
-                <TableCell>
-                  {r.temperature_celsius != null ? `${r.temperature_celsius}°C` : '—'}
-                </TableCell>
-                <TableCell>
-                  {r.duration_minutes != null ? `${r.duration_minutes} min` : '—'}
-                </TableCell>
-                <TableCell>
-                  <Badge variant={r.active ? 'default' : 'destructive'}>
-                    {r.active ? 'Ativa' : 'Inativa'}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <RecipeFormDialog unitId={unitId} mode="edit" recipe={r} />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleToggle(r.id, r.active)}
-                    >
-                      {r.active ? 'Desativar' : 'Ativar'}
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+            {filtered.map((r) => {
+              const isExpanded = expanded === r.id
+              return (
+                <TableRow key={r.id} className={!r.active ? 'opacity-50' : ''}>
+                  <TableCell colSpan={6} className="p-0">
+                    <div className="grid grid-cols-6 items-center px-4 py-3">
+                      <div className="font-medium">
+                        <div>{r.name}</div>
+                        {r.description && (
+                          <div className="text-xs text-gray-400 truncate max-w-xs">{r.description}</div>
+                        )}
+                      </div>
+                      <div>
+                        <Badge variant="secondary">{PIECE_TYPE_LABELS[r.piece_type]}</Badge>
+                      </div>
+                      <div>
+                        {r.temperature_celsius != null ? `${r.temperature_celsius}°C` : '—'}
+                      </div>
+                      <div>
+                        {r.duration_minutes != null ? `${r.duration_minutes} min` : '—'}
+                      </div>
+                      <div>
+                        <Badge variant={r.active ? 'default' : 'destructive'}>
+                          {r.active ? 'Ativa' : 'Inativa'}
+                        </Badge>
+                      </div>
+                      <div className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => setExpanded(isExpanded ? null : r.id)}
+                            className="text-xs text-[#60a5fa] hover:underline"
+                          >
+                            {isExpanded ? 'Fechar insumos' : 'Insumos'}
+                          </button>
+                          <RecipeFormDialog unitId={unitId} mode="edit" recipe={r} />
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleToggle(r.id, r.active)}
+                          >
+                            {r.active ? 'Desativar' : 'Ativar'}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                    {isExpanded && (
+                      <div className="px-4 pb-4 border-t border-white/5">
+                        <RecipeChemicalsSection recipeId={r.id} unitId={unitId} />
+                      </div>
+                    )}
+                  </TableCell>
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       </div>
