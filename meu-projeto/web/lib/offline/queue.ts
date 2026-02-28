@@ -69,7 +69,15 @@ export async function drainQueue(
   let succeeded = 0
   let failed = 0
 
+  const MAX_RETRIES = 5
+
   for (const action of actions) {
+    if (action.retries >= MAX_RETRIES) {
+      await removeAction(action.id)
+      failed++
+      continue
+    }
+
     try {
       const ok = await handler(action)
       if (ok) {

@@ -96,7 +96,7 @@ async function buildSectorData(
 
 export async function completeSector(rawData: SectorCompletionData): Promise<ActionResult> {
   try {
-    const { user } = await requireRole(['operator'])
+    const { user } = await requireRole(['operator', 'unit_manager'])
 
     const parsed = sectorCompletionSchema.safeParse(rawData)
     if (!parsed.success) {

@@ -2,7 +2,10 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import type { UserRole } from '@/types/auth'
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 async function getProfileFromAdmin(userId: string): Promise<{ role: string; active: boolean } | null> {
+  if (!UUID_REGEX.test(userId)) return null
   const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}&select=role,active&limit=1`
   const res = await fetch(url, {
     headers: {

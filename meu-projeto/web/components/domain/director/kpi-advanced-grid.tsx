@@ -60,7 +60,7 @@ export function KpiAdvancedGrid({ kpis }: Props) {
         )
       : null
 
-  const breakageColor: ColorKey = kpis.deliveryBreakageRate > 10 ? 'red' : 'orange'
+  const breakageColor: ColorKey = kpis.deliveryBreakageRate > 15 ? 'red' : 'orange'
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

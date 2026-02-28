@@ -3,7 +3,7 @@
 import { useEffect, useState, useTransition } from 'react'
 import { notFound } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { updateManifestStatus } from '@/actions/manifests/crud'
+import { completeManifest } from '@/actions/manifests/driver'
 import { DriverStopCard } from '@/components/domain/logistics/driver-stop-card'
 import { ROUTE_SHIFT_LABELS } from '@/types/logistics'
 import { MANIFEST_STATUS_LABELS, type DailyManifest } from '@/types/manifest'
@@ -101,7 +101,7 @@ export default function DriverManifestPage({
   function handleComplete() {
     if (!manifest) return
     startTransition(async () => {
-      await updateManifestStatus(manifest.id, manifest.unit_id, 'completed')
+      await completeManifest(manifest.id)
     })
   }
 
@@ -140,7 +140,6 @@ export default function DriverManifestPage({
           <DriverStopCard
             key={stop.id}
             stop={stop}
-            unitId={manifest.unit_id}
             index={idx}
           />
         ))}

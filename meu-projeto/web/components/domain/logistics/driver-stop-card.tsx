@@ -2,21 +2,24 @@
 
 import { useTransition } from 'react'
 import { Button } from '@/components/ui/button'
-import { updateStopStatus } from '@/actions/manifests/crud'
+import { markStopVisited, skipStop } from '@/actions/manifests/driver'
 import type { ManifestStop } from '@/types/manifest'
 
 interface DriverStopCardProps {
   stop: ManifestStop
-  unitId: string
   index: number
 }
 
-export function DriverStopCard({ stop, unitId, index }: DriverStopCardProps) {
+export function DriverStopCard({ stop, index }: DriverStopCardProps) {
   const [isPending, startTransition] = useTransition()
 
   function handle(status: 'visited' | 'skipped') {
     startTransition(async () => {
-      await updateStopStatus(stop.id, unitId, status)
+      if (status === 'visited') {
+        await markStopVisited(stop.id)
+      } else {
+        await skipStop(stop.id, 'Pulado pelo motorista')
+      }
     })
   }
 

@@ -38,7 +38,7 @@ export async function completeSorting(
   extraItems?: ExtraItem[]
 ): Promise<ActionResult> {
   try {
-    const { user } = await requireRole(['operator'])
+    const { user } = await requireRole(['operator', 'unit_manager'])
 
     const parsed = completeSortingSchema.safeParse({ orderId, unitId, items, notes, extraItems })
     if (!parsed.success) {

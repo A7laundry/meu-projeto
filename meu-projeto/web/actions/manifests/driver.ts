@@ -238,3 +238,35 @@ export async function skipStop(
   revalidatePath('/driver/route')
   return { success: true }
 }
+
+export async function completeManifest(
+  manifestId: string,
+): Promise<{ success: boolean; error?: string }> {
+  const { profile } = await requireRole(['driver'])
+  const supabase = createAdminClient()
+
+  const { data: manifest } = await supabase
+    .from('daily_manifests')
+    .select('id, driver_id, status')
+    .eq('id', manifestId)
+    .single()
+
+  if (!manifest || manifest.driver_id !== profile.id) {
+    return { success: false, error: 'Romaneio não pertence a você' }
+  }
+
+  if (manifest.status === 'completed') {
+    return { success: false, error: 'Romaneio já concluído' }
+  }
+
+  const { error } = await supabase
+    .from('daily_manifests')
+    .update({ status: 'completed' })
+    .eq('id', manifestId)
+    .eq('driver_id', profile.id)
+
+  if (error) return { success: false, error: error.message }
+
+  revalidatePath('/driver/route')
+  return { success: true }
+}

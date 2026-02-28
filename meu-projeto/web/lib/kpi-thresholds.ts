@@ -3,7 +3,7 @@
 
 export const KPI_THRESHOLDS = {
   // Taxa de ruptura de entrega: acima disso dispara alerta
-  deliveryBreakageWarning: 10,   // % — warning
+  deliveryBreakageWarning: 15,   // % — warning (AC1: 15%)
   deliveryBreakageCritical: 20,  // % — critical
 
   // Alertas SLA: total de alertas ativos na rede
