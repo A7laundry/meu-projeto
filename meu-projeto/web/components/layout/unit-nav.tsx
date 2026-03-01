@@ -14,6 +14,7 @@ const NAV_GROUPS = [
       { href: 'dashboard',  label: 'Dashboard',   icon: '◈' },
       { href: 'alerts',     label: 'Alertas SLA', icon: '⚡' },
       { href: 'production', label: 'Produção',     icon: '⊞' },
+      { href: 'production/history', label: 'Histórico Prod.', icon: '⊡' },
       { href: 'equipment',  label: 'Equipamentos', icon: '⚙' },
       { href: 'recipes',    label: 'Receitas',     icon: '⊟' },
       { href: 'supplies',   label: 'Insumos',      icon: '◎' },

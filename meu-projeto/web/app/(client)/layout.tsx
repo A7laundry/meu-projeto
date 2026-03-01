@@ -1,11 +1,11 @@
 import { getUser } from '@/lib/auth/get-user'
-import { Home, Package, Sparkles, LogOut } from 'lucide-react'
+import { Home, User, Sparkles, LogOut } from 'lucide-react'
 
 const NAV_ITEMS = [
-  { href: '/client/orders', Icon: Home,     label: 'Início',    active: true  },
-  { href: '#history',       Icon: Package,  label: 'Histórico', active: false },
-  { href: '#services',      Icon: Sparkles, label: 'Serviços',  active: false },
-  { href: '/auth/logout',   Icon: LogOut,   label: 'Sair',      active: false },
+  { href: '/client/orders',  Icon: Home,     label: 'Início',  active: true  },
+  { href: '/client/profile', Icon: User,     label: 'Perfil',  active: false },
+  { href: '#services',       Icon: Sparkles, label: 'Serviços', active: false },
+  { href: '/auth/logout',    Icon: LogOut,   label: 'Sair',    active: false },
 ]
 
 export default async function ClientLayout({ children }: { children: React.ReactNode }) {

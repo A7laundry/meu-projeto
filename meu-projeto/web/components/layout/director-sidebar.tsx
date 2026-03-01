@@ -12,14 +12,20 @@ import {
   Tv,
   PanelLeftClose,
   PanelLeftOpen,
+  Shield,
+  DollarSign,
+  Users,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 const NAV_ITEMS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: '/director/dashboard',    label: 'Dashboard Geral', icon: LayoutDashboard },
   { href: '/director/units',        label: 'Unidades',         icon: Building2 },
+  { href: '/director/users',        label: 'Usuários',         icon: Users },
   { href: '/director/reports',      label: 'Relatórios',       icon: FileBarChart },
+  { href: '/director/financial',    label: 'DRE Consolidado',  icon: DollarSign },
   { href: '/director/nps',          label: 'NPS & Pesquisas',  icon: Star },
+  { href: '/director/audit',        label: 'Auditoria',        icon: Shield },
   { href: '/commercial/dashboard',  label: 'Comercial',        icon: Briefcase },
 ]
 

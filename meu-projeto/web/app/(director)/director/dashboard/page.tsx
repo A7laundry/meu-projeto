@@ -7,6 +7,7 @@ import { getAdvancedKpis } from '@/actions/director/kpis-advanced'
 import { getNpsScoreByUnit } from '@/actions/director/nps'
 import { getWeeklyTrend } from '@/actions/director/trends'
 import { evaluateKpiAlerts } from '@/lib/kpi-alerts'
+import { persistExecutiveAlerts } from '@/actions/director/persist-alerts'
 import { FinancialNetworkSummary } from '@/components/domain/director/financial-network-summary'
 import { KpiAdvancedGrid } from '@/components/domain/director/kpi-advanced-grid'
 import { NpsSummary } from '@/components/domain/director/nps-summary'
@@ -69,6 +70,9 @@ export default async function DirectorDashboardPage() {
   const totalInQueue  = allKpis.reduce((s, u) => s + u.kpis.queueByStatus.reduce((qs, q) => qs + q.count, 0), 0)
   const totalSlaAlerts = slaAlerts.reduce((s, u) => s + u.alertCount, 0)
   const executiveAlerts = evaluateKpiAlerts({ advancedKpis, slaAlerts, manifestSummaries, npsScores })
+
+  // Persistir alertas no banco (fire-and-forget, idempotente por dia)
+  persistExecutiveAlerts(executiveAlerts).catch(() => {})
 
   // KPIs de gauge
   const networkOnTimePct = totalOrders > 0
@@ -222,7 +226,12 @@ export default async function DirectorDashboardPage() {
 
       {/* ── Financeiro da Rede ────────────────────────── */}
       <section className="space-y-4">
-        <h2 className="section-title">Financeiro da Rede</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="section-title" style={{ flex: 1 }}>Financeiro da Rede</h2>
+          <Link href="/director/financial" className="text-xs text-[#60a5fa]/60 hover:text-[#60a5fa] transition-colors flex-shrink-0">
+            Ver DRE →
+          </Link>
+        </div>
         <FinancialNetworkSummary financial={networkFinancial} />
       </section>
 

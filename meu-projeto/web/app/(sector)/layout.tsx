@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import { getUser } from '@/lib/auth/get-user'
 import { logout } from '@/app/(auth)/login/actions'
 
@@ -33,9 +34,16 @@ const SECTOR_TEXT: Record<string, string> = {
   shipping: '#60a5fa',
 }
 
+const ALLOWED_ROLES = ['operator', 'unit_manager']
+
 export default async function SectorLayout({ children }: { children: React.ReactNode }) {
   const user = await getUser()
-  const sector = user?.sector ?? ''
+
+  if (!user || !ALLOWED_ROLES.includes(user.role)) {
+    redirect('/login')
+  }
+
+  const sector = user.sector ?? ''
   const sectorLabel = SECTOR_LABELS[sector] ?? 'Setor'
   const sectorIcon = SECTOR_ICONS[sector] ?? '◈'
   const sectorBg = SECTOR_COLORS[sector] ?? 'rgba(59,130,246,0.12)'
