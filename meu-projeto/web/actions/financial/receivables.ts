@@ -79,6 +79,7 @@ export async function markReceivablePaid(
 
   revalidatePath(`/unit/${unitId}/financial`)
   revalidatePath('/store/financeiro')
+  revalidatePath('/director/financial/receivables')
   return { success: true, data: undefined }
 }
 

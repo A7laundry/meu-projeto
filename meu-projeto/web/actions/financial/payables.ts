@@ -62,6 +62,7 @@ export async function createPayable(
 
   revalidatePath(`/unit/${unitId}/financial`)
   revalidatePath('/store/financeiro')
+  revalidatePath('/director/financial/payables')
   return { success: true, data: data as Payable }
 }
 
@@ -100,5 +101,6 @@ export async function markPayablePaid(
 
   revalidatePath(`/unit/${unitId}/financial`)
   revalidatePath('/store/financeiro')
+  revalidatePath('/director/financial/payables')
   return { success: true, data: undefined }
 }

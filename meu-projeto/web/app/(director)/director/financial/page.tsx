@@ -1,7 +1,7 @@
 export const revalidate = 60
 
 import Link from 'next/link'
-import { DollarSign, TrendingUp, TrendingDown, FileBarChart } from 'lucide-react'
+import { DollarSign, TrendingUp, TrendingDown, FileBarChart, CreditCard, Wallet, BarChart3, Users } from 'lucide-react'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getNetworkFinancial } from '@/actions/director/consolidated'
 import { getConsolidatedDre } from '@/actions/director/consolidated-dre'
@@ -137,8 +137,8 @@ export default async function FinancialHubPage() {
 
       {/* Cards de navegação */}
       <section className="space-y-4">
-        <h2 className="section-title">Relatórios Financeiros</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <h2 className="section-title">Módulos Financeiros</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link
             href="/director/financial/dre"
             className="card-dark rounded-xl p-5 group hover:bg-white/04 transition-colors"
@@ -151,6 +151,62 @@ export default async function FinancialHubPage() {
             </div>
             <p className="text-xs text-white/40">
               Demonstrativo de resultado por unidade com navegação mensal
+            </p>
+          </Link>
+          <Link
+            href="/director/financial/receivables"
+            className="card-dark rounded-xl p-5 group hover:bg-white/04 transition-colors"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.20)' }}>
+                <CreditCard size={16} className="text-emerald-400" />
+              </div>
+              <h3 className="font-semibold text-white group-hover:text-emerald-400 transition-colors">Contas a Receber</h3>
+            </div>
+            <p className="text-xs text-white/40">
+              Gestão multi-unidade de recebíveis com baixa de títulos
+            </p>
+          </Link>
+          <Link
+            href="/director/financial/payables"
+            className="card-dark rounded-xl p-5 group hover:bg-white/04 transition-colors"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.20)' }}>
+                <Wallet size={16} className="text-red-400" />
+              </div>
+              <h3 className="font-semibold text-white group-hover:text-red-400 transition-colors">Contas a Pagar</h3>
+            </div>
+            <p className="text-xs text-white/40">
+              Lançamento e baixa de contas a pagar de toda a rede
+            </p>
+          </Link>
+          <Link
+            href="/director/financial/cashflow"
+            className="card-dark rounded-xl p-5 group hover:bg-white/04 transition-colors"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.20)' }}>
+                <BarChart3 size={16} className="text-[#60a5fa]" />
+              </div>
+              <h3 className="font-semibold text-white group-hover:text-[#60a5fa] transition-colors">Fluxo de Caixa</h3>
+            </div>
+            <p className="text-xs text-white/40">
+              Fluxo semanal consolidado com breakdown por unidade
+            </p>
+          </Link>
+          <Link
+            href="/director/financial/billing"
+            className="card-dark rounded-xl p-5 group hover:bg-white/04 transition-colors"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'rgba(234,179,8,0.12)', border: '1px solid rgba(234,179,8,0.20)' }}>
+                <Users size={16} className="text-yellow-400" />
+              </div>
+              <h3 className="font-semibold text-white group-hover:text-yellow-400 transition-colors">Faturamento & Aging</h3>
+            </div>
+            <p className="text-xs text-white/40">
+              Faturamento por cliente e aging de recebíveis
             </p>
           </Link>
           <Link
