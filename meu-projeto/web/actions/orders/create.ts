@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { requireRole, requireUnitAccess, requireAuth } from '@/lib/auth/guards'
+import { requireRole, requireUnitAccess } from '@/lib/auth/guards'
 import { validateTransition } from '@/lib/auth/order-machine'
 import { z } from 'zod'
 import type { ActionResult } from '@/lib/auth/action-result'
@@ -73,11 +73,7 @@ export async function createOrder(
 
     const orderNumber = await generateOrderNumber(unitId, unitSlug)
 
-    // Se payment_method foi informado, tenta salvar no campo da tabela.
-    // TODO: Caso a coluna `payment_method` ainda nao exista na tabela `orders`,
-    // execute a migration:
-    //   ALTER TABLE orders ADD COLUMN payment_method text;
-    // Enquanto isso, o valor e salvo como fallback no campo `notes`.
+    // Se payment_method foi informado, salvar no campo da tabela (migration 026)
     const paymentMethod = parsed.data.payment_method ?? null
     const paymentLabel: Record<string, string> = {
       cash: 'Dinheiro',

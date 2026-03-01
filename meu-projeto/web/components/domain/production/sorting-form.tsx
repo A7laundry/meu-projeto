@@ -1,8 +1,10 @@
 'use client'
 
-import { useState, useTransition } from 'react'
-import { completeSorting } from '@/actions/production/complete-sorting'
+import { useState, useTransition, useCallback } from 'react'
+import { completeSorting, type SortingItem, type ExtraItem } from '@/actions/production/complete-sorting'
 import { uploadOrderPhotos } from '@/actions/orders/photos'
+import { useOfflineAction } from '@/hooks/use-offline-action'
+import { OfflineQueueBanner } from '@/components/layout/offline-queue-banner'
 import { PhotoCapture } from '@/components/ui/photo-capture'
 import type { Order, PieceType } from '@/types/order'
 import type { Recipe } from '@/types/recipe'
@@ -53,6 +55,18 @@ export function SortingForm({ order, unitId, recipes, onComplete, onCancel }: So
   const [notes, setNotes] = useState('')
   const [selectedRecipes, setSelectedRecipes] = useState<Record<string, string>>({})
 
+  const sortingHandler = useCallback(
+    async (payload: Record<string, unknown>) => {
+      const p = payload as { orderId: string; unitId: string; items: SortingItem[]; notes?: string; extraItems?: ExtraItem[] }
+      return completeSorting(p.orderId, p.unitId, p.items, p.notes, p.extraItems)
+    },
+    []
+  )
+  const { execute: executeOffline, pendingCount, syncing, isOnline } = useOfflineAction(
+    'complete-sorting',
+    sortingHandler
+  )
+
   // Quantities editáveis por item (inicializado dos items da comanda)
   const [quantities, setQuantities] = useState<Record<string, number>>(() => {
     const init: Record<string, number> = {}
@@ -101,20 +115,28 @@ export function SortingForm({ order, unitId, recipes, onComplete, onCancel }: So
       quantity: quantities[item.id] ?? item.quantity,
     }))
 
+    const payload = {
+      orderId: order.id,
+      unitId,
+      items,
+      notes: notes || undefined,
+      extraItems: extraItems.length > 0 ? extraItems : undefined,
+    }
+
     startTransition(async () => {
-      const result = await completeSorting(order.id, unitId, items, notes, extraItems)
+      const result = await executeOffline(payload as unknown as Record<string, unknown>)
       if (result.success) {
-        // Upload fotos de evidencia apos triagem concluida
-        if (photos.length > 0) {
+        // Upload fotos apenas quando online (não serializáveis para IndexedDB)
+        if (isOnline && photos.length > 0) {
           const formData = new FormData()
           for (const photo of photos) {
             formData.append('photos', photo)
           }
-          await uploadOrderPhotos(order.id, formData)
+          await uploadOrderPhotos(order.id, formData).catch(() => {})
         }
         onComplete()
       } else {
-        setError(result.error)
+        setError(result.error ?? 'Erro desconhecido')
       }
     })
   }
@@ -127,6 +149,8 @@ export function SortingForm({ order, unitId, recipes, onComplete, onCancel }: So
       className="flex flex-col h-full text-white"
       style={{ background: 'linear-gradient(180deg, #060609 0%, #07070a 100%)' }}
     >
+      <OfflineQueueBanner pendingCount={pendingCount} syncing={syncing} isOnline={isOnline} />
+
       {/* Header */}
       <div
         className="px-5 py-4 flex items-center justify-between flex-shrink-0"

@@ -6,10 +6,7 @@ const SLA_MINUTES: Partial<Record<OrderStatus, number>> = {
   washing: 120,
   drying: 60,
   ironing: 120,
-  // TODO: shipping status not in OrderStatus enum — usando 'shipped' como placeholder
-  // Quando 'shipping' (em trânsito) for adicionado ao enum, trocar 'shipped' por 'shipping'
-  // O status 'shipped' é estado final e não deveria ter SLA de tempo
-  shipped: 30,
+  ready: 30, // Tempo máximo aguardando expedição
 }
 
 export interface SlaAlert {

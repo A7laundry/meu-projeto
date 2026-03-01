@@ -15,6 +15,7 @@ export function useProductionRealtime(unitId: string) {
   const [sectorData, setSectorData] = useState<SectorData[]>([])
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
   const [isConnected, setIsConnected] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   const fetchData = useCallback(async () => {
     const supabase = createClient()
@@ -41,7 +42,7 @@ export function useProductionRealtime(unitId: string) {
     const supabase = createClient()
 
     const channel = supabase
-      .channel(`tv:${unitId}`)
+      .channel(`tv:${unitId}:${refreshKey}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'orders', filter: `unit_id=eq.${unitId}` },
@@ -59,10 +60,10 @@ export function useProductionRealtime(unitId: string) {
     // Polling fallback a cada 30s
     const pollingInterval = setInterval(fetchData, 30_000)
 
-    // TODO: replace reload with proper state cleanup to avoid memory leaks
-    // window.location.reload() is a brute-force solution; consider resetting
-    // state and re-subscribing instead
-    const refreshTimeout = setTimeout(() => window.location.reload(), 6 * 3600_000)
+    // A cada 6h: teardown channel + re-subscribe (evita memory leak sem reload)
+    const refreshTimeout = setTimeout(() => {
+      setRefreshKey((k) => k + 1)
+    }, 6 * 3600_000)
 
     return () => {
       clearTimeout(initialFetch)
@@ -70,7 +71,7 @@ export function useProductionRealtime(unitId: string) {
       clearInterval(pollingInterval)
       clearTimeout(refreshTimeout)
     }
-  }, [unitId, fetchData])
+  }, [unitId, fetchData, refreshKey])
 
   return { sectorData, lastUpdated, isConnected }
 }
