@@ -40,7 +40,7 @@ export default function LoginPage({
             fontSize: 15, fontWeight: 900, color: '#ffffff',
           }}>A</div>
           <span style={{ fontWeight: 700, fontSize: 15, color: 'rgba(255,255,255,0.85)', letterSpacing: '-0.01em' }}>
-            A7x <span style={{ color: 'rgba(255,255,255,0.28)', fontWeight: 400 }}>TecNologia</span>
+            A7X <span style={{ color: 'rgba(255,255,255,0.28)', fontWeight: 400 }}>System&apos;s</span>
           </span>
         </Link>
 
@@ -83,7 +83,7 @@ export default function LoginPage({
 
         {/* Bottom */}
         <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.18)' }}>
-          © {new Date().getFullYear()} A7x TecNologia · Sistema Operacional Inteligente
+          © {new Date().getFullYear()} A7X System&apos;s · Sistema Operacional Inteligente
         </p>
       </div>
 
@@ -100,7 +100,7 @@ export default function LoginPage({
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 18, fontWeight: 900, color: '#ffffff',
           }}>A</div>
-          <p className="shimmer-text" style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-0.04em' }}>A7x TecNologia</p>
+          <p className="shimmer-text" style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-0.04em' }}>A7X System&apos;s</p>
           <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.30)', marginTop: 4 }}>Sistema Operacional Inteligente</p>
         </div>
 

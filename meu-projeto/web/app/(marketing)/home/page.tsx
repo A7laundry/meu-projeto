@@ -61,6 +61,7 @@ const PANELS = [
     color: '#3b82f6',
     border: 'rgba(59,130,246,0.30)',
     bg: 'rgba(59,130,246,0.06)',
+    img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=220&fit=crop&q=80',
   },
   {
     icon: '⊞',
@@ -70,6 +71,7 @@ const PANELS = [
     color: '#10b981',
     border: 'rgba(16,185,129,0.30)',
     bg: 'rgba(16,185,129,0.06)',
+    img: 'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=400&h=220&fit=crop&q=80',
   },
   {
     icon: '⊡',
@@ -79,6 +81,7 @@ const PANELS = [
     color: '#8b5cf6',
     border: 'rgba(139,92,246,0.30)',
     bg: 'rgba(139,92,246,0.06)',
+    img: 'https://images.unsplash.com/photo-1545173168-9f1947eebb7f?w=400&h=220&fit=crop&q=80',
   },
   {
     icon: '◎',
@@ -88,6 +91,7 @@ const PANELS = [
     color: '#f59e0b',
     border: 'rgba(245,158,11,0.30)',
     bg: 'rgba(245,158,11,0.06)',
+    img: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=220&fit=crop&q=80',
   },
   {
     icon: '⬡',
@@ -97,6 +101,7 @@ const PANELS = [
     color: '#f97316',
     border: 'rgba(249,115,22,0.30)',
     bg: 'rgba(249,115,22,0.06)',
+    img: 'https://images.unsplash.com/photo-1619454016518-697bc231e7cb?w=400&h=220&fit=crop&q=80',
   },
   {
     icon: '⚙',
@@ -106,6 +111,7 @@ const PANELS = [
     color: '#06b6d4',
     border: 'rgba(6,182,212,0.30)',
     bg: 'rgba(6,182,212,0.06)',
+    img: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=220&fit=crop&q=80',
   },
 ]
 
@@ -330,11 +336,24 @@ export default function HomePage() {
             </div>
 
             {/* ── Dashboard mockup ── */}
-            <div style={{ maxWidth: 960, margin: '64px auto 0', padding: '0 16px' }}>
+            <div style={{ maxWidth: 960, margin: '64px auto 0', padding: '0 16px', position: 'relative' }}>
+              {/* Background image behind mockup */}
+              <div style={{
+                position: 'absolute', inset: '-40px -60px', zIndex: 0,
+                borderRadius: 24, overflow: 'hidden',
+              }}>
+                <img
+                  src="https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?w=1200&h=600&fit=crop&q=80"
+                  alt=""
+                  loading="lazy"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.08, filter: 'blur(2px)' }}
+                />
+              </div>
               <div className="float-card" style={{
                 borderRadius: 16, overflow: 'hidden',
                 boxShadow: '0 0 0 1px rgba(59,130,246,0.10), 0 48px 120px rgba(0,0,0,0.85)',
                 background: '#06060e',
+                position: 'relative', zIndex: 1,
               }}>
                 {/* Browser chrome */}
                 <div style={{
@@ -532,6 +551,24 @@ export default function HomePage() {
                       background: `linear-gradient(90deg, transparent, ${p.color}, transparent)`,
                       opacity: 0, transition: 'opacity 0.3s',
                     }} className={`panel-border-${p.title.replace(/\s|\//g, '')}`} />
+
+                    {/* Thumbnail */}
+                    <div style={{
+                      position: 'relative', marginBottom: 18, borderRadius: 12, overflow: 'hidden',
+                      height: 120, background: p.bg,
+                    }}>
+                      <img
+                        src={p.img}
+                        alt={p.title}
+                        loading="lazy"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.25 }}
+                      />
+                      <div style={{
+                        position: 'absolute', inset: 0,
+                        background: `linear-gradient(180deg, transparent 30%, ${p.bg} 100%)`,
+                      }} />
+                    </div>
+
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
                       <div style={{
                         width: 48, height: 48, borderRadius: 14,
@@ -674,8 +711,18 @@ export default function HomePage() {
           </div>
 
           {/* ── ANTES / DEPOIS ──────────────────────────────────────────── */}
-          <section style={{ padding: '88px 24px' }}>
-            <div style={{ maxWidth: 960, margin: '0 auto' }}>
+          <section style={{ padding: '88px 24px', position: 'relative', overflow: 'hidden' }}>
+            {/* Background image */}
+            <img
+              src="https://images.unsplash.com/photo-1521656693700-6e5c1e38d018?w=1400&h=800&fit=crop&q=80"
+              alt=""
+              loading="lazy"
+              style={{
+                position: 'absolute', inset: 0, width: '100%', height: '100%',
+                objectFit: 'cover', opacity: 0.04, pointerEvents: 'none',
+              }}
+            />
+            <div style={{ maxWidth: 960, margin: '0 auto', position: 'relative' }}>
               <div style={{ textAlign: 'center', marginBottom: 52 }}>
                 <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: 'rgba(59,130,246,0.60)', textTransform: 'uppercase', marginBottom: 12 }}>
                   Por que A7X System&apos;s
@@ -762,15 +809,33 @@ export default function HomePage() {
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
                 {[
-                  { symbol: '◐', label: 'Lavanderias Comerciais', desc: 'De 300 a 10.000+ peças/dia' },
-                  { symbol: '◇', label: 'Hotéis e Pousadas',      desc: 'Roupas de cama, toalhas e uniformes' },
-                  { symbol: '⊕', label: 'Hospitais e Clínicas',   desc: 'Lavanderia hospitalar com rastreio' },
-                  { symbol: '⊗', label: 'Restaurantes e Redes',   desc: 'Uniformes com controle de custos' },
+                  { symbol: '◐', label: 'Lavanderias Comerciais', desc: 'De 300 a 10.000+ peças/dia', img: 'https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?w=300&h=180&fit=crop&q=80' },
+                  { symbol: '◇', label: 'Hotéis e Pousadas',      desc: 'Roupas de cama, toalhas e uniformes', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=300&h=180&fit=crop&q=80' },
+                  { symbol: '⊕', label: 'Hospitais e Clínicas',   desc: 'Lavanderia hospitalar com rastreio', img: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=300&h=180&fit=crop&q=80' },
+                  { symbol: '⊗', label: 'Restaurantes e Redes',   desc: 'Uniformes com controle de custos', img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=300&h=180&fit=crop&q=80' },
                 ].map(s => (
-                  <div key={s.label} className="feat-card" style={{ textAlign: 'center', padding: '28px 20px' }}>
-                    <p style={{ fontSize: 32, color: '#3b82f6', margin: '0 0 12px', filter: 'drop-shadow(0 0 10px rgba(59,130,246,0.4))' }}>{s.symbol}</p>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', margin: '0 0 6px' }}>{s.label}</p>
-                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.38)', margin: 0, lineHeight: 1.5 }}>{s.desc}</p>
+                  <div key={s.label} className="feat-card" style={{ textAlign: 'center', padding: 0, overflow: 'hidden' }}>
+                    <div style={{ position: 'relative', height: 100, overflow: 'hidden' }}>
+                      <img
+                        src={s.img}
+                        alt={s.label}
+                        loading="lazy"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.3 }}
+                      />
+                      <div style={{
+                        position: 'absolute', inset: 0,
+                        background: 'linear-gradient(180deg, transparent 20%, rgba(5,5,8,0.95) 100%)',
+                      }} />
+                      <p style={{
+                        position: 'absolute', bottom: 8, left: 0, right: 0,
+                        fontSize: 28, color: '#3b82f6', margin: 0,
+                        filter: 'drop-shadow(0 0 10px rgba(59,130,246,0.4))',
+                      }}>{s.symbol}</p>
+                    </div>
+                    <div style={{ padding: '14px 20px 22px' }}>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', margin: '0 0 6px' }}>{s.label}</p>
+                      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.38)', margin: 0, lineHeight: 1.5 }}>{s.desc}</p>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -805,6 +870,16 @@ export default function HomePage() {
               background: 'linear-gradient(135deg, rgba(59,130,246,0.09) 0%, rgba(59,130,246,0.04) 100%)',
               border: '1px solid rgba(59,130,246,0.20)',
             }}>
+              {/* CTA background image */}
+              <img
+                src="https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=900&h=500&fit=crop&q=80"
+                alt=""
+                loading="lazy"
+                style={{
+                  position: 'absolute', inset: 0, width: '100%', height: '100%',
+                  objectFit: 'cover', opacity: 0.06, pointerEvents: 'none',
+                }}
+              />
               <div style={{
                 position: 'absolute', inset: 0, pointerEvents: 'none',
                 background: 'radial-gradient(ellipse 70% 70% at 50% 50%, rgba(59,130,246,0.06) 0%, transparent 70%)',

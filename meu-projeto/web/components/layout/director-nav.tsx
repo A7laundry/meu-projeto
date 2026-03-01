@@ -18,6 +18,9 @@ import {
   ExternalLink,
   Shield,
   DollarSign,
+  Globe,
+  Store,
+  PenTool,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -33,6 +36,7 @@ const NAV_GROUPS: {
       { href: '/director/dashboard', label: 'Dashboard Geral', icon: LayoutDashboard },
       { href: '/director/units',     label: 'Unidades',         icon: Building2 },
       { href: '/director/users',     label: 'Usuários',         icon: Users },
+      { href: '/portal',             label: 'Portal',           icon: Globe, external: true },
     ],
   },
   {
@@ -47,7 +51,9 @@ const NAV_GROUPS: {
   {
     label: 'Módulos',
     items: [
-      { href: '/commercial/dashboard', label: 'Comercial', icon: Briefcase, external: true },
+      { href: '/commercial/dashboard', label: 'Comercial',   icon: Briefcase, external: true },
+      { href: '/store/pdv',            label: 'Loja / PDV',  icon: Store,     external: true },
+      { href: '/copywriter/dashboard', label: 'Copywriting', icon: PenTool,   external: true },
     ],
   },
 ]

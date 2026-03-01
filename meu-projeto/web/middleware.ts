@@ -19,7 +19,7 @@ async function getProfileFromAdmin(userId: string): Promise<{ role: string; acti
 }
 
 // Rotas públicas — sem autenticação
-const PUBLIC_ROUTES = ['/login', '/auth/error', '/captacao', '/nps', '/display']
+const PUBLIC_ROUTES = ['/login', '/auth/error', '/captacao', '/nps', '/display', '/home']
 
 // Mapa de rotas protegidas → roles permitidos
 const PROTECTED_ROUTES: Record<string, UserRole[]> = {

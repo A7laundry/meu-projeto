@@ -11,10 +11,20 @@
 -- 10000000-0000-0000-0000-000000000002  → Unidade Norte
 
 -- Usuários de teste
--- a0000000-0000-0000-0000-000000000001  → gerente@synkra.test   (unit_manager)
--- a0000000-0000-0000-0000-000000000002  → operador@synkra.test  (operator / washing)
--- a0000000-0000-0000-0000-000000000003  → motorista@synkra.test (driver)
--- a0000000-0000-0000-0000-000000000004  → loja@synkra.test      (store)
+-- a0000000-0000-0000-0000-000000000001  → gerente@synkra.test       (unit_manager / Centro)
+-- a0000000-0000-0000-0000-000000000002  → operador@synkra.test      (operator / washing / Centro)
+-- a0000000-0000-0000-0000-000000000003  → motorista@synkra.test     (driver / Centro)
+-- a0000000-0000-0000-0000-000000000004  → loja@synkra.test          (store / Centro)
+-- a0000000-0000-0000-0000-000000000010  → diretor@synkra.test       (director)
+-- a0000000-0000-0000-0000-000000000011  → triagem@synkra.test       (operator / sorting / Centro)
+-- a0000000-0000-0000-0000-000000000012  → secagem@synkra.test       (operator / drying / Centro)
+-- a0000000-0000-0000-0000-000000000013  → passadoria@synkra.test    (operator / ironing / Centro)
+-- a0000000-0000-0000-0000-000000000014  → expedicao@synkra.test     (operator / shipping / Centro)
+-- a0000000-0000-0000-0000-000000000015  → cliente@synkra.test       (customer)
+-- a0000000-0000-0000-0000-000000000016  → sdr@synkra.test           (sdr / Centro)
+-- a0000000-0000-0000-0000-000000000017  → closer@synkra.test        (closer / Centro)
+-- a0000000-0000-0000-0000-000000000018  → copywriter@synkra.test    (copywriter)
+-- a0000000-0000-0000-0000-000000000019  → gerente.norte@synkra.test (unit_manager / Norte)
 
 -- =============================================================
 -- 1. UNIDADES
@@ -63,6 +73,76 @@ VALUES
    'a0000000-0000-0000-0000-000000000004',
    'authenticated', 'authenticated', 'loja@synkra.test',
    crypt('Synkra@123', gen_salt('bf')), NOW(),
+   '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, NOW(), NOW()),
+
+  -- Diretor
+  ('00000000-0000-0000-0000-000000000000',
+   'a0000000-0000-0000-0000-000000000010',
+   'authenticated', 'authenticated', 'diretor@synkra.test',
+   crypt('Synkra@123', gen_salt('bf')), NOW(),
+   '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, NOW(), NOW()),
+
+  -- Operador Triagem (sorting)
+  ('00000000-0000-0000-0000-000000000000',
+   'a0000000-0000-0000-0000-000000000011',
+   'authenticated', 'authenticated', 'triagem@synkra.test',
+   crypt('Synkra@123', gen_salt('bf')), NOW(),
+   '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, NOW(), NOW()),
+
+  -- Operador Secagem (drying)
+  ('00000000-0000-0000-0000-000000000000',
+   'a0000000-0000-0000-0000-000000000012',
+   'authenticated', 'authenticated', 'secagem@synkra.test',
+   crypt('Synkra@123', gen_salt('bf')), NOW(),
+   '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, NOW(), NOW()),
+
+  -- Operador Passadoria (ironing)
+  ('00000000-0000-0000-0000-000000000000',
+   'a0000000-0000-0000-0000-000000000013',
+   'authenticated', 'authenticated', 'passadoria@synkra.test',
+   crypt('Synkra@123', gen_salt('bf')), NOW(),
+   '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, NOW(), NOW()),
+
+  -- Operador Expedição (shipping)
+  ('00000000-0000-0000-0000-000000000000',
+   'a0000000-0000-0000-0000-000000000014',
+   'authenticated', 'authenticated', 'expedicao@synkra.test',
+   crypt('Synkra@123', gen_salt('bf')), NOW(),
+   '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, NOW(), NOW()),
+
+  -- Cliente (customer)
+  ('00000000-0000-0000-0000-000000000000',
+   'a0000000-0000-0000-0000-000000000015',
+   'authenticated', 'authenticated', 'cliente@synkra.test',
+   crypt('Synkra@123', gen_salt('bf')), NOW(),
+   '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, NOW(), NOW()),
+
+  -- SDR
+  ('00000000-0000-0000-0000-000000000000',
+   'a0000000-0000-0000-0000-000000000016',
+   'authenticated', 'authenticated', 'sdr@synkra.test',
+   crypt('Synkra@123', gen_salt('bf')), NOW(),
+   '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, NOW(), NOW()),
+
+  -- Closer
+  ('00000000-0000-0000-0000-000000000000',
+   'a0000000-0000-0000-0000-000000000017',
+   'authenticated', 'authenticated', 'closer@synkra.test',
+   crypt('Synkra@123', gen_salt('bf')), NOW(),
+   '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, NOW(), NOW()),
+
+  -- Copywriter
+  ('00000000-0000-0000-0000-000000000000',
+   'a0000000-0000-0000-0000-000000000018',
+   'authenticated', 'authenticated', 'copywriter@synkra.test',
+   crypt('Synkra@123', gen_salt('bf')), NOW(),
+   '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, NOW(), NOW()),
+
+  -- Gerente Norte (unit_manager)
+  ('00000000-0000-0000-0000-000000000000',
+   'a0000000-0000-0000-0000-000000000019',
+   'authenticated', 'authenticated', 'gerente.norte@synkra.test',
+   crypt('Synkra@123', gen_salt('bf')), NOW(),
    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, NOW(), NOW())
 ON CONFLICT (id) DO NOTHING;
 
@@ -71,10 +151,20 @@ ON CONFLICT (id) DO NOTHING;
 -- =============================================================
 INSERT INTO profiles (id, full_name, role, unit_id, sector, active)
 VALUES
-  ('a0000000-0000-0000-0000-000000000001', 'Carlos Gerente',    'unit_manager', '10000000-0000-0000-0000-000000000001', null,      true),
-  ('a0000000-0000-0000-0000-000000000002', 'Ana Operadora',     'operator',     '10000000-0000-0000-0000-000000000001', 'washing', true),
-  ('a0000000-0000-0000-0000-000000000003', 'João Motorista',    'driver',       '10000000-0000-0000-0000-000000000001', null,      true),
-  ('a0000000-0000-0000-0000-000000000004', 'Boa Aparência Loja','store',        '10000000-0000-0000-0000-000000000001', null,      true)
+  ('a0000000-0000-0000-0000-000000000001', 'Carlos Gerente',     'unit_manager', '10000000-0000-0000-0000-000000000001', null,       true),
+  ('a0000000-0000-0000-0000-000000000002', 'Ana Operadora',      'operator',     '10000000-0000-0000-0000-000000000001', 'washing',  true),
+  ('a0000000-0000-0000-0000-000000000003', 'João Motorista',     'driver',       '10000000-0000-0000-0000-000000000001', null,       true),
+  ('a0000000-0000-0000-0000-000000000004', 'Boa Aparência Loja', 'store',        '10000000-0000-0000-0000-000000000001', null,       true),
+  ('a0000000-0000-0000-0000-000000000010', 'Roberto Diretor',    'director',     null,                                   null,       true),
+  ('a0000000-0000-0000-0000-000000000011', 'Pedro Triagem',      'operator',     '10000000-0000-0000-0000-000000000001', 'sorting',  true),
+  ('a0000000-0000-0000-0000-000000000012', 'Lucia Secagem',      'operator',     '10000000-0000-0000-0000-000000000001', 'drying',   true),
+  ('a0000000-0000-0000-0000-000000000013', 'Marcos Passadoria',  'operator',     '10000000-0000-0000-0000-000000000001', 'ironing',  true),
+  ('a0000000-0000-0000-0000-000000000014', 'Carla Expedição',    'operator',     '10000000-0000-0000-0000-000000000001', 'shipping', true),
+  ('a0000000-0000-0000-0000-000000000015', 'Maria Cliente',      'customer',     null,                                   null,       true),
+  ('a0000000-0000-0000-0000-000000000016', 'Fernanda SDR',       'sdr',          '10000000-0000-0000-0000-000000000001', null,       true),
+  ('a0000000-0000-0000-0000-000000000017', 'Paulo Closer',       'closer',       '10000000-0000-0000-0000-000000000001', null,       true),
+  ('a0000000-0000-0000-0000-000000000018', 'Julia Copywriter',   'copywriter',   null,                                   null,       true),
+  ('a0000000-0000-0000-0000-000000000019', 'Ricardo Gerente',    'unit_manager', '10000000-0000-0000-0000-000000000002', null,       true)
 ON CONFLICT (id) DO NOTHING;
 
 -- =============================================================
