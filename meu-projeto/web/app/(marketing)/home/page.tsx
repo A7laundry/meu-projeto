@@ -287,12 +287,12 @@ export default function HomePage() {
                 alt=""
                 style={{
                   width: '100%', height: '100%', objectFit: 'cover',
-                  opacity: 0.18, filter: 'brightness(0.7)',
+                  opacity: 0.35, filter: 'brightness(1.1) saturate(1.2)',
                 }}
               />
               <div style={{
                 position: 'absolute', inset: 0,
-                background: 'linear-gradient(180deg, rgba(5,5,8,0.3) 0%, rgba(5,5,8,0.7) 50%, rgba(5,5,8,1) 100%)',
+                background: 'linear-gradient(180deg, rgba(5,5,8,0.1) 0%, rgba(5,5,8,0.4) 50%, rgba(5,5,8,0.95) 100%)',
               }} />
             </div>
 
