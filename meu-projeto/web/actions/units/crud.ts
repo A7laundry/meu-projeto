@@ -16,6 +16,8 @@ const unitSchema = z.object({
   state: z.string().length(2, 'Estado: 2 letras (ex: SP)').toUpperCase(),
   phone: z.string().optional(),
   active: z.boolean().default(true),
+  labor_cost_monthly: z.number().min(0).default(0),
+  overhead_monthly: z.number().min(0).default(0),
 })
 
 export type UnitFormData = z.infer<typeof unitSchema>
@@ -93,6 +95,8 @@ export async function updateUnit(id: string, formData: FormData): Promise<Action
     state: formData.get('state') as string,
     phone: formData.get('phone') as string || undefined,
     active: formData.get('active') === 'true',
+    labor_cost_monthly: parseFloat(formData.get('labor_cost_monthly') as string) || 0,
+    overhead_monthly: parseFloat(formData.get('overhead_monthly') as string) || 0,
   }
 
   const parsed = unitSchema.safeParse(raw)

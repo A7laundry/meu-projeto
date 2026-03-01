@@ -110,6 +110,40 @@ export function UnitFormDialog({ mode, unit }: UnitFormDialogProps) {
           </div>
 
           {mode === 'edit' && (
+            <>
+              <div className="border-t pt-3 mt-3">
+                <p className="text-xs text-gray-400 font-medium mb-2">Custos operacionais (mensal)</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="labor_cost_monthly">Mão de obra (R$)</Label>
+                    <Input
+                      id="labor_cost_monthly"
+                      name="labor_cost_monthly"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      defaultValue={(unit as unknown as Record<string, unknown>)?.labor_cost_monthly as number ?? 0}
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="overhead_monthly">Overhead (R$)</Label>
+                    <Input
+                      id="overhead_monthly"
+                      name="overhead_monthly"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      defaultValue={(unit as unknown as Record<string, unknown>)?.overhead_monthly as number ?? 0}
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {mode === 'edit' && (
             <input type="hidden" name="active" value={unit?.active ? 'true' : 'false'} />
           )}
 

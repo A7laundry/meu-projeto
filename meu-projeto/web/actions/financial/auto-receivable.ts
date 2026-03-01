@@ -13,12 +13,11 @@ export async function generateReceivableFromOrder(
 ): Promise<void> {
   const supabase = createAdminClient()
 
-  // Verificar se já existe receivable para esta comanda (idempotência)
+  // Verificar se já existe receivable para esta comanda (idempotência via FK)
   const { data: existing } = await supabase
     .from('receivables')
     .select('id')
-    .eq('unit_id', unitId)
-    .eq('description', `ilike.%${orderId.slice(0, 8)}%`)
+    .eq('order_id', orderId)
     .limit(1)
 
   if (existing && existing.length > 0) return
@@ -59,11 +58,12 @@ export async function generateReceivableFromOrder(
 
   await supabase.from('receivables').insert({
     unit_id: unitId,
+    order_id: orderId,
     client_id: order.client_id,
-    description: `Comanda #${order.order_number} (${orderId.slice(0, 8)})`,
+    description: `Comanda #${order.order_number}`,
     amount: total,
     due_date: dueDate,
     status: 'pending',
-    notes: `Gerado automaticamente na entrega`,
+    notes: `Gerado automaticamente na expedição`,
   })
 }

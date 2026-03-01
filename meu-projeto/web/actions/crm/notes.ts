@@ -76,19 +76,30 @@ export async function getClientStats(
   await requireUnitAccess(unitId, ['unit_manager', 'store', 'sdr', 'closer'])
   const supabase = createAdminClient()
 
-  const { data: quotes } = await supabase
-    .from('quotes')
-    .select('total, created_at, status')
-    .eq('client_id', clientId)
-    .eq('unit_id', unitId)
-    .eq('status', 'approved')
-    .order('created_at', { ascending: true })
+  // Buscar dados reais de orders + receivables pagas
+  const [ordersRes, receivablesRes] = await Promise.all([
+    supabase
+      .from('orders')
+      .select('id, created_at')
+      .eq('client_id', clientId)
+      .eq('unit_id', unitId)
+      .order('created_at', { ascending: true }),
+    supabase
+      .from('receivables')
+      .select('amount, paid_at')
+      .eq('client_id', clientId)
+      .eq('unit_id', unitId)
+      .eq('status', 'paid'),
+  ])
 
-  const totalOrders = quotes?.length ?? 0
-  const totalSpent = (quotes ?? []).reduce((sum, q) => sum + Number(q.total), 0)
+  const orders = ordersRes.data ?? []
+  const receivables = receivablesRes.data ?? []
+
+  const totalOrders = orders.length
+  const totalSpent = receivables.reduce((sum, r) => sum + Number(r.amount ?? 0), 0)
   const avgTicket = totalOrders > 0 ? totalSpent / totalOrders : 0
-  const firstOrderAt = quotes?.[0]?.created_at ?? null
-  const lastOrderAt = quotes?.[quotes.length - 1]?.created_at ?? null
+  const firstOrderAt = orders[0]?.created_at ?? null
+  const lastOrderAt = orders.length > 0 ? orders[orders.length - 1]?.created_at ?? null : null
 
   // LTV anual = (total gasto / meses ativos) × 12
   let annualLtv = 0
