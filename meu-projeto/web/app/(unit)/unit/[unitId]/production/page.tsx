@@ -1,6 +1,13 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { getPackagingReport, getPackagingLabel } from '@/actions/production/packaging-report'
+import { getPackagingReport } from '@/actions/production/packaging-report'
+
+const PACKAGING_LABELS: Record<string, string> = {
+  bag: 'Sacola',
+  box: 'Caixa',
+  hanger: 'Cabide',
+  other: 'Outros',
+}
 
 export default async function ProductionPage({
   params,
@@ -41,7 +48,7 @@ export default async function ProductionPage({
             {packagingReport.map((row) => (
               <div key={row.packaging_type} className="px-5 py-3 flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-white/90">{getPackagingLabel(row.packaging_type)}</p>
+                  <p className="text-sm font-medium text-white/90">{PACKAGING_LABELS[row.packaging_type] ?? row.packaging_type}</p>
                   <p className="text-xs text-white/40">{row.order_count} comandas</p>
                 </div>
                 <span className="text-lg font-bold text-white">{row.total_quantity}</span>

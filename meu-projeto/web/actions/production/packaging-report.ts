@@ -9,17 +9,6 @@ export interface PackagingRow {
   order_count: number
 }
 
-const TYPE_LABELS: Record<string, string> = {
-  bag: 'Sacola',
-  box: 'Caixa',
-  hanger: 'Cabide',
-  other: 'Outros',
-}
-
-export function getPackagingLabel(type: string): string {
-  return TYPE_LABELS[type] ?? type
-}
-
 export async function getPackagingReport(
   unitId: string,
   days: number = 30
