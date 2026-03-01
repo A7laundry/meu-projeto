@@ -7,6 +7,7 @@ import { validateTransition } from '@/lib/auth/order-machine'
 import { z } from 'zod'
 import { generateReceivableFromOrder } from '@/actions/financial/auto-receivable'
 import { sendOrderStatusEmail } from '@/actions/notifications/order-email'
+import { logAudit } from '@/lib/audit'
 import type { ActionResult } from '@/lib/auth/action-result'
 import type { OrderStatus } from '@/types/order'
 
@@ -98,7 +99,7 @@ async function buildSectorData(
 
 export async function completeSector(rawData: SectorCompletionData): Promise<ActionResult> {
   try {
-    const { user } = await requireRole(['operator', 'unit_manager'])
+    const { user, profile } = await requireRole(['operator', 'unit_manager'])
 
     const parsed = sectorCompletionSchema.safeParse(rawData)
     if (!parsed.success) {
@@ -192,6 +193,21 @@ export async function completeSector(rawData: SectorCompletionData): Promise<Act
     sendOrderStatusEmail(data.orderId, data.unitId, transition.nextStatus).catch((err) =>
       console.error('[order-email] Falha:', err)
     )
+
+    // Audit log (fire-and-forget)
+    logAudit({
+      unitId: data.unitId,
+      userId: user.id,
+      userName: profile.full_name ?? '',
+      action: 'order.status_change',
+      entityType: 'order',
+      entityId: data.orderId,
+      metadata: {
+        sector: data.sectorKey,
+        previous_status: currentOrder.status,
+        new_status: transition.nextStatus,
+      },
+    }).catch(() => {})
 
     revalidatePath(`/sector/${data.sectorKey}`)
     revalidatePath(`/unit/${data.unitId}/supplies`)

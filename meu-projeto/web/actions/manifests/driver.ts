@@ -6,7 +6,7 @@ import { requireRole } from '@/lib/auth/guards'
 import type { DailyManifest } from '@/types/manifest'
 
 export async function getDriverManifestsToday(): Promise<DailyManifest[]> {
-  const { user, profile } = await requireRole(['driver'])
+  const { profile } = await requireRole(['driver'])
 
   const today = new Date().toISOString().split('T')[0]
   const supabase = createAdminClient()
@@ -133,6 +133,7 @@ export async function markStopVisited(
 export async function markStopVisitedWithEvidence(
   stopId: string,
   formData: FormData,
+  pickupQuantity?: number,
 ): Promise<{ success: boolean; error?: string }> {
   const { profile } = await requireRole(['driver'])
   const supabase = createAdminClient()
@@ -169,23 +170,44 @@ export async function markStopVisitedWithEvidence(
     }
   }
 
+  // Upload da assinatura se existir
+  const signature = formData.get('signature') as File | null
+  let signatureUrl: string | null = null
+
+  if (signature && signature.size > 0) {
+    const sigPath = `signatures/${stopId}/${Date.now()}.png`
+    const { error: sigError } = await supabase.storage
+      .from('delivery-photos')
+      .upload(sigPath, signature, { contentType: 'image/png' })
+
+    if (!sigError) {
+      const { data: sigData } = supabase.storage.from('delivery-photos').getPublicUrl(sigPath)
+      signatureUrl = sigData.publicUrl
+    }
+  }
+
   // Build notes with photo URL if available
   let updatedNotes = stop.notes || ''
   if (photoUrl) {
-    // Append photo reference to notes
     updatedNotes = updatedNotes
       ? `${updatedNotes} [FOTO:${photoUrl}]`
       : `[FOTO:${photoUrl}]`
   }
 
   // Marcar como visitado
+  const updateData: Record<string, unknown> = {
+    status: 'visited',
+    visited_at: new Date().toISOString(),
+    notes: updatedNotes || null,
+    signature_url: signatureUrl,
+  }
+  if (pickupQuantity && pickupQuantity > 0) {
+    updateData.pickup_quantity = pickupQuantity
+  }
+
   const { error } = await supabase
     .from('manifest_stops')
-    .update({
-      status: 'visited',
-      visited_at: new Date().toISOString(),
-      notes: updatedNotes || null,
-    })
+    .update(updateData)
     .eq('id', stopId)
 
   if (error) return { success: false, error: error.message }
@@ -230,6 +252,7 @@ export async function skipStop(
     .update({
       status: 'skipped',
       notes: updatedNotes,
+      skip_reason: reason.trim(),
     })
     .eq('id', stopId)
 

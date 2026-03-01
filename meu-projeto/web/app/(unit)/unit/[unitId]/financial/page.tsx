@@ -46,6 +46,9 @@ export default async function FinancialPage({
         <div className="flex gap-2">
           <FinancialExportButtons receivables={receivables} payables={payables} />
           <Button asChild variant="outline" size="sm">
+            <Link href={`/unit/${unitId}/financial/costs`}>Custo Operacional</Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
             <Link href={`/unit/${unitId}/financial/cashflow`}>Fluxo de Caixa / DRE</Link>
           </Button>
         </div>

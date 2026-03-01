@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { listRoutes } from '@/actions/routes/crud'
 import { listManifests } from '@/actions/manifests/crud'
 import { ManifestList } from '@/components/domain/logistics/manifest-list'
@@ -28,9 +29,18 @@ export default async function ManifestsPage({
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Romaneio Diário</h1>
-        <p className="text-sm text-white/40 mt-1 capitalize">{todayLabel}</p>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Romaneio Diário</h1>
+          <p className="text-sm text-white/40 mt-1 capitalize">{todayLabel}</p>
+        </div>
+        <Link
+          href={`/unit/${unitId}/manifests/day-close`}
+          className="text-sm font-medium px-3 py-1.5 rounded-lg"
+          style={{ color: '#60a5fa', background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.18)' }}
+        >
+          Fechamento do dia
+        </Link>
       </div>
 
       <ManifestList

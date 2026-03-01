@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useRef, useTransition } from 'react'
-import { Camera, Navigation, SkipForward, X, Check, Loader2, ImageIcon } from 'lucide-react'
+import { Camera, Navigation, SkipForward, X, Check, Loader2, ImageIcon, PenTool } from 'lucide-react'
 import { markStopVisitedWithEvidence, skipStop } from '@/actions/manifests/driver'
+import { SignaturePad } from '@/components/domain/driver/signature-pad'
 import type { DailyManifest, ManifestStop } from '@/types/manifest'
 
 // ---------------------------------------------------------------------------
@@ -51,6 +52,9 @@ function StopCard({ stop, idx, totalStops }: { stop: ManifestStop; idx: number; 
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [showSkipForm, setShowSkipForm] = useState(false)
   const [skipReason, setSkipReason] = useState('')
+  const [pickupQty, setPickupQty] = useState('')
+  const [showSignature, setShowSignature] = useState(false)
+  const [signatureBlob, setSignatureBlob] = useState<Blob | null>(null)
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -81,7 +85,11 @@ function StopCard({ stop, idx, totalStops }: { stop: ManifestStop; idx: number; 
       if (photoFile) {
         formData.append('photo', photoFile)
       }
-      const result = await markStopVisitedWithEvidence(stop.id, formData)
+      if (signatureBlob) {
+        formData.append('signature', signatureBlob, 'signature.png')
+      }
+      const qty = pickupQty ? parseInt(pickupQty) : undefined
+      const result = await markStopVisitedWithEvidence(stop.id, formData, qty)
       if (!result.success) {
         setError(result.error ?? 'Erro ao registrar visita')
       }
@@ -224,6 +232,28 @@ function StopCard({ stop, idx, totalStops }: { stop: ManifestStop; idx: number; 
         )}
       </div>
 
+      {/* Pickup quantity input */}
+      {stop.status === 'pending' && (
+        <div className="mt-2 ml-10">
+          <div className="flex items-center gap-2">
+            <label className="text-[11px] text-white/35">Peças coletadas:</label>
+            <input
+              type="number"
+              min={0}
+              value={pickupQty}
+              onChange={(e) => setPickupQty(e.target.value)}
+              placeholder="Qtd"
+              className="w-16 text-xs text-center rounded-md px-2 py-1 outline-none"
+              style={{
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.09)',
+                color: '#fff',
+              }}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Photo preview */}
       {stop.status === 'pending' && photoPreview && (
         <div className="mt-2 ml-10 flex items-center gap-2">
@@ -247,6 +277,49 @@ function StopCard({ stop, idx, totalStops }: { stop: ManifestStop; idx: number; 
             </button>
           </div>
           <span className="text-[11px] text-white/35">Foto capturada</span>
+        </div>
+      )}
+
+      {/* Signature pad */}
+      {stop.status === 'pending' && !showSignature && !signatureBlob && (
+        <div className="mt-2 ml-10">
+          <button
+            type="button"
+            onClick={() => setShowSignature(true)}
+            className="flex items-center gap-1 text-[11px] text-white/35 hover:text-white/55 transition-colors"
+          >
+            <PenTool size={12} />
+            Coletar assinatura
+          </button>
+        </div>
+      )}
+      {stop.status === 'pending' && showSignature && (
+        <div className="mt-2 ml-10">
+          <SignaturePad
+            onSave={(blob) => {
+              setSignatureBlob(blob)
+              setShowSignature(false)
+            }}
+            onCancel={() => setShowSignature(false)}
+          />
+        </div>
+      )}
+      {stop.status === 'pending' && signatureBlob && !showSignature && (
+        <div className="mt-2 ml-10 flex items-center gap-2">
+          <span
+            className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded"
+            style={{ background: 'rgba(52,211,153,0.10)', color: '#34d399', border: '1px solid rgba(52,211,153,0.22)' }}
+          >
+            <PenTool size={10} />
+            Assinatura coletada
+          </span>
+          <button
+            type="button"
+            onClick={() => { setSignatureBlob(null); setShowSignature(true) }}
+            className="text-[10px] text-white/25 hover:text-white/45"
+          >
+            Refazer
+          </button>
         </div>
       )}
 

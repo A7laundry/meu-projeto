@@ -2,7 +2,8 @@
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendEmail } from '@/lib/email'
-import { orderStatusEmail, npsRequestEmail } from '@/lib/email-templates'
+import { orderStatusEmail } from '@/lib/email-templates'
+import { dispatchNpsAfterDelivery } from '@/actions/notifications/nps-dispatch'
 
 const NOTIFY_STATUSES = ['ready', 'shipped', 'delivered'] as const
 
@@ -65,31 +66,10 @@ export async function sendOrderStatusEmail(
 
   await sendEmail({ to: clientEmail, subject, html })
 
-  // Se entregue, enviar NPS após 1h (via setTimeout simples — em produção usar queue)
+  // Se entregue, despachar NPS via SMS (com fallback email)
   if (newStatus === 'delivered') {
-    // Buscar ou criar NPS survey
-    const { data: survey } = await supabase
-      .from('nps_surveys')
-      .insert({
-        unit_id: unitId,
-        client_id: order.client_id,
-      })
-      .select('id')
-      .single()
-
-    if (survey) {
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://a7-lavanderia-app.vercel.app'
-      const npsUrl = `${baseUrl}/nps/${survey.id}`
-
-      const npsEmail = npsRequestEmail({
-        clientName: order.client_name ?? 'Cliente',
-        orderNumber: order.order_number,
-        npsUrl,
-        unitName,
-      })
-
-      // Envia NPS email imediatamente (idealmente com delay, mas sem job queue)
-      await sendEmail({ to: clientEmail, subject: npsEmail.subject, html: npsEmail.html })
-    }
+    dispatchNpsAfterDelivery(orderId, unitId).catch((err) =>
+      console.error('[nps-dispatch] Falha:', err)
+    )
   }
 }

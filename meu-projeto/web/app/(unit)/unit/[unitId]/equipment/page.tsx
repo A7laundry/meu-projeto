@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import { AlertTriangle } from 'lucide-react'
 import { listEquipment } from '@/actions/equipment/crud'
-import { getMaintenanceAlerts } from '@/actions/equipment/maintenance-schedule'
+import { getMaintenanceAlerts, listMaintenanceSchedules } from '@/actions/equipment/maintenance-schedule'
 import { Badge } from '@/components/ui/badge'
+import { MaintenanceSchedulePanel } from '@/components/domain/equipment/maintenance-schedule-panel'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { EquipmentFormDialog } from '@/components/domain/equipment/equipment-form-dialog'
@@ -24,9 +25,10 @@ export default async function EquipmentPage({
   params: Promise<{ unitId: string }>
 }) {
   const { unitId } = await params
-  const [equipment, maintenanceAlerts] = await Promise.all([
+  const [equipment, maintenanceAlerts, maintenanceSchedules] = await Promise.all([
     listEquipment(unitId),
     getMaintenanceAlerts(unitId),
+    listMaintenanceSchedules(unitId),
   ])
 
   const byType = {
@@ -76,6 +78,15 @@ export default async function EquipmentPage({
           ))}
         </div>
       )}
+
+      {/* Painel de manutenção preventiva */}
+      <div className="mb-6">
+        <MaintenanceSchedulePanel
+          unitId={unitId}
+          schedules={maintenanceSchedules}
+          equipmentOptions={equipment.map((e) => ({ id: e.id, name: e.name }))}
+        />
+      </div>
 
       <div className="rounded-md border">
         <Table>
