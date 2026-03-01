@@ -1,23 +1,24 @@
-import { ClipboardList, Package, Activity, DollarSign, TrendingDown, TrendingUp } from 'lucide-react'
+import { Suspense } from 'react'
+import { ClipboardList, Package, Activity, DollarSign, TrendingDown, TrendingUp, Clock } from 'lucide-react'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getProductionKpis } from '@/lib/queries/production-kpis'
 import { KpiCard } from '@/components/domain/kpi/kpi-card'
 import { ProductionChart } from '@/components/domain/kpi/production-chart'
 import { SectorQueueChart } from '@/components/domain/kpi/sector-queue-chart'
 import { RingGauge } from '@/components/ui/ring-gauge'
+import { PeriodFilter, getDateFromPeriod } from '@/components/domain/kpi/period-filter'
 
 export const revalidate = 60
 
-async function getDailyRevenue(unitId: string): Promise<number> {
+async function getDailyRevenue(unitId: string, dateFrom: string): Promise<number> {
   const supabase = createAdminClient()
-  const today = new Date().toISOString().split('T')[0]
 
   const [ordersRes, pricesRes] = await Promise.all([
     supabase
       .from('orders')
       .select('items:order_items(piece_type, quantity)')
       .eq('unit_id', unitId)
-      .gte('created_at', `${today}T00:00:00`),
+      .gte('created_at', `${dateFrom}T00:00:00`),
     supabase
       .from('price_table')
       .select('piece_type, price')
@@ -39,19 +40,18 @@ async function getDailyRevenue(unitId: string): Promise<number> {
   return total
 }
 
-async function getDailyChemicalCost(unitId: string): Promise<{
+async function getDailyChemicalCost(unitId: string, dateFrom: string): Promise<{
   totalCost: number
   byProduct: { name: string; qty: number; cost: number }[]
 }> {
   const supabase = createAdminClient()
-  const today = new Date().toISOString().split('T')[0]
 
   const { data } = await supabase
     .from('chemical_movements')
     .select('quantity, product:chemical_products(name, cost_per_unit, measure_unit)')
     .eq('unit_id', unitId)
     .eq('movement_type', 'out')
-    .gte('created_at', `${today}T00:00:00`)
+    .gte('created_at', `${dateFrom}T00:00:00`)
 
   const byProduct: { name: string; qty: number; cost: number }[] = []
   let totalCost = 0
@@ -69,19 +69,32 @@ async function getDailyChemicalCost(unitId: string): Promise<{
   return { totalCost, byProduct: byProduct.sort((a, b) => b.cost - a.cost) }
 }
 
+function formatCycleTime(minutes: number | null): string {
+  if (minutes === null) return '—'
+  if (minutes < 60) return `${minutes} min`
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  return m > 0 ? `${h}h ${m}min` : `${h}h`
+}
+
 export default async function UnitDashboardPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ unitId: string }>
+  searchParams: Promise<{ period?: string }>
 }) {
   const { unitId } = await params
+  const { period } = await searchParams
+  const dateFrom = getDateFromPeriod(period)
+
   const [kpis, chemical, dailyRevenue] = await Promise.all([
-    getProductionKpis(unitId),
-    getDailyChemicalCost(unitId),
-    getDailyRevenue(unitId),
+    getProductionKpis(unitId, dateFrom),
+    getDailyChemicalCost(unitId, dateFrom),
+    getDailyRevenue(unitId, dateFrom),
   ])
 
-  const { dailyVolume, queueByStatus, piecesPerSectorLastHour, onTimeVsLate } = kpis
+  const { dailyVolume, queueByStatus, piecesPerSectorLastHour, onTimeVsLate, avgCycleTimeMinutes, trend } = kpis
   const totalInQueue = queueByStatus.reduce((s, q) => s + q.count, 0)
   const onTimePercent = dailyVolume.total_orders > 0
     ? Math.round((onTimeVsLate.on_time / dailyVolume.total_orders) * 100)
@@ -92,45 +105,59 @@ export default async function UnitDashboardPage({
   const maxChemicalCost = Math.max(...chemical.byProduct.map(p => p.cost), 1)
 
   const gaugeColor = onTimePercent >= 90 ? '#10b981' : onTimePercent >= 70 ? '#f59e0b' : '#f87171'
+  const periodLabel = period === 'week' ? 'Últimos 7 dias' : period === 'month' ? 'Últimos 30 dias' : 'Hoje'
 
   return (
     <div className="p-6 lg:p-8 space-y-10">
 
-      {/* ── Header ─────────────────────────────────────── */}
-      <div>
-        <p className="text-overline mb-2">Operacional</p>
-        <h1 className="text-display-lg text-white">Dashboard de Produção</h1>
-        <p className="text-sm text-white/40 mt-2">Dados de hoje — atualiza a cada 60s</p>
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-overline mb-2">Operacional</p>
+          <h1 className="text-display-lg text-white">Dashboard de Produção</h1>
+          <p className="text-sm text-white/40 mt-2">{periodLabel} — atualiza a cada 60s</p>
+        </div>
+        <Suspense>
+          <PeriodFilter />
+        </Suspense>
       </div>
 
-      {/* ── KPIs principais ───────────────────────────── */}
+      {/* KPIs principais */}
       <section className="space-y-4">
-        <h2 className="section-title">Produção — Hoje</h2>
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <h2 className="section-title">Produção — {periodLabel}</h2>
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
           <KpiCard
             title="Faturamento estimado" highlight stagger={1}
             value={dailyRevenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-            subtitle="Comandas de hoje"
+            subtitle="Comandas do período"
             icon={TrendingUp} iconColor="#34d399" iconBg="rgba(52,211,153,0.12)"
           />
           <KpiCard
-            title="Comandas do dia" value={dailyVolume.total_orders}
-            subtitle="Criadas hoje" stagger={2}
+            title="Comandas" value={dailyVolume.total_orders}
+            subtitle="Criadas no período" stagger={2}
+            trend={trend?.ordersChange}
             icon={ClipboardList} iconColor="#60a5fa" iconBg="rgba(59,130,246,0.12)"
           />
           <KpiCard
             title="Peças processadas" value={dailyVolume.total_items}
             unit="pçs" subtitle="Total de itens" stagger={3}
+            trend={trend?.itemsChange}
             icon={Package} iconColor="#60a5fa" iconBg="rgba(96,165,250,0.10)"
           />
           <KpiCard
+            title="Tempo médio ciclo" stagger={4}
+            value={formatCycleTime(avgCycleTimeMinutes)}
+            subtitle={`${dailyVolume.completed_orders} concluída${dailyVolume.completed_orders !== 1 ? 's' : ''}`}
+            icon={Clock} iconColor="#fbbf24" iconBg="rgba(251,191,36,0.10)"
+          />
+          <KpiCard
             title="Na fila agora" value={totalInQueue}
-            subtitle="Todos os setores" stagger={4}
+            subtitle="Todos os setores" stagger={5}
             icon={Activity} iconColor="#a78bfa" iconBg="rgba(167,139,250,0.10)"
           />
 
-          {/* Ring gauge — No prazo */}
-          <div className="card-stat rounded-xl p-5 flex flex-col items-center justify-center gap-2 animate-fade-up stagger-5">
+          {/* Ring gauge */}
+          <div className="card-stat rounded-xl p-5 flex flex-col items-center justify-center gap-2 animate-fade-up stagger-6">
             <RingGauge
               percent={onTimePercent}
               size={80}
@@ -149,7 +176,7 @@ export default async function UnitDashboardPage({
         </div>
       </section>
 
-      {/* ── Gráficos ───────────────────────────────────── */}
+      {/* Gráficos */}
       <section className="space-y-4">
         <h2 className="section-title">Fila &amp; Setores — Agora</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -158,14 +185,14 @@ export default async function UnitDashboardPage({
         </div>
       </section>
 
-      {/* ── Custo de Insumos ──────────────────────────── */}
+      {/* Custo de Insumos */}
       <section className="space-y-4">
-        <h2 className="section-title">Insumos — Hoje</h2>
+        <h2 className="section-title">Insumos — {periodLabel}</h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <KpiCard
             title="Total em insumos" stagger={1}
             value={`R$ ${chemical.totalCost.toFixed(2).replace('.', ',')}`}
-            subtitle="Saídas de estoque de hoje"
+            subtitle="Saídas de estoque do período"
             icon={DollarSign} iconColor="#34d399" iconBg="rgba(52,211,153,0.10)"
           />
           <KpiCard
@@ -179,7 +206,7 @@ export default async function UnitDashboardPage({
           <div className="card-dark rounded-xl p-5 animate-fade-up stagger-3">
             <p className="section-header mb-4">Por produto</p>
             {chemical.byProduct.length === 0 ? (
-              <p className="text-sm text-white/25 italic">Nenhuma saída de insumo hoje</p>
+              <p className="text-sm text-white/25 italic">Nenhuma saída de insumo no período</p>
             ) : (
               <div className="space-y-3">
                 {chemical.byProduct.slice(0, 4).map((p) => {

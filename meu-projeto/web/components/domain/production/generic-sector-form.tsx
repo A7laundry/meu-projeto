@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useCallback } from 'react'
 import { completeSector, type SectorCompletionData } from '@/actions/production/complete-sector'
+import { useOfflineAction } from '@/hooks/use-offline-action'
+import { OfflineQueueBanner } from '@/components/layout/offline-queue-banner'
 import type { Order } from '@/types/order'
 import type { Equipment } from '@/types/equipment'
 import type { ShiftCycleCount } from '@/actions/equipment/shift-cycles'
@@ -64,6 +66,15 @@ export function GenericSectorForm({
   const [notes, setNotes] = useState('')
   const [selectedEquipmentId, setSelectedEquipmentId] = useState<string | null>(null)
 
+  const sectorHandler = useCallback(
+    async (payload: Record<string, unknown>) => completeSector(payload as SectorCompletionData),
+    []
+  )
+  const { execute: executeOffline, pendingCount, syncing, isOnline } = useOfflineAction(
+    `complete-sector-${sectorKey}`,
+    sectorHandler
+  )
+
   const [cycles, setCycles] = useState(1)
   const [weightKg, setWeightKg] = useState('')
   const [tempLevel, setTempLevel] = useState<'low' | 'medium' | 'high'>('medium')
@@ -94,9 +105,12 @@ export function GenericSectorForm({
       }),
     }
     startTransition(async () => {
-      const result = await completeSector(data)
-      if (result.success) onComplete()
-      else setError(result.error)
+      const result = await executeOffline(data as unknown as Record<string, unknown>)
+      if (result.success) {
+        onComplete()
+      } else {
+        setError(result.error ?? 'Erro desconhecido')
+      }
     })
   }
 
@@ -123,6 +137,8 @@ export function GenericSectorForm({
       className="flex flex-col h-full text-white"
       style={{ background: 'linear-gradient(180deg, #060609 0%, #07070a 100%)' }}
     >
+      <OfflineQueueBanner pendingCount={pendingCount} syncing={syncing} isOnline={isOnline} />
+
       {/* Header */}
       <div
         className="px-5 py-4 flex items-center justify-between flex-shrink-0"

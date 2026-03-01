@@ -82,7 +82,12 @@ export async function createRecipe(
     .select()
     .single()
 
-  if (error) return { success: false, error: `Erro ao criar receita: ${error.message}` }
+  if (error) {
+    if (error.code === '23505') {
+      return { success: false, error: 'Já existe uma receita com este nome e tipo de peça nesta unidade.' }
+    }
+    return { success: false, error: `Erro ao criar receita: ${error.message}` }
+  }
 
   revalidatePath(`/unit/${unitId}/recipes`)
   return { success: true, data: data as Recipe }
@@ -117,7 +122,12 @@ export async function updateRecipe(
     .select()
     .single()
 
-  if (error) return { success: false, error: `Erro ao atualizar receita: ${error.message}` }
+  if (error) {
+    if (error.code === '23505') {
+      return { success: false, error: 'Já existe uma receita com este nome e tipo de peça nesta unidade.' }
+    }
+    return { success: false, error: `Erro ao atualizar receita: ${error.message}` }
+  }
 
   revalidatePath(`/unit/${unitId}/recipes`)
   return { success: true, data: data as Recipe }
