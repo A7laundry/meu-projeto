@@ -3,6 +3,8 @@
 import { useState, useTransition } from 'react'
 import { completeSector, type SectorCompletionData } from '@/actions/production/complete-sector'
 import type { Order } from '@/types/order'
+import type { Equipment } from '@/types/equipment'
+import type { ShiftCycleCount } from '@/actions/equipment/shift-cycles'
 
 const SECTOR_CONFIG = {
   washing: {
@@ -41,6 +43,8 @@ interface GenericSectorFormProps {
   order: Order
   unitId: string
   sectorKey: SectorKey
+  equipment?: Equipment[]
+  shiftCycles?: ShiftCycleCount[]
   onComplete: () => void
   onCancel: () => void
 }
@@ -49,6 +53,8 @@ export function GenericSectorForm({
   order,
   unitId,
   sectorKey,
+  equipment,
+  shiftCycles,
   onComplete,
   onCancel,
 }: GenericSectorFormProps) {
@@ -56,6 +62,7 @@ export function GenericSectorForm({
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [notes, setNotes] = useState('')
+  const [selectedEquipmentId, setSelectedEquipmentId] = useState<string | null>(null)
 
   const [cycles, setCycles] = useState(1)
   const [weightKg, setWeightKg] = useState('')
@@ -71,6 +78,7 @@ export function GenericSectorForm({
       sectorKey,
       orderId: order.id,
       unitId,
+      equipmentId: selectedEquipmentId || undefined,
       notes: notes || undefined,
       ...(sectorKey === 'washing' && {
         cycles,
@@ -141,6 +149,50 @@ export function GenericSectorForm({
 
       {/* Campos */}
       <div className="flex-1 overflow-auto p-5 space-y-4">
+        {/* Seleção de equipamento */}
+        {equipment && equipment.length > 0 && (
+          <div style={cardStyle}>
+            <p className="text-[10px] uppercase tracking-widest text-white/30 font-semibold mb-3">Equipamento</p>
+            <div className="grid grid-cols-2 gap-2">
+              {equipment.map((eq) => {
+                const selected = selectedEquipmentId === eq.id
+                const cycleCount = shiftCycles?.find((c) => c.equipmentId === eq.id)?.cycles ?? 0
+                return (
+                  <button
+                    key={eq.id}
+                    type="button"
+                    onClick={() => setSelectedEquipmentId(selected ? null : eq.id)}
+                    className="py-3 px-3 rounded-xl text-left transition-all"
+                    style={{
+                      background: selected ? config.accentBg : 'rgba(255,255,255,0.04)',
+                      border: `2px solid ${selected ? config.accentBorder : 'rgba(255,255,255,0.08)'}`,
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-semibold" style={{ color: selected ? config.accentColor : 'rgba(255,255,255,0.60)' }}>
+                        {eq.name}
+                      </p>
+                      {cycleCount > 0 && (
+                        <span
+                          className="text-[10px] font-bold px-1.5 py-0.5 rounded-md tabular-nums"
+                          style={{ background: config.accentBg, color: config.accentColor }}
+                        >
+                          {cycleCount}x
+                        </span>
+                      )}
+                    </div>
+                    {eq.capacity_kg && (
+                      <p className="text-[11px] mt-0.5" style={{ color: 'rgba(255,255,255,0.30)' }}>
+                        {eq.capacity_kg} kg
+                      </p>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
         {sectorKey === 'washing' && (
           <div style={cardStyle}>
             <p className="text-[10px] uppercase tracking-widest text-white/30 font-semibold mb-4">Dados da Lavagem</p>

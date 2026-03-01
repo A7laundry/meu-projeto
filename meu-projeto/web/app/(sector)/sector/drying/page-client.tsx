@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { SectorQueue } from '@/components/domain/production/sector-queue'
 import { GenericSectorForm } from '@/components/domain/production/generic-sector-form'
 import type { Order, OrderStatus } from '@/types/order'
+import type { Equipment } from '@/types/equipment'
+import type { ShiftCycleCount } from '@/actions/equipment/shift-cycles'
 
 interface SectorPageClientProps {
   unitId: string
@@ -11,6 +13,8 @@ interface SectorPageClientProps {
   sectorKey: 'washing' | 'drying' | 'ironing' | 'shipping'
   sectorName: string
   statuses: OrderStatus[]
+  equipment?: Equipment[]
+  shiftCycles?: ShiftCycleCount[]
 }
 
 export function SectorPageClient({
@@ -19,6 +23,8 @@ export function SectorPageClient({
   sectorKey,
   sectorName,
   statuses,
+  equipment,
+  shiftCycles,
 }: SectorPageClientProps) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -41,6 +47,8 @@ export function SectorPageClient({
           order={selectedOrder}
           unitId={unitId}
           sectorKey={sectorKey}
+          equipment={equipment}
+          shiftCycles={shiftCycles}
           onComplete={handleComplete}
           onCancel={() => setSelectedOrder(null)}
         />

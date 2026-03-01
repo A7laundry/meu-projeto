@@ -159,7 +159,28 @@ export async function completeSector(rawData: SectorCompletionData): Promise<Act
       return { success: false, error: result.error ?? 'Erro desconhecido na RPC.' }
     }
 
+    // Baixa automática de insumos químicos no estoque (setor lavagem com receita)
+    if (data.sectorKey === 'washing' && data.recipeId && data.cycles) {
+      const { data: chemicals } = await admin
+        .from('recipe_chemicals')
+        .select('product_id, quantity_per_cycle')
+        .eq('recipe_id', data.recipeId)
+
+      if (chemicals && chemicals.length > 0) {
+        const movements = chemicals.map((c) => ({
+          product_id: c.product_id,
+          unit_id: data.unitId,
+          movement_type: 'out' as const,
+          quantity: (c.quantity_per_cycle as number) * (data.cycles ?? 1),
+          notes: `Auto: lavagem ${data.orderId.slice(0, 8)} · ${data.cycles} ciclo(s)`,
+          operator_id: user.id,
+        }))
+        await admin.from('chemical_movements').insert(movements)
+      }
+    }
+
     revalidatePath(`/sector/${data.sectorKey}`)
+    revalidatePath(`/unit/${data.unitId}/supplies`)
     return { success: true, data: undefined }
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : 'Erro desconhecido' }
