@@ -229,7 +229,7 @@ export default async function DirectorDashboardPage() {
         <div className="flex items-center gap-3">
           <h2 className="section-title" style={{ flex: 1 }}>Financeiro da Rede</h2>
           <Link href="/director/financial" className="text-xs text-[#60a5fa]/60 hover:text-[#60a5fa] transition-colors flex-shrink-0">
-            Ver DRE →
+            Ver Financeiro →
           </Link>
         </div>
         <FinancialNetworkSummary financial={networkFinancial} />

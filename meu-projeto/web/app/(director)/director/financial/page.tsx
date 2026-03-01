@@ -1,7 +1,12 @@
-export const revalidate = 0
+export const revalidate = 60
 
 import Link from 'next/link'
+import { DollarSign, TrendingUp, TrendingDown, FileBarChart } from 'lucide-react'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { getNetworkFinancial } from '@/actions/director/consolidated'
 import { getConsolidatedDre } from '@/actions/director/consolidated-dre'
+import { FinancialNetworkSummary } from '@/components/domain/director/financial-network-summary'
+import type { Unit } from '@/types/unit'
 
 const fmtCurrency = (v: number) =>
   v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
@@ -11,128 +16,159 @@ const MONTHS = [
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
 ]
 
-interface Props {
-  searchParams: Promise<{ year?: string; month?: string }>
-}
-
-export default async function ConsolidatedDrePage({ searchParams }: Props) {
-  const sp = await searchParams
+export default async function FinancialHubPage() {
+  const supabase = createAdminClient()
   const now = new Date()
-  const year = Number(sp.year ?? now.getFullYear())
-  const month = Number(sp.month ?? now.getMonth() + 1)
+  const year = now.getFullYear()
+  const month = now.getMonth() + 1
 
-  const report = await getConsolidatedDre(year, month)
+  const { data: units } = await supabase
+    .from('units')
+    .select('id, name')
+    .eq('active', true)
+    .order('name')
 
-  const prevMonth = month === 1 ? 12 : month - 1
-  const prevYear = month === 1 ? year - 1 : year
-  const nextMonth = month === 12 ? 1 : month + 1
-  const nextYear = month === 12 ? year + 1 : year
+  const unitIds = ((units ?? []) as Pick<Unit, 'id' | 'name'>[]).map((u) => u.id)
+
+  const [networkFinancial, dre] = await Promise.all([
+    getNetworkFinancial(unitIds),
+    getConsolidatedDre(year, month),
+  ])
+
+  const totalCosts = dre.totals.suppliesCost + dre.totals.payrollCost + dre.totals.overheadCost
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">DRE Consolidado</h1>
-          <p className="text-sm text-white/40 mt-1">
-            Demonstrativo de resultado da rede — {MONTHS[month - 1]} {year}
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Link
-            href={`?year=${prevYear}&month=${prevMonth}`}
-            className="px-3 py-1.5 rounded-lg text-sm text-white/40 hover:text-white/70"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
-          >
-            Anterior
-          </Link>
-          <Link
-            href={`?year=${nextYear}&month=${nextMonth}`}
-            className="px-3 py-1.5 rounded-lg text-sm text-white/40 hover:text-white/70"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
-          >
-            Próximo
-          </Link>
-        </div>
+    <div className="p-6 lg:p-8 max-w-5xl mx-auto space-y-8">
+      {/* Header */}
+      <div>
+        <p className="text-overline mb-2">Módulo Financeiro</p>
+        <h1 className="text-display-lg text-white">Financeiro da Rede</h1>
+        <p className="text-sm text-white/40 mt-2">
+          Visão consolidada — {MONTHS[month - 1]} {year}
+        </p>
       </div>
 
-      {/* Totals cards */}
+      {/* 4 KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="card-dark rounded-xl p-4">
-          <p className="text-xs text-white/40 mb-1">Receita total</p>
-          <p className="text-xl font-bold text-emerald-400">{fmtCurrency(report.totals.revenue)}</p>
+          <div className="flex items-center gap-2 mb-2">
+            <TrendingUp size={14} className="text-emerald-400/60" />
+            <p className="text-xs text-white/40">Receita do mês</p>
+          </div>
+          <p className="text-xl font-bold text-emerald-400">{fmtCurrency(dre.totals.revenue)}</p>
         </div>
         <div className="card-dark rounded-xl p-4">
-          <p className="text-xs text-white/40 mb-1">Insumos</p>
-          <p className="text-xl font-bold text-red-400">{fmtCurrency(report.totals.suppliesCost)}</p>
+          <div className="flex items-center gap-2 mb-2">
+            <DollarSign size={14} className="text-emerald-400/60" />
+            <p className="text-xs text-white/40">A receber</p>
+          </div>
+          <p className="text-xl font-bold text-emerald-400">{fmtCurrency(networkFinancial.totalReceivable)}</p>
         </div>
         <div className="card-dark rounded-xl p-4">
-          <p className="text-xs text-white/40 mb-1">Folha + overhead</p>
-          <p className="text-xl font-bold text-red-400">
-            {fmtCurrency(report.totals.payrollCost + report.totals.overheadCost)}
-          </p>
+          <div className="flex items-center gap-2 mb-2">
+            <TrendingDown size={14} className="text-red-400/60" />
+            <p className="text-xs text-white/40">A pagar</p>
+          </div>
+          <p className="text-xl font-bold text-red-400">{fmtCurrency(networkFinancial.totalPayable)}</p>
         </div>
         <div className="card-dark rounded-xl p-4">
-          <p className="text-xs text-white/40 mb-1">EBIT</p>
-          <p className={`text-xl font-bold ${report.totals.ebit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-            {fmtCurrency(report.totals.ebit)}
+          <div className="flex items-center gap-2 mb-2">
+            <FileBarChart size={14} className={dre.totals.ebit >= 0 ? 'text-emerald-400/60' : 'text-red-400/60'} />
+            <p className="text-xs text-white/40">EBIT</p>
+          </div>
+          <p className={`text-xl font-bold ${dre.totals.ebit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            {fmtCurrency(dre.totals.ebit)}
           </p>
         </div>
       </div>
 
-      {/* Per-unit table */}
-      <div className="card-dark rounded-xl overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/08">
-          <h2 className="font-semibold text-white">Resultado por Unidade</h2>
+      {/* Financial Network Summary (A receber / A pagar / Saldo) */}
+      <section className="space-y-4">
+        <h2 className="section-title">Posição Financeira</h2>
+        <FinancialNetworkSummary financial={networkFinancial} />
+      </section>
+
+      {/* Mini DRE — Receita vs Custos */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-3">
+          <h2 className="section-title" style={{ flex: 1 }}>Resumo DRE — {MONTHS[month - 1]}</h2>
+          <Link
+            href="/director/financial/dre"
+            className="text-xs text-[#60a5fa]/60 hover:text-[#60a5fa] transition-colors flex-shrink-0"
+          >
+            Ver DRE completo →
+          </Link>
         </div>
-        {report.units.length === 0 ? (
-          <p className="px-5 py-6 text-sm text-white/30 italic text-center">Sem dados no período.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="border-b border-white/08">
-                <tr>
-                  <th className="text-left px-4 py-3 section-header">Unidade</th>
-                  <th className="text-right px-4 py-3 section-header">Receita</th>
-                  <th className="text-right px-4 py-3 section-header">Insumos</th>
-                  <th className="text-right px-4 py-3 section-header">Folha</th>
-                  <th className="text-right px-4 py-3 section-header">Overhead</th>
-                  <th className="text-right px-4 py-3 section-header">EBIT</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/05">
-                {report.units.map((u) => (
-                  <tr key={u.unitId} className="hover:bg-white/03">
-                    <td className="px-4 py-2.5 text-white/70 font-medium">{u.unitName}</td>
-                    <td className="px-4 py-2.5 text-right text-emerald-400">{fmtCurrency(u.revenue)}</td>
-                    <td className="px-4 py-2.5 text-right text-red-400/70">{fmtCurrency(u.suppliesCost)}</td>
-                    <td className="px-4 py-2.5 text-right text-red-400/70">{fmtCurrency(u.payrollCost)}</td>
-                    <td className="px-4 py-2.5 text-right text-red-400/70">{fmtCurrency(u.overheadCost)}</td>
-                    <td className="px-4 py-2.5 text-right">
-                      <span className={`font-semibold ${u.ebit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                        {fmtCurrency(u.ebit)}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot className="border-t border-white/10 bg-white/02 font-semibold">
-                <tr>
-                  <td className="px-4 py-3 text-white/60">Total Rede</td>
-                  <td className="px-4 py-3 text-right text-emerald-400">{fmtCurrency(report.totals.revenue)}</td>
-                  <td className="px-4 py-3 text-right text-red-400/70">{fmtCurrency(report.totals.suppliesCost)}</td>
-                  <td className="px-4 py-3 text-right text-red-400/70">{fmtCurrency(report.totals.payrollCost)}</td>
-                  <td className="px-4 py-3 text-right text-red-400/70">{fmtCurrency(report.totals.overheadCost)}</td>
-                  <td className="px-4 py-3 text-right">
-                    <span className={`${report.totals.ebit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                      {fmtCurrency(report.totals.ebit)}
-                    </span>
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        )}
-      </div>
+        <div className="card-dark rounded-xl overflow-hidden">
+          <table className="w-full text-sm">
+            <tbody className="divide-y divide-white/05">
+              <tr>
+                <td className="px-5 py-3 text-white/60">Receita total</td>
+                <td className="px-5 py-3 text-right text-emerald-400 font-semibold">{fmtCurrency(dre.totals.revenue)}</td>
+              </tr>
+              <tr>
+                <td className="px-5 py-3 text-white/60">Insumos</td>
+                <td className="px-5 py-3 text-right text-red-400/70">{fmtCurrency(dre.totals.suppliesCost)}</td>
+              </tr>
+              <tr>
+                <td className="px-5 py-3 text-white/60">Folha de pagamento</td>
+                <td className="px-5 py-3 text-right text-red-400/70">{fmtCurrency(dre.totals.payrollCost)}</td>
+              </tr>
+              <tr>
+                <td className="px-5 py-3 text-white/60">Overhead</td>
+                <td className="px-5 py-3 text-right text-red-400/70">{fmtCurrency(dre.totals.overheadCost)}</td>
+              </tr>
+              <tr className="bg-white/02">
+                <td className="px-5 py-3 text-white/80 font-semibold">Total custos</td>
+                <td className="px-5 py-3 text-right text-red-400 font-semibold">{fmtCurrency(totalCosts)}</td>
+              </tr>
+            </tbody>
+            <tfoot className="border-t border-white/10">
+              <tr>
+                <td className="px-5 py-3 text-white font-bold">EBIT</td>
+                <td className={`px-5 py-3 text-right font-bold text-lg ${dre.totals.ebit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {fmtCurrency(dre.totals.ebit)}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+
+      {/* Cards de navegação */}
+      <section className="space-y-4">
+        <h2 className="section-title">Relatórios Financeiros</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Link
+            href="/director/financial/dre"
+            className="card-dark rounded-xl p-5 group hover:bg-white/04 transition-colors"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.20)' }}>
+                <FileBarChart size={16} className="text-[#60a5fa]" />
+              </div>
+              <h3 className="font-semibold text-white group-hover:text-[#60a5fa] transition-colors">DRE Consolidado</h3>
+            </div>
+            <p className="text-xs text-white/40">
+              Demonstrativo de resultado por unidade com navegação mensal
+            </p>
+          </Link>
+          <Link
+            href="/director/reports"
+            className="card-dark rounded-xl p-5 group hover:bg-white/04 transition-colors"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.20)' }}>
+                <TrendingUp size={16} className="text-[#60a5fa]" />
+              </div>
+              <h3 className="font-semibold text-white group-hover:text-[#60a5fa] transition-colors">Relatórios</h3>
+            </div>
+            <p className="text-xs text-white/40">
+              Exportações, consumo por unidade e relatórios operacionais
+            </p>
+          </Link>
+        </div>
+      </section>
     </div>
   )
 }

@@ -23,7 +23,7 @@ const NAV_ITEMS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: '/director/units',        label: 'Unidades',         icon: Building2 },
   { href: '/director/users',        label: 'Usuários',         icon: Users },
   { href: '/director/reports',      label: 'Relatórios',       icon: FileBarChart },
-  { href: '/director/financial',    label: 'DRE Consolidado',  icon: DollarSign },
+  { href: '/director/financial',    label: 'Financeiro',        icon: DollarSign },
   { href: '/director/nps',          label: 'NPS & Pesquisas',  icon: Star },
   { href: '/director/audit',        label: 'Auditoria',        icon: Shield },
   { href: '/commercial/dashboard',  label: 'Comercial',        icon: Briefcase },

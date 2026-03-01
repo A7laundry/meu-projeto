@@ -39,7 +39,7 @@ const NAV_GROUPS: {
     label: 'Análise',
     items: [
       { href: '/director/reports',   label: 'Relatórios',      icon: FileBarChart },
-      { href: '/director/financial', label: 'DRE Consolidado', icon: DollarSign },
+      { href: '/director/financial', label: 'Financeiro',       icon: DollarSign },
       { href: '/director/nps',      label: 'NPS & Pesquisas', icon: Star },
       { href: '/director/audit',    label: 'Auditoria',       icon: Shield },
     ],
