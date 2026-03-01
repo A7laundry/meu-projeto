@@ -2,7 +2,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'A7x TecNologia OS — Sistema Operacional para Lavanderias',
+  title: "A7X System's — Sistema Operacional para Lavanderias",
   description:
     'Controle de produção em tempo real, NPS integrado e dashboard executivo para redes de lavanderia industrial.',
 }
@@ -12,7 +12,7 @@ const FEATURES = [
     icon: '◈',
     title: 'Dashboard Executivo',
     desc: 'Visão consolidada de toda a rede em tempo real. Gauges, tendências semanais e comparativo entre unidades em uma tela.',
-    color: '#d6b25e',
+    color: '#3b82f6',
     tag: 'DIRETOR',
   },
   {
@@ -52,11 +52,68 @@ const FEATURES = [
   },
 ]
 
+const PANELS = [
+  {
+    icon: '◈',
+    title: 'Painel Executivo',
+    role: 'Director',
+    desc: 'Dashboard consolidado com KPIs multi-unidade, tendências semanais e alertas executivos.',
+    color: '#3b82f6',
+    border: 'rgba(59,130,246,0.30)',
+    bg: 'rgba(59,130,246,0.06)',
+  },
+  {
+    icon: '⊞',
+    title: 'Gestão de Unidade',
+    role: 'Unit Manager',
+    desc: 'Controle de produção, equipamentos, insumos e equipe da sua unidade.',
+    color: '#10b981',
+    border: 'rgba(16,185,129,0.30)',
+    bg: 'rgba(16,185,129,0.06)',
+  },
+  {
+    icon: '⊡',
+    title: 'Operação',
+    role: 'Sector Operator',
+    desc: 'Interface tablet otimizada por setor — triagem, lavagem, secagem, passadoria.',
+    color: '#8b5cf6',
+    border: 'rgba(139,92,246,0.30)',
+    bg: 'rgba(139,92,246,0.06)',
+  },
+  {
+    icon: '◎',
+    title: 'Loja / PDV',
+    role: 'Store',
+    desc: 'Ponto de venda, CRM de clientes e controle financeiro integrado.',
+    color: '#f59e0b',
+    border: 'rgba(245,158,11,0.30)',
+    bg: 'rgba(245,158,11,0.06)',
+  },
+  {
+    icon: '⬡',
+    title: 'Motorista',
+    role: 'Driver',
+    desc: 'Rotas otimizadas, registro de coletas e entregas em tempo real.',
+    color: '#f97316',
+    border: 'rgba(249,115,22,0.30)',
+    bg: 'rgba(249,115,22,0.06)',
+  },
+  {
+    icon: '⚙',
+    title: 'Portal do Cliente',
+    role: 'Customer',
+    desc: 'Acompanhamento de pedidos, histórico de serviços e NPS.',
+    color: '#06b6d4',
+    border: 'rgba(6,182,212,0.30)',
+    bg: 'rgba(6,182,212,0.06)',
+  },
+]
+
 export default function HomePage() {
   return (
     <>
       <style>{`
-        @keyframes shimmer-gold {
+        @keyframes shimmer-blue {
           0%   { background-position: -200% center; }
           100% { background-position:  200% center; }
         }
@@ -70,14 +127,14 @@ export default function HomePage() {
         }
         .shimmer-text {
           background: linear-gradient(90deg,
-            #b08030 0%, #d6b25e 20%, #f5e09f 40%,
-            #d6b25e 60%, #b08030 80%, #d6b25e 100%
+            #2563eb 0%, #3b82f6 20%, #93c5fd 40%,
+            #3b82f6 60%, #2563eb 80%, #3b82f6 100%
           );
           background-size: 200% auto;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
-          animation: shimmer-gold 3.5s linear infinite;
+          animation: shimmer-blue 3.5s linear infinite;
         }
         .float-card { animation: float-y 5.5s ease-in-out infinite; }
         .dot-grid-bg {
@@ -95,22 +152,46 @@ export default function HomePage() {
         }
         .feat-card:hover {
           background: rgba(255,255,255,0.05);
-          border-color: rgba(214,178,94,0.22);
+          border-color: rgba(59,130,246,0.22);
           transform: translateY(-3px);
-          box-shadow: 0 16px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(214,178,94,0.10);
+          box-shadow: 0 16px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(59,130,246,0.10);
+        }
+        .panel-card {
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 20px;
+          padding: 32px 28px;
+          transition: all 0.3s ease;
+          position: relative;
+          overflow: hidden;
+        }
+        .panel-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .panel-card::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 2px;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+        .panel-card:hover::before {
+          opacity: 1;
         }
         .cta-primary {
           display: inline-flex; align-items: center; gap: 8px;
           padding: 14px 32px; border-radius: 12px;
-          background: linear-gradient(135deg, #d6b25e 0%, #f0d080 100%);
-          color: #05050a; font-weight: 700; font-size: 15px;
+          background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+          color: #fff; font-weight: 700; font-size: 15px;
           text-decoration: none;
-          box-shadow: 0 8px 32px rgba(214,178,94,0.25);
+          box-shadow: 0 8px 32px rgba(59,130,246,0.25);
           transition: all 0.2s;
         }
         .cta-primary:hover {
           transform: translateY(-1px);
-          box-shadow: 0 12px 40px rgba(214,178,94,0.35);
+          box-shadow: 0 12px 40px rgba(59,130,246,0.35);
         }
         .cta-ghost {
           display: inline-flex; align-items: center;
@@ -123,10 +204,10 @@ export default function HomePage() {
         .cta-ghost:hover { background: rgba(255,255,255,0.07); color: #fff; }
         .step-num {
           width: 56px; height: 56px; border-radius: 16px; flex-shrink: 0;
-          background: rgba(214,178,94,0.08);
-          border: 1px solid rgba(214,178,94,0.22);
+          background: rgba(59,130,246,0.08);
+          border: 1px solid rgba(59,130,246,0.22);
           display: flex; align-items: center; justify-content: center;
-          font-size: 22px; font-weight: 900; color: #d6b25e; letter-spacing: -0.04em;
+          font-size: 22px; font-weight: 900; color: #3b82f6; letter-spacing: -0.04em;
         }
       `}</style>
 
@@ -137,13 +218,13 @@ export default function HomePage() {
         {/* Dot grid */}
         <div className="dot-grid-bg fixed inset-0 pointer-events-none" style={{ zIndex: 0, opacity: 0.6 }} />
 
-        {/* Gold spotlight */}
+        {/* Blue spotlight */}
         <div
           className="fixed pointer-events-none"
           style={{
             top: 0, left: '50%', transform: 'translateX(-50%)',
             width: 900, height: 500, zIndex: 0,
-            background: 'radial-gradient(ellipse at 50% 0%, rgba(214,178,94,0.09) 0%, transparent 65%)',
+            background: 'radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.09) 0%, transparent 65%)',
           }}
         />
 
@@ -163,17 +244,17 @@ export default function HomePage() {
               <Link href="/home" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
                 <div style={{
                   width: 32, height: 32, borderRadius: 8,
-                  background: 'linear-gradient(135deg, #d6b25e 0%, #b08030 100%)',
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 13, fontWeight: 900, color: '#05050a',
+                  fontSize: 13, fontWeight: 900, color: '#fff',
                 }}>A</div>
                 <span style={{ fontWeight: 700, fontSize: 14, color: '#fff', letterSpacing: '-0.01em' }}>
-                  A7x <span style={{ color: 'rgba(255,255,255,0.30)', fontWeight: 400 }}>TecNologia</span>
+                  A7X <span style={{ color: 'rgba(255,255,255,0.30)', fontWeight: 400 }}>System&apos;s</span>
                 </span>
               </Link>
 
               <div style={{ display: 'flex', gap: 32 }} className="hidden md:flex">
-                {[['Funcionalidades', '#funcionalidades'], ['Como funciona', '#como-funciona'], ['Para quem', '#segmentos'], ['Contato', '#cta']].map(([l, h]) => (
+                {[['Painéis', '#paineis'], ['Funcionalidades', '#funcionalidades'], ['Como funciona', '#como-funciona'], ['Para quem', '#segmentos'], ['Contato', '#cta']].map(([l, h]) => (
                   <a key={l} href={h} className="nav-link" style={{ fontSize: 14 }}>{l}</a>
                 ))}
               </div>
@@ -182,8 +263,8 @@ export default function HomePage() {
                 <Link href="/login" className="nav-link" style={{ fontSize: 14 }}>Entrar</Link>
                 <Link href="/captacao" style={{
                   fontSize: 13, fontWeight: 600, padding: '8px 18px', borderRadius: 8,
-                  background: 'linear-gradient(135deg, #d6b25e 0%, #c4a050 100%)',
-                  color: '#05050a', textDecoration: 'none',
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                  color: '#fff', textDecoration: 'none',
                 }}>
                   Solicitar Demo
                 </Link>
@@ -200,9 +281,9 @@ export default function HomePage() {
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   padding: '5px 14px', borderRadius: 100,
-                  background: 'rgba(214,178,94,0.08)',
-                  border: '1px solid rgba(214,178,94,0.22)',
-                  fontSize: 12, fontWeight: 500, color: '#d6b25e', letterSpacing: '0.02em',
+                  background: 'rgba(59,130,246,0.08)',
+                  border: '1px solid rgba(59,130,246,0.22)',
+                  fontSize: 12, fontWeight: 500, color: '#60a5fa', letterSpacing: '0.02em',
                 }}>
                   <span style={{ position: 'relative', display: 'inline-block', width: 8, height: 8 }}>
                     <span style={{
@@ -252,7 +333,7 @@ export default function HomePage() {
             <div style={{ maxWidth: 960, margin: '64px auto 0', padding: '0 16px' }}>
               <div className="float-card" style={{
                 borderRadius: 16, overflow: 'hidden',
-                boxShadow: '0 0 0 1px rgba(214,178,94,0.10), 0 48px 120px rgba(0,0,0,0.85)',
+                boxShadow: '0 0 0 1px rgba(59,130,246,0.10), 0 48px 120px rgba(0,0,0,0.85)',
                 background: '#06060e',
               }}>
                 {/* Browser chrome */}
@@ -271,7 +352,7 @@ export default function HomePage() {
                     borderRadius: 6, padding: '4px 12px',
                     fontSize: 11, color: 'rgba(255,255,255,0.22)', textAlign: 'center',
                   }}>
-                    app.a7xos.com.br / director / dashboard
+                    app.a7xsystems.com.br / director / dashboard
                   </div>
                 </div>
 
@@ -285,17 +366,17 @@ export default function HomePage() {
                   }}>
                     <div style={{
                       width: 30, height: 30, borderRadius: 8,
-                      background: 'linear-gradient(135deg, #d6b25e, #b08030)',
+                      background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 11, fontWeight: 900, color: '#07070a',
+                      fontSize: 11, fontWeight: 900, color: '#fff',
                     }}>A</div>
                     <div style={{ height: 4 }} />
                     {[{ i: '◈', a: true }, { i: '⊞', a: false }, { i: '◎', a: false }, { i: '⊡', a: false }].map((n, k) => (
                       <div key={k} style={{
                         width: 30, height: 30, borderRadius: 8,
-                        background: n.a ? 'rgba(214,178,94,0.12)' : 'transparent',
+                        background: n.a ? 'rgba(59,130,246,0.12)' : 'transparent',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 13, color: n.a ? '#d6b25e' : 'rgba(255,255,255,0.18)',
+                        fontSize: 13, color: n.a ? '#60a5fa' : 'rgba(255,255,255,0.18)',
                       }}>{n.i}</div>
                     ))}
                   </div>
@@ -317,7 +398,7 @@ export default function HomePage() {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 10 }}>
                       {[
                         { l: 'Pontualidade', v: '94%', c: '#10b981' },
-                        { l: 'Comandas hoje', v: '1.248', c: '#d6b25e' },
+                        { l: 'Comandas hoje', v: '1.248', c: '#3b82f6' },
                         { l: 'Em processo', v: '387', c: '#a78bfa' },
                         { l: 'Atrasadas', v: '12', c: '#f87171' },
                       ].map(k => (
@@ -338,12 +419,12 @@ export default function HomePage() {
                         <svg viewBox="0 0 240 44" style={{ width: '100%', height: 32 }}>
                           <defs>
                             <linearGradient id="mc1" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="0%" stopColor="#d6b25e" stopOpacity="0.28" />
-                              <stop offset="100%" stopColor="#d6b25e" stopOpacity="0" />
+                              <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.28" />
+                              <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
                             </linearGradient>
                           </defs>
                           <polyline points="0,38 34,30 68,33 102,16 136,20 170,7 204,10 240,4"
-                            fill="none" stroke="#d6b25e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                           <polygon points="0,38 34,30 68,33 102,16 136,20 170,7 204,10 240,4 240,44 0,44" fill="url(#mc1)" />
                         </svg>
                       </div>
@@ -360,14 +441,14 @@ export default function HomePage() {
                               <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.28)', width: 28, flexShrink: 0 }}>{u.n}</span>
                               <div style={{ flex: 1, height: 6, borderRadius: 3, overflow: 'hidden', display: 'flex', background: 'rgba(255,255,255,0.04)' }}>
                                 <div style={{ width: `${u.on}%`, background: '#34d399', opacity: 0.75 }} />
-                                <div style={{ width: `${u.q}%`,  background: '#d6b25e', opacity: 0.65 }} />
+                                <div style={{ width: `${u.q}%`,  background: '#3b82f6', opacity: 0.65 }} />
                                 <div style={{ width: `${u.l}%`,  background: '#f87171', opacity: 0.70 }} />
                               </div>
                             </div>
                           ))}
                         </div>
                         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                          {[['#34d399', 'No prazo'], ['#d6b25e', 'Em fila'], ['#f87171', 'Atrasadas']].map(([c, lb]) => (
+                          {[['#34d399', 'No prazo'], ['#3b82f6', 'Em fila'], ['#f87171', 'Atrasadas']].map(([c, lb]) => (
                             <span key={lb} style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 8, color: 'rgba(255,255,255,0.26)' }}>
                               <span style={{ width: 5, height: 5, borderRadius: '50%', background: c, flexShrink: 0 }} />{lb}
                             </span>
@@ -382,7 +463,7 @@ export default function HomePage() {
               {/* Glow reflection */}
               <div style={{
                 height: 80, marginTop: -40, pointerEvents: 'none',
-                background: 'radial-gradient(ellipse at 50% 0%, rgba(214,178,94,0.07) 0%, transparent 70%)',
+                background: 'radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.07) 0%, transparent 70%)',
                 filter: 'blur(20px)',
               }} />
             </div>
@@ -395,10 +476,10 @@ export default function HomePage() {
               display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1,
             }} className="md:grid-cols-4">
               {[
-                { v: '100%', l: 'Web — funciona em qualquer dispositivo ou TV' },
-                { v: '60s',  l: 'Atualização automática dos dashboards' },
-                { v: '48h',  l: 'Tempo médio de implantação' },
-                { v: '∞',    l: 'Unidades e operadores sem custo adicional' },
+                { v: '6',     l: 'Painéis especializados por perfil de acesso' },
+                { v: '60s',   l: 'Atualização automática dos dashboards' },
+                { v: '48h',   l: 'Tempo médio de implantação completa' },
+                { v: '∞',     l: 'Unidades e operadores sem custo adicional' },
               ].map((s, i) => (
                 <div key={s.v} style={{
                   textAlign: 'center', padding: '32px 24px',
@@ -406,7 +487,7 @@ export default function HomePage() {
                 }} className={i > 0 ? 'border-l border-white/05' : ''}>
                   <p style={{
                     fontSize: 44, fontWeight: 900, letterSpacing: '-0.05em',
-                    background: 'linear-gradient(135deg, #d6b25e 0%, #f0d080 100%)',
+                    background: 'linear-gradient(135deg, #3b82f6 0%, #93c5fd 100%)',
                     WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
                     margin: '0 0 8px',
                   }}>{s.v}</p>
@@ -418,19 +499,82 @@ export default function HomePage() {
 
           {/* Divider */}
           <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 24px' }}>
-            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(214,178,94,0.12), transparent)' }} />
+            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(59,130,246,0.12), transparent)' }} />
+          </div>
+
+          {/* ── PAINÉIS DO SISTEMA ─────────────────────────────────────── */}
+          <section id="paineis" style={{ padding: '88px 24px' }}>
+            <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+              <div style={{ textAlign: 'center', marginBottom: 56 }}>
+                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: 'rgba(59,130,246,0.60)', textTransform: 'uppercase', marginBottom: 12 }}>
+                  Painéis do Sistema
+                </p>
+                <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 16px' }}>
+                  Cada perfil tem{' '}
+                  <span style={{ color: '#3b82f6' }}>seu painel.</span>
+                </h2>
+                <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.40)', maxWidth: 520, margin: '0 auto', lineHeight: 1.6 }}>
+                  Do diretor ao cliente final, cada usuário acessa exatamente
+                  o que precisa — sem ruído, sem complexidade.
+                </p>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16 }}>
+                {PANELS.map(p => (
+                  <div key={p.title} className="panel-card" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+                    <style>{`
+                      .panel-card:hover .panel-border-${p.title.replace(/\s|\//g, '')} {
+                        border-color: ${p.border} !important;
+                      }
+                    `}</style>
+                    <div style={{
+                      position: 'absolute', top: 0, left: 0, right: 0, height: 2,
+                      background: `linear-gradient(90deg, transparent, ${p.color}, transparent)`,
+                      opacity: 0, transition: 'opacity 0.3s',
+                    }} className={`panel-border-${p.title.replace(/\s|\//g, '')}`} />
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
+                      <div style={{
+                        width: 48, height: 48, borderRadius: 14,
+                        background: p.bg, border: `1px solid ${p.border}`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 22, color: p.color,
+                      }}>{p.icon}</div>
+                      <span style={{
+                        fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase',
+                        padding: '4px 10px', borderRadius: 8,
+                        background: `${p.color}12`, border: `1px solid ${p.color}25`, color: p.color,
+                      }}>{p.role}</span>
+                    </div>
+                    <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', margin: '0 0 8px', letterSpacing: '-0.02em' }}>{p.title}</h3>
+                    <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.42)', lineHeight: 1.65, margin: '0 0 20px' }}>{p.desc}</p>
+                    <Link href="/login" style={{
+                      fontSize: 13, fontWeight: 600, color: p.color, textDecoration: 'none',
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                      transition: 'gap 0.2s',
+                    }}>
+                      Acessar <span style={{ transition: 'transform 0.2s' }}>→</span>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Divider */}
+          <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 24px' }}>
+            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(59,130,246,0.12), transparent)' }} />
           </div>
 
           {/* ── FUNCIONALIDADES ─────────────────────────────────────────── */}
           <section id="funcionalidades" style={{ padding: '88px 24px' }}>
             <div style={{ maxWidth: 1100, margin: '0 auto' }}>
               <div style={{ textAlign: 'center', marginBottom: 56 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: 'rgba(214,178,94,0.60)', textTransform: 'uppercase', marginBottom: 12 }}>
+                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: 'rgba(59,130,246,0.60)', textTransform: 'uppercase', marginBottom: 12 }}>
                   Funcionalidades
                 </p>
                 <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 16px' }}>
                   Um sistema.{' '}
-                  <span style={{ color: '#d6b25e' }}>Seis módulos.</span>
+                  <span style={{ color: '#3b82f6' }}>Seis módulos.</span>
                   {' '}Controle total.
                 </h2>
                 <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.40)', maxWidth: 500, margin: '0 auto', lineHeight: 1.6 }}>
@@ -460,19 +604,19 @@ export default function HomePage() {
 
           {/* Divider */}
           <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 24px' }}>
-            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(214,178,94,0.12), transparent)' }} />
+            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(59,130,246,0.12), transparent)' }} />
           </div>
 
           {/* ── COMO FUNCIONA ───────────────────────────────────────────── */}
           <section id="como-funciona" style={{ padding: '88px 24px' }}>
             <div style={{ maxWidth: 960, margin: '0 auto' }}>
               <div style={{ textAlign: 'center', marginBottom: 56 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: 'rgba(214,178,94,0.60)', textTransform: 'uppercase', marginBottom: 12 }}>
+                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: 'rgba(59,130,246,0.60)', textTransform: 'uppercase', marginBottom: 12 }}>
                   Como funciona
                 </p>
                 <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, letterSpacing: '-0.03em', color: '#fff', margin: 0 }}>
                   Da implantação ao resultado{' '}
-                  <span style={{ color: '#d6b25e' }}>em 3 passos.</span>
+                  <span style={{ color: '#3b82f6' }}>em 3 passos.</span>
                 </h2>
               </div>
 
@@ -502,7 +646,7 @@ export default function HomePage() {
               <div style={{
                 marginTop: 48, borderRadius: 14, padding: '20px 24px',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16,
-                background: 'rgba(214,178,94,0.05)', border: '1px solid rgba(214,178,94,0.15)',
+                background: 'rgba(59,130,246,0.05)', border: '1px solid rgba(59,130,246,0.15)',
               }}>
                 <div>
                   <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', margin: '0 0 4px' }}>
@@ -510,12 +654,12 @@ export default function HomePage() {
                   </p>
                   <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.42)', margin: 0 }}>
                     A maioria das lavanderias começa a operar em{' '}
-                    <strong style={{ color: '#d6b25e' }}>48 horas</strong> após a contratação.
+                    <strong style={{ color: '#60a5fa' }}>48 horas</strong> após a contratação.
                   </p>
                 </div>
                 <Link href="/captacao" style={{
                   padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 600,
-                  background: 'rgba(214,178,94,0.12)', border: '1px solid rgba(214,178,94,0.28)', color: '#d6b25e',
+                  background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.28)', color: '#60a5fa',
                   textDecoration: 'none', flexShrink: 0,
                 }}>
                   Começar agora →
@@ -526,19 +670,19 @@ export default function HomePage() {
 
           {/* Divider */}
           <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 24px' }}>
-            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(214,178,94,0.12), transparent)' }} />
+            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(59,130,246,0.12), transparent)' }} />
           </div>
 
           {/* ── ANTES / DEPOIS ──────────────────────────────────────────── */}
           <section style={{ padding: '88px 24px' }}>
             <div style={{ maxWidth: 960, margin: '0 auto' }}>
               <div style={{ textAlign: 'center', marginBottom: 52 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: 'rgba(214,178,94,0.60)', textTransform: 'uppercase', marginBottom: 12 }}>
-                  Por que A7x OS
+                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: 'rgba(59,130,246,0.60)', textTransform: 'uppercase', marginBottom: 12 }}>
+                  Por que A7X System&apos;s
                 </p>
                 <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, letterSpacing: '-0.03em', color: '#fff', margin: 0 }}>
                   Não é ERP. Não é planilha.{' '}
-                  <span style={{ color: '#d6b25e' }}>É um OS.</span>
+                  <span style={{ color: '#3b82f6' }}>É um OS.</span>
                 </h2>
               </div>
 
@@ -573,7 +717,7 @@ export default function HomePage() {
                   background: 'rgba(52,211,153,0.04)', border: '1px solid rgba(52,211,153,0.14)',
                 }}>
                   <p style={{ fontSize: 13, fontWeight: 600, color: 'rgba(52,211,153,0.80)', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 16 }}>✓</span> Com o A7x OS
+                    <span style={{ fontSize: 16 }}>✓</span> Com o A7X System&apos;s
                   </p>
                   <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {[
@@ -596,23 +740,23 @@ export default function HomePage() {
 
           {/* Divider */}
           <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 24px' }}>
-            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(214,178,94,0.12), transparent)' }} />
+            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(59,130,246,0.12), transparent)' }} />
           </div>
 
           {/* ── SEGMENTOS ───────────────────────────────────────────────── */}
           <section id="segmentos" style={{ padding: '88px 24px' }}>
             <div style={{ maxWidth: 960, margin: '0 auto' }}>
               <div style={{ textAlign: 'center', marginBottom: 52 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: 'rgba(214,178,94,0.60)', textTransform: 'uppercase', marginBottom: 12 }}>
+                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: 'rgba(59,130,246,0.60)', textTransform: 'uppercase', marginBottom: 12 }}>
                   Para quem é
                 </p>
                 <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 16px' }}>
                   Feito para quem processa{' '}
-                  <span style={{ color: '#d6b25e' }}>volume com qualidade.</span>
+                  <span style={{ color: '#3b82f6' }}>volume com qualidade.</span>
                 </h2>
                 <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.38)', maxWidth: 480, margin: '0 auto', lineHeight: 1.6 }}>
                   Se você processa mais de 300 peças por dia e precisa de rastreabilidade
-                  e controle de custos, o A7x OS é para você.
+                  e controle de custos, o A7X System&apos;s é para você.
                 </p>
               </div>
 
@@ -624,7 +768,7 @@ export default function HomePage() {
                   { symbol: '⊗', label: 'Restaurantes e Redes',   desc: 'Uniformes com controle de custos' },
                 ].map(s => (
                   <div key={s.label} className="feat-card" style={{ textAlign: 'center', padding: '28px 20px' }}>
-                    <p style={{ fontSize: 32, color: '#d6b25e', margin: '0 0 12px', filter: 'drop-shadow(0 0 10px rgba(214,178,94,0.4))' }}>{s.symbol}</p>
+                    <p style={{ fontSize: 32, color: '#3b82f6', margin: '0 0 12px', filter: 'drop-shadow(0 0 10px rgba(59,130,246,0.4))' }}>{s.symbol}</p>
                     <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', margin: '0 0 6px' }}>{s.label}</p>
                     <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.38)', margin: 0, lineHeight: 1.5 }}>{s.desc}</p>
                   </div>
@@ -639,10 +783,10 @@ export default function HomePage() {
                 ].map(h => (
                   <div key={h.title} style={{
                     borderRadius: 12, padding: '18px 20px',
-                    background: 'rgba(214,178,94,0.04)', border: '1px solid rgba(214,178,94,0.10)',
+                    background: 'rgba(59,130,246,0.04)', border: '1px solid rgba(59,130,246,0.10)',
                   }}>
                     <p style={{ fontSize: 13, fontWeight: 600, color: '#fff', margin: '0 0 6px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#d6b25e', flexShrink: 0, boxShadow: '0 0 6px rgba(214,178,94,0.5)' }} />
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#3b82f6', flexShrink: 0, boxShadow: '0 0 6px rgba(59,130,246,0.5)' }} />
                       {h.title}
                     </p>
                     <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.40)', margin: 0, lineHeight: 1.55 }}>{h.desc}</p>
@@ -658,22 +802,22 @@ export default function HomePage() {
               maxWidth: 760, margin: '0 auto',
               borderRadius: 24, padding: '64px 40px',
               textAlign: 'center', position: 'relative', overflow: 'hidden',
-              background: 'linear-gradient(135deg, rgba(214,178,94,0.09) 0%, rgba(214,178,94,0.04) 100%)',
-              border: '1px solid rgba(214,178,94,0.20)',
+              background: 'linear-gradient(135deg, rgba(59,130,246,0.09) 0%, rgba(59,130,246,0.04) 100%)',
+              border: '1px solid rgba(59,130,246,0.20)',
             }}>
               <div style={{
                 position: 'absolute', inset: 0, pointerEvents: 'none',
-                background: 'radial-gradient(ellipse 70% 70% at 50% 50%, rgba(214,178,94,0.06) 0%, transparent 70%)',
+                background: 'radial-gradient(ellipse 70% 70% at 50% 50%, rgba(59,130,246,0.06) 0%, transparent 70%)',
               }} />
-              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: 'rgba(214,178,94,0.60)', textTransform: 'uppercase', marginBottom: 12 }}>
+              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: 'rgba(59,130,246,0.60)', textTransform: 'uppercase', marginBottom: 12 }}>
                 Pronto para começar?
               </p>
               <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 16px' }}>
                 Modernize sua lavanderia{' '}
-                <span style={{ color: '#d6b25e' }}>esta semana.</span>
+                <span style={{ color: '#3b82f6' }}>esta semana.</span>
               </h2>
               <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.42)', maxWidth: 400, margin: '0 auto 36px', lineHeight: 1.6 }}>
-                Agende uma demonstração gratuita e veja o A7x OS funcionando
+                Agende uma demonstração gratuita e veja o A7X System&apos;s funcionando
                 com os dados da sua operação.
               </p>
               <Link href="/captacao" className="cta-primary" style={{ fontSize: 16, padding: '16px 40px' }}>
@@ -695,11 +839,11 @@ export default function HomePage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
                   <div style={{
                     width: 30, height: 30, borderRadius: 8,
-                    background: 'linear-gradient(135deg, #d6b25e, #b08030)',
+                    background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 11, fontWeight: 900, color: '#05050a',
+                    fontSize: 11, fontWeight: 900, color: '#fff',
                   }}>A</div>
-                  <span style={{ fontWeight: 700, fontSize: 14, color: '#fff' }}>A7x TecNologia</span>
+                  <span style={{ fontWeight: 700, fontSize: 14, color: '#fff' }}>A7X System&apos;s</span>
                 </div>
                 <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.30)', lineHeight: 1.6, margin: 0 }}>
                   Sistema Operacional Inteligente para redes de lavanderia industrial.
@@ -710,7 +854,7 @@ export default function HomePage() {
                 <div>
                   <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', marginBottom: 14 }}>Produto</p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {[['Funcionalidades', '#funcionalidades'], ['Como funciona', '#como-funciona'], ['Para quem', '#segmentos']].map(([l, h]) => (
+                    {[['Painéis', '#paineis'], ['Funcionalidades', '#funcionalidades'], ['Como funciona', '#como-funciona'], ['Para quem', '#segmentos']].map(([l, h]) => (
                       <a key={l} href={h} className="nav-link" style={{ fontSize: 13 }}>{l}</a>
                     ))}
                   </div>
@@ -732,7 +876,7 @@ export default function HomePage() {
               display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'space-between', alignItems: 'center',
             }}>
               <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.20)', margin: 0 }}>
-                © {new Date().getFullYear()} A7x TecNologia. Todos os direitos reservados.
+                © {new Date().getFullYear()} A7X System&apos;s. Todos os direitos reservados.
               </p>
               <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.18)', margin: 0 }}>
                 Tecnologia de ponta para lavanderias industriais.

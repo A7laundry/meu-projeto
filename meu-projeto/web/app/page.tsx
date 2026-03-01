@@ -8,22 +8,5 @@ export default async function Home() {
     redirect('/home')
   }
 
-  switch (user.role) {
-    case 'director':
-      redirect('/director/dashboard')
-    case 'unit_manager':
-      redirect(user.unit_id ? `/unit/${user.unit_id}/dashboard` : '/login')
-    case 'operator':
-      redirect(user.sector ? `/sector/${user.sector}` : '/login')
-    case 'driver':
-      redirect('/driver/route')
-    case 'store':
-    case 'customer':
-      redirect('/client/orders')
-    case 'sdr':
-    case 'closer':
-      redirect('/commercial/dashboard')
-    default:
-      redirect('/login')
-  }
+  redirect('/portal')
 }
