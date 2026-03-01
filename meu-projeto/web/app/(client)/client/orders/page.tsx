@@ -7,14 +7,14 @@ import type { Order } from '@/types/order'
 
 /* ---- Busca de dados ---------------------------------------------------- */
 
-async function getClientRecord(profileId: string): Promise<{ id: string; name: string; unitPhone: string | null } | null> {
+async function getClientRecord(profileId: string): Promise<{ id: string; name: string; unitId: string | null; unitPhone: string | null } | null> {
   const supabase = createAdminClient()
   const { data } = await supabase
-    .from('clients').select('id, name, units(phone)')
+    .from('clients').select('id, name, unit_id, units(phone)')
     .eq('profile_id', profileId).maybeSingle()
   if (!data) return null
-  const raw = data as { id: string; name: string; units?: { phone?: string | null } | null }
-  return { id: raw.id, name: raw.name, unitPhone: raw.units?.phone ?? null }
+  const raw = data as { id: string; name: string; unit_id?: string | null; units?: { phone?: string | null } | null }
+  return { id: raw.id, name: raw.name, unitId: raw.unit_id ?? null, unitPhone: raw.units?.phone ?? null }
 }
 
 async function getClientOrders(clientId: string): Promise<Order[]> {
@@ -53,6 +53,7 @@ export default async function ClientOrdersPage() {
   return (
     <OrdersClient
       clientId={clientRecord?.id ?? null}
+      unitId={clientRecord?.unitId ?? null}
       firstName={firstName}
       unitWa={unitWa}
       initialOrders={orders}

@@ -5,6 +5,7 @@ import { listPayables } from '@/actions/financial/payables'
 import { FinancialSummaryCard } from '@/components/domain/financial/financial-summary'
 import { ReceivableList } from '@/components/domain/financial/receivable-list'
 import { PayableList } from '@/components/domain/financial/payable-list'
+import { FinancialExportButtons } from '@/components/domain/financial/financial-export'
 import type { FinancialSummary } from '@/types/financial'
 
 export const revalidate = 0
@@ -42,9 +43,12 @@ export default async function FinancialPage({
           <h1 className="text-2xl font-bold text-white">Financeiro</h1>
           <p className="text-sm text-white/40 mt-1">Contas a receber e a pagar da unidade</p>
         </div>
-        <Button asChild variant="outline" size="sm">
-          <Link href={`/unit/${unitId}/financial/cashflow`}>📈 Fluxo de Caixa / DRE</Link>
-        </Button>
+        <div className="flex gap-2">
+          <FinancialExportButtons receivables={receivables} payables={payables} />
+          <Button asChild variant="outline" size="sm">
+            <Link href={`/unit/${unitId}/financial/cashflow`}>Fluxo de Caixa / DRE</Link>
+          </Button>
+        </div>
       </div>
 
       <FinancialSummaryCard summary={summary} />

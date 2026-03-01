@@ -1,7 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import { useClientOrdersRealtime } from '@/hooks/use-client-orders-realtime'
 import { NpsWidget } from '@/components/domain/client/nps-widget'
+import { ServiceRequestForm } from '@/components/domain/client/service-request-form'
 import type { Order, OrderEvent, OrderItem, OrderStatus } from '@/types/order'
 
 /* ---- Etapas do processo ------------------------------------------------ */
@@ -77,6 +79,7 @@ const WA_ICON = (
 
 interface OrdersClientProps {
   clientId: string | null
+  unitId: string | null
   firstName: string
   unitWa: string | null
   initialOrders: Order[]
@@ -84,8 +87,9 @@ interface OrdersClientProps {
 
 /* ---- Componente principal ---------------------------------------------- */
 
-export function OrdersClient({ clientId, firstName, unitWa, initialOrders }: OrdersClientProps) {
+export function OrdersClient({ clientId, unitId, firstName, unitWa, initialOrders }: OrdersClientProps) {
   const { orders, updatedOrderId } = useClientOrdersRealtime(clientId, initialOrders)
+  const [showServiceRequest, setShowServiceRequest] = useState(false)
 
   const active  = orders.filter((o) => o.status !== 'delivered')
   const history = orders.filter((o) => o.status === 'delivered')
@@ -135,6 +139,37 @@ export function OrdersClient({ clientId, firstName, unitWa, initialOrders }: Ord
           </p>
         </div>
       </div>
+
+      {/* ---- Botão nova solicitação ---------------------------------------- */}
+      {clientId && unitId && (
+        <div className="px-5 mb-4">
+          <button
+            onClick={() => setShowServiceRequest(!showServiceRequest)}
+            className="w-full py-3 rounded-xl text-sm font-semibold transition-all"
+            style={{
+              background: showServiceRequest ? 'rgba(255,255,255,0.06)' : 'rgba(59,130,246,0.10)',
+              color: showServiceRequest ? 'rgba(255,255,255,0.5)' : '#60a5fa',
+              border: `1px solid ${showServiceRequest ? 'rgba(255,255,255,0.10)' : 'rgba(59,130,246,0.22)'}`,
+            }}
+          >
+            {showServiceRequest ? 'Cancelar' : '+ Solicitar novo serviço'}
+          </button>
+        </div>
+      )}
+
+      {/* ---- Formulário de solicitação ------------------------------------- */}
+      {showServiceRequest && clientId && unitId && (
+        <div
+          className="mx-5 mb-5 rounded-2xl overflow-hidden"
+          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
+        >
+          <ServiceRequestForm
+            clientId={clientId}
+            unitId={unitId}
+            onClose={() => setShowServiceRequest(false)}
+          />
+        </div>
+      )}
 
       {/* ---- Stats ------------------------------------------------------- */}
       {orders.length > 0 && (

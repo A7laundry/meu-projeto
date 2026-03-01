@@ -5,6 +5,8 @@ import { revalidatePath } from 'next/cache'
 import { requireRole } from '@/lib/auth/guards'
 import { validateTransition } from '@/lib/auth/order-machine'
 import { z } from 'zod'
+import { generateReceivableFromOrder } from '@/actions/financial/auto-receivable'
+import { sendOrderStatusEmail } from '@/actions/notifications/order-email'
 import type { ActionResult } from '@/lib/auth/action-result'
 import type { OrderStatus } from '@/types/order'
 
@@ -179,8 +181,21 @@ export async function completeSector(rawData: SectorCompletionData): Promise<Act
       }
     }
 
+    // Auto-gerar conta a receber quando comanda é expedida (shipped)
+    if (data.sectorKey === 'shipping') {
+      generateReceivableFromOrder(data.orderId, data.unitId).catch((err) =>
+        console.error('[auto-receivable] Falha:', err)
+      )
+    }
+
+    // Enviar email de notificação ao cliente (fire-and-forget)
+    sendOrderStatusEmail(data.orderId, data.unitId, transition.nextStatus).catch((err) =>
+      console.error('[order-email] Falha:', err)
+    )
+
     revalidatePath(`/sector/${data.sectorKey}`)
     revalidatePath(`/unit/${data.unitId}/supplies`)
+    revalidatePath(`/unit/${data.unitId}/financial`)
     return { success: true, data: undefined }
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : 'Erro desconhecido' }

@@ -1,5 +1,7 @@
 import Link from 'next/link'
+import { AlertTriangle } from 'lucide-react'
 import { listEquipment } from '@/actions/equipment/crud'
+import { getMaintenanceAlerts } from '@/actions/equipment/maintenance-schedule'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -22,7 +24,10 @@ export default async function EquipmentPage({
   params: Promise<{ unitId: string }>
 }) {
   const { unitId } = await params
-  const equipment = await listEquipment(unitId)
+  const [equipment, maintenanceAlerts] = await Promise.all([
+    listEquipment(unitId),
+    getMaintenanceAlerts(unitId),
+  ])
 
   const byType = {
     washer: equipment.filter(e => e.type === 'washer').length,
@@ -41,6 +46,36 @@ export default async function EquipmentPage({
         </div>
         <EquipmentFormDialog unitId={unitId} mode="create" />
       </div>
+
+      {/* Alertas de manutenção */}
+      {maintenanceAlerts.length > 0 && (
+        <div className="space-y-2 mb-6">
+          {maintenanceAlerts.map((alert) => (
+            <div
+              key={alert.scheduleId}
+              className="flex items-center gap-3 rounded-lg px-4 py-3"
+              style={{
+                background: alert.urgency === 'overdue' ? 'rgba(248,113,113,0.08)' : 'rgba(251,191,36,0.08)',
+                border: `1px solid ${alert.urgency === 'overdue' ? 'rgba(248,113,113,0.25)' : 'rgba(251,191,36,0.25)'}`,
+              }}
+            >
+              <AlertTriangle
+                className="w-4 h-4 flex-shrink-0"
+                style={{ color: alert.urgency === 'overdue' ? '#f87171' : '#fbbf24' }}
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white/90">
+                  {alert.equipmentName} — {alert.description}
+                </p>
+                <p className="text-xs text-white/40 mt-0.5">{alert.reason}</p>
+              </div>
+              <Badge variant={alert.urgency === 'overdue' ? 'destructive' : 'secondary'}>
+                {alert.urgency === 'overdue' ? 'Vencida' : 'Em breve'}
+              </Badge>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="rounded-md border">
         <Table>
