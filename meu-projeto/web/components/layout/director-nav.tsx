@@ -21,6 +21,14 @@ import {
   Globe,
   Store,
   PenTool,
+  Truck,
+  UserCog,
+  Scale,
+  TrendingUp,
+  Wallet,
+  Receipt,
+  CreditCard,
+  PieChart,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -40,10 +48,28 @@ const NAV_GROUPS: {
     ],
   },
   {
+    label: 'Departamentos',
+    items: [
+      { href: '/director/financial',    label: 'Financeiro',   icon: DollarSign },
+      { href: '/director/logistics',    label: 'Logística',    icon: Truck },
+      { href: '/director/hr',           label: 'RH',           icon: UserCog },
+      { href: '/director/legal',        label: 'Jurídico',     icon: Scale },
+    ],
+  },
+  {
+    label: 'Financeiro',
+    items: [
+      { href: '/director/financial/dre',         label: 'DRE',              icon: TrendingUp },
+      { href: '/director/financial/cashflow',    label: 'Fluxo de Caixa',  icon: PieChart },
+      { href: '/director/financial/receivables', label: 'Contas a Receber', icon: Wallet },
+      { href: '/director/financial/payables',    label: 'Contas a Pagar',  icon: CreditCard },
+      { href: '/director/financial/billing',     label: 'Faturamento',     icon: Receipt },
+    ],
+  },
+  {
     label: 'Análise',
     items: [
       { href: '/director/reports',   label: 'Relatórios',      icon: FileBarChart },
-      { href: '/director/financial', label: 'Financeiro',       icon: DollarSign },
       { href: '/director/nps',      label: 'NPS & Pesquisas', icon: Star },
       { href: '/director/audit',    label: 'Auditoria',       icon: Shield },
     ],

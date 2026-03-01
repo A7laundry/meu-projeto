@@ -279,7 +279,24 @@ export default function HomePage() {
           </nav>
 
           {/* ── HERO ────────────────────────────────────────────────────── */}
-          <section style={{ padding: '88px 24px 48px', textAlign: 'center' }}>
+          <section style={{ padding: '0', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+            {/* Hero background image */}
+            <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+              <img
+                src="https://images.unsplash.com/photo-1545173168-9f1947eebb7f?w=1600&h=900&fit=crop&q=80"
+                alt=""
+                style={{
+                  width: '100%', height: '100%', objectFit: 'cover',
+                  opacity: 0.18, filter: 'brightness(0.7)',
+                }}
+              />
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'linear-gradient(180deg, rgba(5,5,8,0.3) 0%, rgba(5,5,8,0.7) 50%, rgba(5,5,8,1) 100%)',
+              }} />
+            </div>
+
+            <div style={{ position: 'relative', zIndex: 1, padding: '100px 24px 48px' }}>
             <div style={{ maxWidth: 820, margin: '0 auto' }}>
 
               {/* Badge */}
@@ -485,6 +502,7 @@ export default function HomePage() {
                 background: 'radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.07) 0%, transparent 70%)',
                 filter: 'blur(20px)',
               }} />
+            </div>
             </div>
           </section>
 
