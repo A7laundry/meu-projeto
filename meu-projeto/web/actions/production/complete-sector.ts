@@ -42,6 +42,7 @@ const sectorCompletionSchema = z.object({
   // Shipping-specific
   packagingType: z.enum(['bag', 'box', 'hanger', 'other']).optional(),
   packagingQuantity: z.number().int().min(1).optional(),
+  manifestId: z.string().uuid().optional(),
 })
 
 export type SectorCompletionData = z.infer<typeof sectorCompletionSchema>
@@ -82,6 +83,7 @@ async function buildSectorData(
     case 'drying':
       return {
         temperature_level: data.temperatureLevel ?? 'medium',
+        started_at: data.startedAt ?? null,
       }
     case 'ironing':
       return {
@@ -91,6 +93,7 @@ async function buildSectorData(
       return {
         packaging_type: data.packagingType ?? 'bag',
         packaging_quantity: data.packagingQuantity ?? 1,
+        manifest_id: data.manifestId ?? null,
       }
     default:
       return {}

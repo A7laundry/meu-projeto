@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { SectorQueue } from '@/components/domain/production/sector-queue'
-import { GenericSectorForm } from '@/components/domain/production/generic-sector-form'
+import { GenericSectorForm, type ManifestOption } from '@/components/domain/production/generic-sector-form'
 import { notifyClientOrderReady } from '@/actions/orders/notify-client'
 import type { Order, OrderStatus } from '@/types/order'
 
@@ -12,6 +12,7 @@ interface SectorPageClientProps {
   sectorKey: 'washing' | 'drying' | 'ironing' | 'shipping'
   sectorName: string
   statuses: OrderStatus[]
+  manifests?: ManifestOption[]
 }
 
 interface NotifyState {
@@ -27,6 +28,7 @@ export function SectorPageClient({
   sectorKey,
   sectorName,
   statuses,
+  manifests,
 }: SectorPageClientProps) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -190,6 +192,7 @@ export function SectorPageClient({
           order={selectedOrder}
           unitId={unitId}
           sectorKey={sectorKey}
+          manifests={manifests}
           onComplete={handleComplete}
           onCancel={() => setSelectedOrder(null)}
         />

@@ -41,12 +41,19 @@ const SECTOR_CONFIG = {
 
 type SectorKey = keyof typeof SECTOR_CONFIG
 
+export interface ManifestOption {
+  id: string
+  label: string
+}
+
 interface GenericSectorFormProps {
   order: Order
   unitId: string
   sectorKey: SectorKey
   equipment?: Equipment[]
   shiftCycles?: ShiftCycleCount[]
+  manifests?: ManifestOption[]
+  shiftPiecesCount?: number
   onComplete: () => void
   onCancel: () => void
 }
@@ -57,6 +64,8 @@ export function GenericSectorForm({
   sectorKey,
   equipment,
   shiftCycles,
+  manifests,
+  shiftPiecesCount,
   onComplete,
   onCancel,
 }: GenericSectorFormProps) {
@@ -75,11 +84,13 @@ export function GenericSectorForm({
     sectorHandler
   )
 
+  const [startedAt] = useState(() => new Date().toISOString())
   const [cycles, setCycles] = useState(1)
   const [weightKg, setWeightKg] = useState('')
   const [tempLevel, setTempLevel] = useState<'low' | 'medium' | 'high'>('medium')
   const [packagingType, setPackagingType] = useState<'bag' | 'box' | 'hanger' | 'other'>('bag')
   const [packagingQty, setPackagingQty] = useState(1)
+  const [manifestId, setManifestId] = useState('')
 
   const totalPieces = order.items?.reduce((s, i) => s + i.quantity, 0) ?? 0
 
@@ -95,13 +106,14 @@ export function GenericSectorForm({
         cycles,
         weightKg: weightKg ? parseFloat(weightKg) : undefined,
       }),
-      ...(sectorKey === 'drying' && { temperatureLevel: tempLevel }),
+      ...(sectorKey === 'drying' && { temperatureLevel: tempLevel, startedAt }),
       ...(sectorKey === 'ironing' && {
         piecesByType: order.items?.map((i) => ({ piece_type: i.piece_type, quantity: i.quantity })),
       }),
       ...(sectorKey === 'shipping' && {
         packagingType,
         packagingQuantity: packagingQty,
+        manifestId: manifestId || undefined,
       }),
     }
     startTransition(async () => {
@@ -235,28 +247,59 @@ export function GenericSectorForm({
         )}
 
         {sectorKey === 'drying' && (
-          <div style={cardStyle}>
-            <p className="text-[10px] uppercase tracking-widest text-white/30 font-semibold mb-4">Temperatura de Secagem</p>
-            <div className="grid grid-cols-3 gap-2">
-              {(['low', 'medium', 'high'] as const).map((level) => (
-                <button
-                  key={level} type="button"
-                  onClick={() => setTempLevel(level)}
-                  className="py-4 rounded-xl text-sm font-semibold transition-all"
-                  style={{
-                    background: tempLevel === level ? config.accentBg : 'rgba(255,255,255,0.04)',
-                    border: `2px solid ${tempLevel === level ? config.accentBorder : 'rgba(255,255,255,0.08)'}`,
-                    color: tempLevel === level ? config.accentColor : 'rgba(255,255,255,0.40)',
-                  }}
-                >
-                  {level === 'low' ? '🌡️ Baixa' : level === 'medium' ? '🌡️ Média' : '🌡️ Alta'}
-                </button>
-              ))}
+          <>
+            {/* Shift KPI strip */}
+            {shiftCycles && shiftCycles.length > 0 && (
+              <div
+                className="flex items-center justify-between px-4 py-3 rounded-xl"
+                style={{ background: config.accentBg, border: `1px solid ${config.accentBorder}` }}
+              >
+                <span className="text-xs font-semibold" style={{ color: config.accentColor }}>
+                  Ciclos no turno
+                </span>
+                <span className="text-lg font-black tabular-nums" style={{ color: config.accentColor }}>
+                  {shiftCycles.reduce((s, c) => s + c.cycles, 0)}
+                </span>
+              </div>
+            )}
+            <div style={cardStyle}>
+              <p className="text-[10px] uppercase tracking-widest text-white/30 font-semibold mb-4">Temperatura de Secagem</p>
+              <div className="grid grid-cols-3 gap-2">
+                {(['low', 'medium', 'high'] as const).map((level) => (
+                  <button
+                    key={level} type="button"
+                    onClick={() => setTempLevel(level)}
+                    className="py-4 rounded-xl text-sm font-semibold transition-all"
+                    style={{
+                      background: tempLevel === level ? config.accentBg : 'rgba(255,255,255,0.04)',
+                      border: `2px solid ${tempLevel === level ? config.accentBorder : 'rgba(255,255,255,0.08)'}`,
+                      color: tempLevel === level ? config.accentColor : 'rgba(255,255,255,0.40)',
+                    }}
+                  >
+                    {level === 'low' ? '🌡️ Baixa' : level === 'medium' ? '🌡️ Média' : '🌡️ Alta'}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          </>
         )}
 
         {sectorKey === 'ironing' && (
+          <>
+            {/* Shift pieces counter */}
+            {typeof shiftPiecesCount === 'number' && (
+              <div
+                className="flex items-center justify-between px-4 py-3 rounded-xl"
+                style={{ background: config.accentBg, border: `1px solid ${config.accentBorder}` }}
+              >
+                <span className="text-xs font-semibold" style={{ color: config.accentColor }}>
+                  Peças passadas no turno
+                </span>
+                <span className="text-lg font-black tabular-nums" style={{ color: config.accentColor }}>
+                  {shiftPiecesCount}
+                </span>
+              </div>
+            )}
           <div style={cardStyle}>
             <p className="text-[10px] uppercase tracking-widest text-white/30 font-semibold mb-3">Itens Passados</p>
             <div className="space-y-2">
@@ -277,6 +320,7 @@ export function GenericSectorForm({
               ))}
             </div>
           </div>
+          </>
         )}
 
         {sectorKey === 'shipping' && (
@@ -309,6 +353,21 @@ export function GenericSectorForm({
                 style={inputStyle}
               />
             </div>
+            {manifests && manifests.length > 0 && (
+              <div>
+                <label className="text-xs text-white/40 block mb-1.5">Romaneio (opcional)</label>
+                <select
+                  value={manifestId}
+                  onChange={(e) => setManifestId(e.target.value)}
+                  style={{ ...inputStyle, appearance: 'none' as const }}
+                >
+                  <option value="">Nenhum</option>
+                  {manifests.map((m) => (
+                    <option key={m.id} value={m.id}>{m.label}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
         )}
 
