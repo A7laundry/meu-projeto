@@ -29,6 +29,7 @@ import {
   Receipt,
   CreditCard,
   PieChart,
+  MessageSquareText,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -72,6 +73,7 @@ const NAV_GROUPS: {
       { href: '/director/reports',   label: 'Relatórios',      icon: FileBarChart },
       { href: '/director/nps',      label: 'NPS & Pesquisas', icon: Star },
       { href: '/director/audit',    label: 'Auditoria',       icon: Shield },
+      { href: '/director/feedback', label: 'Feedback UAT',    icon: MessageSquareText },
     ],
   },
   {
