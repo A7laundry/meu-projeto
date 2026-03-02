@@ -344,12 +344,12 @@ export default function HomePage() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
-              { icon: '◈', title: 'Painel Executivo', role: 'Diretor', desc: 'KPIs multi-unidade, tendências, alertas e comparativo em uma tela. Você vê a empresa inteira.', img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop&q=80', color: 'blue' },
-              { icon: '⊞', title: 'Gestão de Unidade', role: 'Gerente', desc: 'Produção, equipamentos, insumos e equipe. O gerente tem controle total da operação.', img: 'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=400&h=200&fit=crop&q=80', color: 'emerald' },
-              { icon: '⊡', title: 'Operação por Setor', role: 'Operador', desc: 'Interface tablet para triagem, lavagem, secagem, passadoria. Simples como arrastar um card.', img: 'https://images.unsplash.com/photo-1545173168-9f1947eebb7f?w=400&h=200&fit=crop&q=80', color: 'violet' },
-              { icon: '◎', title: 'Loja / PDV', role: 'Atendente', desc: 'Ponto de venda, CRM de clientes e financeiro integrado. Tudo no balcão.', img: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=200&fit=crop&q=80', color: 'amber' },
-              { icon: '⬡', title: 'Motorista', role: 'Logística', desc: 'Rotas no celular, coletas e entregas com rastreio. O cliente acompanha ao vivo.', img: 'https://images.unsplash.com/photo-1619454016518-697bc231e7cb?w=400&h=200&fit=crop&q=80', color: 'orange' },
-              { icon: '⚙', title: 'Portal do Cliente', role: 'Seu cliente', desc: 'Acompanhamento de pedidos, histórico e NPS. Profissionalismo que fideliza.', img: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=200&fit=crop&q=80', color: 'cyan' },
+              { icon: '◈', title: 'Painel Executivo', role: 'Diretor', desc: 'KPIs multi-unidade, tendências, alertas e comparativo em uma tela. Você vê a empresa inteira.', img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop&q=80', badge: 'text-blue-400 bg-blue-500/10 border-blue-500/20' },
+              { icon: '⊞', title: 'Gestão de Unidade', role: 'Gerente', desc: 'Produção, equipamentos, insumos e equipe. O gerente tem controle total da operação.', img: 'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=400&h=200&fit=crop&q=80', badge: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' },
+              { icon: '⊡', title: 'Operação por Setor', role: 'Operador', desc: 'Interface tablet para triagem, lavagem, secagem, passadoria. Simples como arrastar um card.', img: 'https://images.unsplash.com/photo-1545173168-9f1947eebb7f?w=400&h=200&fit=crop&q=80', badge: 'text-violet-400 bg-violet-500/10 border-violet-500/20' },
+              { icon: '◎', title: 'Loja / PDV', role: 'Atendente', desc: 'Ponto de venda, CRM de clientes e financeiro integrado. Tudo no balcão.', img: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=200&fit=crop&q=80', badge: 'text-amber-400 bg-amber-500/10 border-amber-500/20' },
+              { icon: '⬡', title: 'Motorista', role: 'Logística', desc: 'Rotas no celular, coletas e entregas com rastreio. O cliente acompanha ao vivo.', img: 'https://images.unsplash.com/photo-1619454016518-697bc231e7cb?w=400&h=200&fit=crop&q=80', badge: 'text-orange-400 bg-orange-500/10 border-orange-500/20' },
+              { icon: '⚙', title: 'Portal do Cliente', role: 'Seu cliente', desc: 'Acompanhamento de pedidos, histórico e NPS. Profissionalismo que fideliza.', img: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=200&fit=crop&q=80', badge: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20' },
             ].map((p) => (
               <div key={p.title} className="group rounded-2xl bg-white/[0.03] border border-white/[0.06] overflow-hidden hover:border-blue-500/20 hover:-translate-y-1 transition-all">
                 <div className="relative h-36 overflow-hidden">
@@ -359,7 +359,7 @@ export default function HomePage() {
                 <div className="p-5">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-sm font-bold text-white">{p.title}</h3>
-                    <span className={`text-[10px] font-bold tracking-wider text-${p.color}-400 bg-${p.color}-500/10 border border-${p.color}-500/20 px-2 py-0.5 rounded-full`}>
+                    <span className={`text-[10px] font-bold tracking-wider border px-2 py-0.5 rounded-full ${p.badge}`}>
                       {p.role}
                     </span>
                   </div>
