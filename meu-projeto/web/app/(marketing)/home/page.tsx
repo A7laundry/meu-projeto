@@ -330,16 +330,15 @@ export default function HomePage() {
       </section>
 
       {/* ─── 6 PAINÉIS — PODER ─────────────────────────────── */}
-      <section className="py-20 md:py-28 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-600/5 to-transparent pointer-events-none" />
-        <div className="relative max-w-6xl mx-auto px-6">
+      <section className="py-20 md:py-28 relative bg-[#0c1220]">
+        <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <p className="text-xs font-bold tracking-[0.2em] text-blue-400 uppercase mb-4">Poder total na sua mão</p>
             <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
               6 painéis. Cada pessoa vê
               <br /><span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">exatamente o que precisa.</span>
             </h2>
-            <p className="mt-4 text-base text-white/40 max-w-xl mx-auto">Diretor, Gerente, Operador, Loja, Motorista, Cliente. Zero ruído, 100% foco.</p>
+            <p className="mt-4 text-base text-white/60 max-w-xl mx-auto">Diretor, Gerente, Operador, Loja, Motorista, Cliente. Zero ruído, 100% foco.</p>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -351,10 +350,10 @@ export default function HomePage() {
               { icon: '⬡', title: 'Motorista', role: 'Logística', desc: 'Rotas no celular, coletas e entregas com rastreio. O cliente acompanha ao vivo.', img: 'https://images.unsplash.com/photo-1619454016518-697bc231e7cb?w=400&h=200&fit=crop&q=80', badge: 'text-orange-400 bg-orange-500/10 border-orange-500/20' },
               { icon: '⚙', title: 'Portal do Cliente', role: 'Seu cliente', desc: 'Acompanhamento de pedidos, histórico e NPS. Profissionalismo que fideliza.', img: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=200&fit=crop&q=80', badge: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20' },
             ].map((p) => (
-              <div key={p.title} className="group rounded-2xl bg-white/[0.03] border border-white/[0.06] overflow-hidden hover:border-blue-500/20 hover:-translate-y-1 transition-all">
+              <div key={p.title} className="group rounded-2xl bg-white/[0.05] border border-white/[0.08] overflow-hidden hover:border-blue-500/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/10 transition-all">
                 <div className="relative h-36 overflow-hidden">
                   <img src={p.img} alt={p.title} width={400} height={200} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#070b14] to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0c1220] via-transparent to-transparent" />
                 </div>
                 <div className="p-5">
                   <div className="flex items-center justify-between mb-2">
@@ -363,7 +362,7 @@ export default function HomePage() {
                       {p.role}
                     </span>
                   </div>
-                  <p className="text-xs text-white/40 leading-relaxed">{p.desc}</p>
+                  <p className="text-xs text-white/60 leading-relaxed">{p.desc}</p>
                 </div>
               </div>
             ))}
@@ -372,7 +371,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── SEGMENTOS ────────────────────────────────────── */}
-      <section className="py-20 md:py-24">
+      <section className="py-20 md:py-24 bg-[#080d18]">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
             <p className="text-xs font-bold tracking-[0.2em] text-blue-400 uppercase mb-4">Quem usa</p>
@@ -388,13 +387,13 @@ export default function HomePage() {
               { label: 'Hospitais e Clínicas', desc: 'Rastreio hospitalar obrigatório', img: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=250&fit=crop&q=80' },
               { label: 'Restaurantes e Redes', desc: 'Uniformes com controle de custos', img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&h=250&fit=crop&q=80' },
             ].map((s) => (
-              <div key={s.label} className="group rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06] hover:border-white/10 transition-all">
+              <div key={s.label} className="group rounded-2xl overflow-hidden bg-white/[0.05] border border-white/[0.08] hover:border-white/15 hover:shadow-lg transition-all">
                 <div className="h-40 overflow-hidden">
                   <img src={s.img} alt={s.label} width={400} height={250} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
                 <div className="p-5">
                   <h3 className="text-sm font-bold text-white mb-1">{s.label}</h3>
-                  <p className="text-xs text-white/40">{s.desc}</p>
+                  <p className="text-xs text-white/50">{s.desc}</p>
                 </div>
               </div>
             ))}
@@ -403,11 +402,12 @@ export default function HomePage() {
       </section>
 
       {/* ─── URGÊNCIA + PREÇO ──────────────────────────────── */}
-      <section className="relative py-20 md:py-28">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-600/8 to-transparent pointer-events-none" />
+      <section className="relative py-20 md:py-28 bg-gradient-to-b from-[#0a1025] to-[#070b14]">
+        {/* Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/15 rounded-full blur-[150px] pointer-events-none" />
 
         <div className="relative max-w-3xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/15 border border-amber-500/25 text-amber-400 text-xs font-bold mb-8">
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
             VAGAS LIMITADAS — Primeiras 50 empresas
           </div>
@@ -415,16 +415,16 @@ export default function HomePage() {
           <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight mb-6">
             Tudo isso por menos que
             <br />
-            <span className="text-white/30">o custo de 1 funcionário</span>
+            <span className="text-white/50">o custo de 1 funcionário</span>
           </h2>
 
           <div className="flex items-baseline justify-center gap-3 mb-4">
-            <span className="text-xl text-white/30 line-through">R$490/mês</span>
+            <span className="text-xl text-white/40 line-through">R$490/mês</span>
             <span className="text-6xl md:text-7xl font-black bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">R$150</span>
-            <span className="text-xl text-white/30">/mês</span>
+            <span className="text-xl text-white/40">/mês</span>
           </div>
 
-          <p className="text-sm text-white/30 mb-10">
+          <p className="text-sm text-white/50 mb-10">
             6 painéis completos + IA + implantação em 48h + suporte dedicado
           </p>
 
@@ -442,7 +442,7 @@ export default function HomePage() {
               'Implantação em 48h',
               '100% web',
             ].map((t) => (
-              <span key={t} className="flex items-center gap-1.5 text-xs text-white/30">
+              <span key={t} className="flex items-center gap-1.5 text-xs text-white/50">
                 <span className="text-emerald-400">✓</span> {t}
               </span>
             ))}
@@ -451,17 +451,17 @@ export default function HomePage() {
       </section>
 
       {/* ─── CTA FINAL — ÚLTIMA CHANCE ─────────────────────── */}
-      <section className="py-20 md:py-28 border-t border-white/5">
+      <section className="py-20 md:py-28 border-t border-white/[0.08] bg-[#0c1220]">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight mb-6">
             Sua concorrência já está
             <br /><span className="text-blue-400">automatizando.</span>
             <br />
-            <span className="text-white/30 text-2xl md:text-3xl">E você?</span>
+            <span className="text-white/50 text-2xl md:text-3xl">E você?</span>
           </h2>
 
-          <p className="text-base text-white/40 max-w-xl mx-auto mb-10 leading-relaxed">
-            Cada mês sem automação é dinheiro perdido que <strong className="text-white/60">nunca volta</strong>.
+          <p className="text-base text-white/60 max-w-xl mx-auto mb-10 leading-relaxed">
+            Cada mês sem automação é dinheiro perdido que <strong className="text-white/80">nunca volta</strong>.
             As primeiras 50 vagas por R$150/mês estão acabando.
           </p>
 
@@ -472,7 +472,7 @@ export default function HomePage() {
             QUERO PARAR DE PERDER DINHEIRO →
           </Link>
 
-          <p className="mt-6 text-xs text-white/20">
+          <p className="mt-6 text-xs text-white/40">
             Sem cartão, sem fidelidade, resultado em 48h. Ou continue perdendo 17%.
           </p>
         </div>
