@@ -1,3 +1,3 @@
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+  return <div className="marketing-light">{children}</div>
 }

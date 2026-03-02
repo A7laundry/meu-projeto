@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { submitLeadForm } from './actions'
 
 export default async function CaptacaoPage({
@@ -25,6 +26,22 @@ export default async function CaptacaoPage({
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#07070a] via-[#0d0d12] to-[#111118] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-lg">
+        {/* Banner de redirecionamento para /oferta */}
+        <Link
+          href="/oferta"
+          className="block mb-6 rounded-xl px-5 py-4 text-center transition-all hover:scale-[1.01]"
+          style={{
+            background: 'linear-gradient(135deg, rgba(37,99,235,0.15) 0%, rgba(37,99,235,0.08) 100%)',
+            border: '1px solid rgba(37,99,235,0.25)',
+          }}
+        >
+          <p className="text-sm font-bold text-blue-400 mb-1">
+            Oferta Especial — Primeiras 50 empresas por R$150/mês
+          </p>
+          <p className="text-xs text-white/50">
+            Clique aqui para conhecer a oferta de lançamento →
+          </p>
+        </Link>
         {/* Logo */}
         <div className="text-center mb-8">
           <p className="text-4xl font-black tracking-tight text-[#d6b25e]">A7x</p>
