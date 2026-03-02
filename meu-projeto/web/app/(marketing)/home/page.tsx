@@ -330,7 +330,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── 6 PAINÉIS — PODER ─────────────────────────────── */}
-      <section className="py-20 md:py-28 relative bg-[#111827]">
+      <section className="py-20 md:py-28 relative bg-slate-800">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <p className="text-xs font-bold tracking-[0.2em] text-blue-400 uppercase mb-4">Poder total na sua mão</p>
@@ -350,10 +350,10 @@ export default function HomePage() {
               { icon: '⬡', title: 'Motorista', role: 'Logística', desc: 'Rotas no celular, coletas e entregas com rastreio. O cliente acompanha ao vivo.', img: 'https://images.unsplash.com/photo-1619454016518-697bc231e7cb?w=400&h=200&fit=crop&q=80', badge: 'text-orange-400 bg-orange-500/10 border-orange-500/20' },
               { icon: '⚙', title: 'Portal do Cliente', role: 'Seu cliente', desc: 'Acompanhamento de pedidos, histórico e NPS. Profissionalismo que fideliza.', img: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=200&fit=crop&q=80', badge: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20' },
             ].map((p) => (
-              <div key={p.title} className="group rounded-2xl bg-slate-800/80 border border-slate-700/60 overflow-hidden hover:border-blue-500/40 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/10 transition-all">
+              <div key={p.title} className="group rounded-2xl bg-slate-700 border border-slate-600 overflow-hidden hover:border-blue-500/40 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/10 transition-all">
                 <div className="relative h-36 overflow-hidden">
                   <img src={p.img} alt={p.title} width={400} height={200} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-800 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-700 via-transparent to-transparent" />
                 </div>
                 <div className="p-5">
                   <div className="flex items-center justify-between mb-2">
@@ -371,7 +371,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── SEGMENTOS ────────────────────────────────────── */}
-      <section className="py-20 md:py-24 bg-[#0f172a]">
+      <section className="py-20 md:py-24 bg-slate-900">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
             <p className="text-xs font-bold tracking-[0.2em] text-blue-400 uppercase mb-4">Quem usa</p>
@@ -387,7 +387,7 @@ export default function HomePage() {
               { label: 'Hospitais e Clínicas', desc: 'Rastreio hospitalar obrigatório', img: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=250&fit=crop&q=80' },
               { label: 'Restaurantes e Redes', desc: 'Uniformes com controle de custos', img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&h=250&fit=crop&q=80' },
             ].map((s) => (
-              <div key={s.label} className="group rounded-2xl overflow-hidden bg-slate-800/60 border border-slate-700/50 hover:border-blue-500/30 hover:shadow-lg transition-all">
+              <div key={s.label} className="group rounded-2xl overflow-hidden bg-slate-800 border border-slate-700 hover:border-blue-500/30 hover:shadow-lg transition-all">
                 <div className="h-40 overflow-hidden">
                   <img src={s.img} alt={s.label} width={400} height={250} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
@@ -402,7 +402,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── URGÊNCIA + PREÇO ──────────────────────────────── */}
-      <section className="relative py-20 md:py-28 bg-gradient-to-b from-[#0f172a] to-[#111827]">
+      <section className="relative py-20 md:py-28 bg-slate-800">
         {/* Glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[150px] pointer-events-none" />
 
@@ -451,7 +451,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── CTA FINAL — ÚLTIMA CHANCE ─────────────────────── */}
-      <section className="py-20 md:py-28 border-t border-slate-700/50 bg-[#111827]">
+      <section className="py-20 md:py-28 border-t border-slate-600 bg-slate-900">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight mb-6 text-white">
             Sua concorrência já está
