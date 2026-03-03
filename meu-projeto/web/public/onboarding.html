@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A7X — Painel de Onboarding &amp; Mapa de URLs</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#07070a;--surface:#0d0d14;--card:#13131e;--card2:#191928;--border:#252538;--border2:#2f2f48;--gold:#d6b25e;--gold2:#c4a24a;--gold-dim:#d6b25e40;--accent:#6366f1;--green:#22c55e;--yellow:#eab308;--red:#ef4444;--orange:#f97316;--cyan:#06b6d4;--pink:#ec4899;--purple:#a855f7;--text:#e2e8f0;--muted:#94a3b8;--dim:#64748b}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.container{max-width:1440px;margin:0 auto;padding:0 24px}
+::selection{background:var(--gold);color:#000}
+
+/* ── Hero ── */
+.hero{background:linear-gradient(160deg,#0a0a12 0%,#12101f 40%,#0f1520 100%);border-bottom:1px solid var(--border);padding:40px 0 32px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-120px;right:-80px;width:400px;height:400px;background:radial-gradient(circle,var(--gold-dim) 0%,transparent 70%);pointer-events:none}
+.brand{font-size:2.2rem;font-weight:900;color:var(--gold);letter-spacing:-1px}
+.brand-sub{font-size:.75rem;color:var(--gold2);opacity:.6;letter-spacing:1px;text-transform:uppercase}
+.hero-title{font-size:1.5rem;font-weight:700;color:#fff;margin-top:16px}
+.hero-desc{color:var(--muted);font-size:.9rem;margin-top:4px}
+.hero-links{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.hero-link{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:.82rem;font-weight:500;border:1px solid var(--border);background:var(--card);color:var(--muted);transition:.2s}
+.hero-link:hover{border-color:var(--gold);color:var(--gold)}
+.hero-link.primary{background:var(--gold);color:#000;border-color:var(--gold);font-weight:600}
+.hero-link.primary:hover{opacity:.9}
+
+/* ── Tabs ── */
+.tabs{display:flex;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:3px;margin:28px 0 20px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{padding:9px 18px;border-radius:7px;cursor:pointer;font-size:.8rem;font-weight:500;color:var(--dim);border:none;background:none;white-space:nowrap;transition:.15s}
+.tab:hover{color:var(--text)}
+.tab.active{background:var(--gold);color:#000;font-weight:600}
+.section{display:none;animation:fadeUp .25s ease}.section.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ── Credential banner ── */
+.cred-banner{background:linear-gradient(135deg,var(--card) 0%,var(--card2) 100%);border:1px solid var(--gold-dim);border-radius:12px;padding:20px 24px;margin-bottom:28px;display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.cred-banner h3{font-size:.95rem;color:var(--gold);margin-bottom:4px}
+.cred-banner p{font-size:.8rem;color:var(--muted)}
+.cred-banner code{background:rgba(214,178,94,.12);color:var(--gold);padding:2px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.82rem}
+
+/* ── Role Section ── */
+.role-section{margin-bottom:36px}
+.role-header{display:flex;align-items:center;gap:14px;margin-bottom:16px;cursor:pointer;user-select:none}
+.role-header:hover .role-name{color:#fff}
+.role-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.role-name{font-size:1.15rem;font-weight:700;transition:.15s}
+.role-meta{font-size:.78rem;color:var(--dim);margin-top:1px}
+.role-cred{display:inline-flex;align-items:center;gap:6px;margin-top:4px;padding:3px 10px;border-radius:5px;background:rgba(214,178,94,.08);border:1px solid rgba(214,178,94,.15);font-size:.72rem;font-family:monospace;color:var(--gold)}
+.role-tag{font-size:.65rem;padding:2px 7px;border-radius:4px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+
+/* ── URL Grid ── */
+.url-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+.url-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;transition:.2s;position:relative;overflow:hidden}
+.url-card:hover{border-color:var(--gold-dim);transform:translateY(-1px)}
+.url-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:3px 0 0 3px}
+.url-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.url-path{font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:6px}
+.url-path a{color:var(--cyan);transition:.15s}
+.url-path a:hover{color:#38bdf8;text-decoration:underline}
+.url-epic{font-size:.6rem;padding:2px 6px;border-radius:3px;font-weight:700;opacity:.8}
+.url-desc{font-size:.78rem;color:var(--muted);margin-bottom:8px}
+.url-checks{display:flex;flex-wrap:wrap;gap:4px}
+.url-check{font-size:.68rem;padding:2px 7px;border-radius:4px;background:var(--surface);border:1px solid var(--border);color:var(--dim)}
+
+/* ── Flow diagram ── */
+.flow{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin:20px 0 28px;padding:16px 20px;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow-x:auto}
+.flow-step{padding:8px 16px;border-radius:8px;font-size:.78rem;font-weight:600;white-space:nowrap}
+.flow-arrow{color:var(--dim);font-size:1rem;padding:0 4px;flex-shrink:0}
+
+/* ── Summary table ── */
+.sum-table{width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:24px}
+.sum-table th{text-align:left;padding:10px 14px;font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);border-bottom:1px solid var(--border);background:var(--surface)}
+.sum-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.03)}
+.sum-table tr:hover td{background:rgba(99,102,241,.03)}
+.sum-table .path{font-family:monospace;font-size:.78rem;color:var(--cyan)}
+.sum-table .desc{color:var(--muted)}
+
+/* ── Legend ── */
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:10px;font-size:.75rem;color:var(--muted)}
+.legend-item{display:flex;align-items:center;gap:5px}
+.legend-dot{width:10px;height:10px;border-radius:3px}
+
+/* ── Public routes box ── */
+.public-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:32px}
+.public-box h3{font-size:1rem;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+
+@media(max-width:768px){
+  .brand{font-size:1.6rem}
+  .hero-title{font-size:1.2rem}
+  .url-grid{grid-template-columns:1fr}
+  .cred-banner{flex-direction:column}
+  .flow{flex-direction:column;align-items:flex-start}
+  .flow-arrow{transform:rotate(90deg);padding:2px 0}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+<div class="container">
+  <div class="brand">A7x</div>
+  <div class="brand-sub">TecNologia — Lavanderia Industrial</div>
+  <div class="hero-title">Painel de Onboarding &amp; Mapa de URLs</div>
+  <div class="hero-desc">Navegue por perfil, veja todas as URLs com o que testar em cada tela.</div>
+  <div class="hero-links">
+    <a class="hero-link primary" href="/login">Ir para Login</a>
+    <a class="hero-link" href="/uat-guide">Guia UAT</a>
+    <a class="hero-link" href="/roadmap.html">Roadmap</a>
+    <a class="hero-link" href="/feedback">Enviar Feedback</a>
+  </div>
+</div>
+</div>
+
+<div class="container">
+
+<!-- ═══ TABS ═══ -->
+<div class="tabs" id="tabs">
+  <button class="tab active" data-tab="all">Todas URLs</button>
+  <button class="tab" data-tab="director">Diretor</button>
+  <button class="tab" data-tab="manager">Gerente</button>
+  <button class="tab" data-tab="operator">Operador</button>
+  <button class="tab" data-tab="store">Loja/PDV</button>
+  <button class="tab" data-tab="driver">Motorista</button>
+  <button class="tab" data-tab="client">Cliente</button>
+  <button class="tab" data-tab="commercial">Comercial</button>
+  <button class="tab" data-tab="copywriter">Copywriter</button>
+  <button class="tab" data-tab="public">Publicas</button>
+  <button class="tab" data-tab="flow">Fluxos</button>
+</div>
+
+<!-- ═══ CREDENCIAIS ═══ -->
+<div class="cred-banner">
+  <div style="flex:1;min-width:200px">
+    <h3>Credenciais de Teste</h3>
+    <p>Senha universal: <code>A7teste@2026</code></p>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:.72rem">
+    <span class="role-cred">diretor@a7lavanderia.com.br</span>
+    <span class="role-cred">gerente@a7lavanderia.com.br</span>
+    <span class="role-cred">triagem@a7lavanderia.com.br</span>
+    <span class="role-cred">lavagem@a7lavanderia.com.br</span>
+    <span class="role-cred">secagem@a7lavanderia.com.br</span>
+    <span class="role-cred">passadoria@a7lavanderia.com.br</span>
+    <span class="role-cred">expedicao@a7lavanderia.com.br</span>
+    <span class="role-cred">motorista@a7lavanderia.com.br</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- TAB: TODAS AS URLs                        -->
+<!-- ══════════════════════════════════════════ -->
+<div class="section active" id="sec-all">
+<h2 style="font-size:1.15rem;margin-bottom:6px">Mapa Completo — Todas as URLs do Sistema</h2>
+<p style="color:var(--muted);font-size:.82rem;margin-bottom:16px">80+ paginas organizadas por modulo. Clique na URL para navegar.</p>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div> Auth</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div> Director</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Unit Manager</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> Operator</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--pink)"></div> Store</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div> Driver</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--cyan)"></div> Client</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div> Commercial</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div> Copywriter</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--dim)"></div> Public</div>
+</div>
+
+<div style="overflow-x:auto">
+<table class="sum-table">
+<thead><tr><th style="width:30%">URL</th><th style="width:35%">Pagina</th><th style="width:15%">Perfil</th><th style="width:20%">O que Testar</th></tr></thead>
+<tbody>
+<tr><td colspan="4" style="background:var(--surface);font-weight:700;color:var(--dim);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;padding:8px 14px">Publicas — Sem Autenticacao</td></tr>
+<tr><td class="path"><a href="/login">/login</a></td><td class="desc">Tela de login</td><td><span class="role-tag" style="background:rgba(100,116,139,.2);color:var(--dim)">publico</span></td><td class="desc">Email + senha, erros, redirect</td></tr>
+<tr><td class="path"><a href="/home">/home</a></td><td class="desc">Landing page marketing</td><td><span class="role-tag" style="background:rgba(100,116,139,.2);color:var(--dim)">publico</span></td><td class="desc">Layout, CTA, responsivo</td></tr>
+<tr><td class="path"><a href="/oferta">/oferta</a></td><td class="desc">Pagina de oferta</td><td><span class="role-tag" style="background:rgba(100,116,139,.2);color:var(--dim)">publico</span></td><td class="desc">Formulario, envio</td></tr>
+<tr><td class="path"><a href="/captacao">/captacao</a></td><td class="desc">Captacao de leads</td><td><span class="role-tag" style="background:rgba(100,116,139,.2);color:var(--dim)">publico</span></td><td class="desc">Form, validacao, submit</td></tr>
+<tr><td class="path">/nps/[surveyId]</td><td class="desc">Responder pesquisa NPS</td><td><span class="role-tag" style="background:rgba(100,116,139,.2);color:var(--dim)">publico</span></td><td class="desc">Nota 0-10, comentario</td></tr>
+<tr><td class="path">/display/[token]</td><td class="desc">TV publica (token auth)</td><td><span class="role-tag" style="background:rgba(100,116,139,.2);color:var(--dim)">publico</span></td><td class="desc">Fullscreen, auto-refresh</td></tr>
+<tr><td class="path"><a href="/uat-guide">/uat-guide</a></td><td class="desc">Guia de testes UAT</td><td><span class="role-tag" style="background:rgba(100,116,139,.2);color:var(--dim)">publico</span></td><td class="desc">Credenciais, instrucoes</td></tr>
+
+<tr><td colspan="4" style="background:var(--surface);font-weight:700;color:var(--gold);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;padding:8px 14px">Diretor — Visao Executiva da Rede</td></tr>
+<tr><td class="path"><a href="/director/dashboard">/director/dashboard</a></td><td class="desc">Dashboard executivo — KPIs da rede</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Totais, gauges, graficos, alertas</td></tr>
+<tr><td class="path"><a href="/director/units">/director/units</a></td><td class="desc">Gestao de unidades</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Criar, ativar/desativar unidade</td></tr>
+<tr><td class="path"><a href="/director/users">/director/users</a></td><td class="desc">Gestao de usuarios</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Criar user, atribuir role/unidade</td></tr>
+<tr><td class="path"><a href="/director/financial">/director/financial</a></td><td class="desc">Financeiro consolidado</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Resumo total da rede</td></tr>
+<tr><td class="path"><a href="/director/financial/billing">/director/financial/billing</a></td><td class="desc">Faturamento da rede</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Valores por unidade</td></tr>
+<tr><td class="path"><a href="/director/financial/cashflow">/director/financial/cashflow</a></td><td class="desc">Fluxo de caixa rede</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Entradas/saidas semanais</td></tr>
+<tr><td class="path"><a href="/director/financial/dre">/director/financial/dre</a></td><td class="desc">DRE (Demonstrativo)</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Receita - custos - lucro</td></tr>
+<tr><td class="path"><a href="/director/financial/receivables">/director/financial/receivables</a></td><td class="desc">Contas a receber (rede)</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Lista, filtros, totais</td></tr>
+<tr><td class="path"><a href="/director/financial/payables">/director/financial/payables</a></td><td class="desc">Contas a pagar (rede)</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Lista, marcar pago</td></tr>
+<tr><td class="path"><a href="/director/nps">/director/nps</a></td><td class="desc">NPS consolidado</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Score por unidade</td></tr>
+<tr><td class="path"><a href="/director/reports">/director/reports</a></td><td class="desc">Relatorios + export CSV</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Gerar e baixar CSV</td></tr>
+<tr><td class="path"><a href="/director/audit">/director/audit</a></td><td class="desc">Log de auditoria</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Acoes registradas</td></tr>
+<tr><td class="path"><a href="/director/hr">/director/hr</a></td><td class="desc">RH</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Visualizacao de pessoal</td></tr>
+<tr><td class="path"><a href="/director/legal">/director/legal</a></td><td class="desc">Juridico</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Painel juridico</td></tr>
+<tr><td class="path"><a href="/director/logistics">/director/logistics</a></td><td class="desc">Logistica da rede</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Visao geral rotas</td></tr>
+<tr><td class="path"><a href="/director/feedback">/director/feedback</a></td><td class="desc">Feedback admin</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Ver todos os feedbacks UAT</td></tr>
+
+<tr><td colspan="4" style="background:var(--surface);font-weight:700;color:var(--green);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;padding:8px 14px">Gerente de Unidade — Operacao Diaria</td></tr>
+<tr><td class="path">/unit/[unitId]/dashboard</td><td class="desc">Dashboard da unidade</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">KPIs, producao, filas</td></tr>
+<tr><td class="path">/unit/[unitId]/production</td><td class="desc">Visao geral da producao</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Status dos setores</td></tr>
+<tr><td class="path">/unit/[unitId]/production/orders</td><td class="desc">Lista de comandas</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Filtros, busca, paginacao</td></tr>
+<tr><td class="path">/unit/[unitId]/production/orders/new</td><td class="desc">Criar nova comanda</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Form, itens, validacao</td></tr>
+<tr><td class="path">/unit/[unitId]/production/orders/[id]</td><td class="desc">Detalhe da comanda</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Timeline, status, fotos</td></tr>
+<tr><td class="path">/unit/[unitId]/production/orders/[id]/label</td><td class="desc">Etiqueta QR para impressao</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">QR code, print layout</td></tr>
+<tr><td class="path">/unit/[unitId]/production/history</td><td class="desc">Historico de producao</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Busca, CSV export</td></tr>
+<tr><td class="path">/unit/[unitId]/clients</td><td class="desc">Clientes da unidade</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">CRUD, CPF/CNPJ, tipo</td></tr>
+<tr><td class="path">/unit/[unitId]/clients/[clientId]</td><td class="desc">Detalhe do cliente</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Historico, notas, NPS</td></tr>
+<tr><td class="path">/unit/[unitId]/equipment</td><td class="desc">Equipamentos</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">CRUD, tipo, status</td></tr>
+<tr><td class="path">/unit/[unitId]/equipment/[id]</td><td class="desc">Detalhe equipamento</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Logs, manutencao</td></tr>
+<tr><td class="path">/unit/[unitId]/recipes</td><td class="desc">Receitas de lavagem</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">CRUD, quimicos vinculados</td></tr>
+<tr><td class="path">/unit/[unitId]/supplies</td><td class="desc">Insumos quimicos</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Estoque, movimentacoes</td></tr>
+<tr><td class="path">/unit/[unitId]/staff</td><td class="desc">Funcionarios</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Convidar, roles</td></tr>
+<tr><td class="path">/unit/[unitId]/pricing</td><td class="desc">Tabela de precos</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Precos por item/cliente</td></tr>
+<tr><td class="path">/unit/[unitId]/quotes</td><td class="desc">Orcamentos</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Criar, converter em ordem</td></tr>
+<tr><td class="path">/unit/[unitId]/routes</td><td class="desc">Rotas logisticas</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">CRUD rotas e paradas</td></tr>
+<tr><td class="path">/unit/[unitId]/manifests</td><td class="desc">Romaneios diarios</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Gerar, status, stops</td></tr>
+<tr><td class="path">/unit/[unitId]/manifests/day-close</td><td class="desc">Fechamento do dia</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Conferir e fechar</td></tr>
+<tr><td class="path">/unit/[unitId]/financial</td><td class="desc">Financeiro da unidade</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Resumo, totais</td></tr>
+<tr><td class="path">/unit/[unitId]/financial/cashflow</td><td class="desc">Fluxo de caixa</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Entradas/saidas semanais</td></tr>
+<tr><td class="path">/unit/[unitId]/financial/costs</td><td class="desc">Custos operacionais</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Config de custo, calculos</td></tr>
+<tr><td class="path">/unit/[unitId]/alerts</td><td class="desc">Alertas SLA</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Atrasos, thresholds</td></tr>
+<tr><td class="path">/unit/[unitId]/campaigns</td><td class="desc">Campanhas de marketing</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Criar campanha, enviar</td></tr>
+<tr><td class="path">/tv/[unitId]</td><td class="desc">Painel TV (gestao a vista)</td><td><span class="role-tag" style="background:rgba(34,197,94,.2);color:var(--green)">unit_manager</span></td><td class="desc">Fullscreen, auto-refresh</td></tr>
+
+<tr><td colspan="4" style="background:var(--surface);font-weight:700;color:var(--red);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;padding:8px 14px">Operador de Setor — Interface Tablet</td></tr>
+<tr><td class="path"><a href="/sector/select">/sector/select</a></td><td class="desc">Selecionar setor</td><td><span class="role-tag" style="background:rgba(239,68,68,.2);color:var(--red)">operator</span></td><td class="desc">5 setores disponiveis</td></tr>
+<tr><td class="path"><a href="/sector/sorting">/sector/sorting</a></td><td class="desc">Triagem</td><td><span class="role-tag" style="background:rgba(239,68,68,.2);color:var(--red)">operator</span></td><td class="desc">Scan QR, pesar, separar</td></tr>
+<tr><td class="path"><a href="/sector/washing">/sector/washing</a></td><td class="desc">Lavagem</td><td><span class="role-tag" style="background:rgba(239,68,68,.2);color:var(--red)">operator</span></td><td class="desc">Iniciar carga, concluir</td></tr>
+<tr><td class="path"><a href="/sector/drying">/sector/drying</a></td><td class="desc">Secagem</td><td><span class="role-tag" style="background:rgba(239,68,68,.2);color:var(--red)">operator</span></td><td class="desc">Queue, marcar pronto</td></tr>
+<tr><td class="path"><a href="/sector/ironing">/sector/ironing</a></td><td class="desc">Passadoria</td><td><span class="role-tag" style="background:rgba(239,68,68,.2);color:var(--red)">operator</span></td><td class="desc">Queue, completar</td></tr>
+<tr><td class="path"><a href="/sector/shipping">/sector/shipping</a></td><td class="desc">Expedicao</td><td><span class="role-tag" style="background:rgba(239,68,68,.2);color:var(--red)">operator</span></td><td class="desc">Embalar, despachar</td></tr>
+
+<tr><td colspan="4" style="background:var(--surface);font-weight:700;color:var(--pink);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;padding:8px 14px">Loja / PDV</td></tr>
+<tr><td class="path"><a href="/store">/store</a></td><td class="desc">Home da loja</td><td><span class="role-tag" style="background:rgba(236,72,153,.2);color:var(--pink)">store</span></td><td class="desc">Quick actions, resumo</td></tr>
+<tr><td class="path"><a href="/store/dashboard">/store/dashboard</a></td><td class="desc">Dashboard da loja</td><td><span class="role-tag" style="background:rgba(236,72,153,.2);color:var(--pink)">store</span></td><td class="desc">Metas, receita, graficos</td></tr>
+<tr><td class="path"><a href="/store/pdv">/store/pdv</a></td><td class="desc">Ponto de venda</td><td><span class="role-tag" style="background:rgba(236,72,153,.2);color:var(--pink)">store</span></td><td class="desc">Selecionar itens, criar ordem</td></tr>
+<tr><td class="path"><a href="/store/comandas">/store/comandas</a></td><td class="desc">Comandas</td><td><span class="role-tag" style="background:rgba(236,72,153,.2);color:var(--pink)">store</span></td><td class="desc">Listar, status, detalhes</td></tr>
+<tr><td class="path"><a href="/store/coletas">/store/coletas</a></td><td class="desc">Coletas</td><td><span class="role-tag" style="background:rgba(236,72,153,.2);color:var(--pink)">store</span></td><td class="desc">Agendar coletas</td></tr>
+<tr><td class="path"><a href="/store/clients">/store/clients</a></td><td class="desc">Clientes</td><td><span class="role-tag" style="background:rgba(236,72,153,.2);color:var(--pink)">store</span></td><td class="desc">Buscar, cadastrar</td></tr>
+<tr><td class="path">/store/crm/[clientId]</td><td class="desc">CRM do cliente</td><td><span class="role-tag" style="background:rgba(236,72,153,.2);color:var(--pink)">store</span></td><td class="desc">Notas, historico</td></tr>
+<tr><td class="path"><a href="/store/financeiro">/store/financeiro</a></td><td class="desc">Financeiro da loja</td><td><span class="role-tag" style="background:rgba(236,72,153,.2);color:var(--pink)">store</span></td><td class="desc">Resumo, receivables</td></tr>
+<tr><td class="path"><a href="/store/financeiro/cashflow">/store/financeiro/cashflow</a></td><td class="desc">Fluxo de caixa</td><td><span class="role-tag" style="background:rgba(236,72,153,.2);color:var(--pink)">store</span></td><td class="desc">Entradas/saidas</td></tr>
+<tr><td class="path"><a href="/store/precos">/store/precos</a></td><td class="desc">Precos</td><td><span class="role-tag" style="background:rgba(236,72,153,.2);color:var(--pink)">store</span></td><td class="desc">Tabela de precos</td></tr>
+<tr><td class="path"><a href="/store/relatorios">/store/relatorios</a></td><td class="desc">Relatorios</td><td><span class="role-tag" style="background:rgba(236,72,153,.2);color:var(--pink)">store</span></td><td class="desc">Vendas, periodo</td></tr>
+
+<tr><td colspan="4" style="background:var(--surface);font-weight:700;color:var(--orange);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;padding:8px 14px">Motorista — Mobile</td></tr>
+<tr><td class="path"><a href="/driver/route">/driver/route</a></td><td class="desc">Rota do dia</td><td><span class="role-tag" style="background:rgba(249,115,22,.2);color:var(--orange)">driver</span></td><td class="desc">Lista de stops, navegacao</td></tr>
+<tr><td class="path">/driver/[manifestId]</td><td class="desc">Romaneio especifico</td><td><span class="role-tag" style="background:rgba(249,115,22,.2);color:var(--orange)">driver</span></td><td class="desc">Stops, assinatura, status</td></tr>
+
+<tr><td colspan="4" style="background:var(--surface);font-weight:700;color:var(--cyan);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;padding:8px 14px">Cliente — Portal</td></tr>
+<tr><td class="path"><a href="/client/orders">/client/orders</a></td><td class="desc">Meus pedidos (realtime)</td><td><span class="role-tag" style="background:rgba(6,182,212,.2);color:var(--cyan)">customer</span></td><td class="desc">Status ao vivo, timeline</td></tr>
+<tr><td class="path"><a href="/client/profile">/client/profile</a></td><td class="desc">Meu perfil</td><td><span class="role-tag" style="background:rgba(6,182,212,.2);color:var(--cyan)">customer</span></td><td class="desc">Editar dados</td></tr>
+
+<tr><td colspan="4" style="background:var(--surface);font-weight:700;color:var(--purple);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;padding:8px 14px">Comercial — CRM</td></tr>
+<tr><td class="path"><a href="/commercial/dashboard">/commercial/dashboard</a></td><td class="desc">Dashboard comercial</td><td><span class="role-tag" style="background:rgba(168,85,247,.2);color:var(--purple)">sdr/closer</span></td><td class="desc">Pipeline, metricas</td></tr>
+<tr><td class="path"><a href="/commercial/leads">/commercial/leads</a></td><td class="desc">Leads (kanban)</td><td><span class="role-tag" style="background:rgba(168,85,247,.2);color:var(--purple)">sdr/closer</span></td><td class="desc">Arrastar cards, status</td></tr>
+<tr><td class="path">/commercial/leads/[leadId]</td><td class="desc">Detalhe do lead</td><td><span class="role-tag" style="background:rgba(168,85,247,.2);color:var(--purple)">sdr/closer</span></td><td class="desc">Timeline, notas, atividades</td></tr>
+<tr><td class="path"><a href="/commercial/clients">/commercial/clients</a></td><td class="desc">Carteira comercial</td><td><span class="role-tag" style="background:rgba(168,85,247,.2);color:var(--purple)">sdr/closer</span></td><td class="desc">Lista de clientes ativos</td></tr>
+<tr><td class="path"><a href="/commercial/campaigns">/commercial/campaigns</a></td><td class="desc">Campanhas</td><td><span class="role-tag" style="background:rgba(168,85,247,.2);color:var(--purple)">sdr/closer</span></td><td class="desc">Criar, visualizar stats</td></tr>
+<tr><td class="path">/commercial/campaigns/[id]</td><td class="desc">Detalhe campanha</td><td><span class="role-tag" style="background:rgba(168,85,247,.2);color:var(--purple)">sdr/closer</span></td><td class="desc">Metricas, mensagens</td></tr>
+
+<tr><td colspan="4" style="background:var(--surface);font-weight:700;color:var(--yellow);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;padding:8px 14px">Copywriter — Portal Gamificado</td></tr>
+<tr><td class="path"><a href="/copywriter/dashboard">/copywriter/dashboard</a></td><td class="desc">Dashboard do writer</td><td><span class="role-tag" style="background:rgba(234,179,8,.2);color:var(--yellow)">copywriter</span></td><td class="desc">XP, nivel, streak</td></tr>
+<tr><td class="path"><a href="/copywriter/missions">/copywriter/missions</a></td><td class="desc">Missoes disponiveis</td><td><span class="role-tag" style="background:rgba(234,179,8,.2);color:var(--yellow)">copywriter</span></td><td class="desc">Briefings, dificuldade</td></tr>
+<tr><td class="path">/copywriter/missions/[id]</td><td class="desc">Editor de missao</td><td><span class="role-tag" style="background:rgba(234,179,8,.2);color:var(--yellow)">copywriter</span></td><td class="desc">Escrever, enviar</td></tr>
+<tr><td class="path"><a href="/copywriter/leaderboard">/copywriter/leaderboard</a></td><td class="desc">Ranking</td><td><span class="role-tag" style="background:rgba(234,179,8,.2);color:var(--yellow)">copywriter</span></td><td class="desc">Top writers, XP</td></tr>
+<tr><td class="path"><a href="/copywriter/profile">/copywriter/profile</a></td><td class="desc">Perfil + badges</td><td><span class="role-tag" style="background:rgba(234,179,8,.2);color:var(--yellow)">copywriter</span></td><td class="desc">Conquistas, editar perfil</td></tr>
+<tr><td class="path"><a href="/copywriter/admin">/copywriter/admin</a></td><td class="desc">Admin copywriter</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Gestao de briefings</td></tr>
+<tr><td class="path"><a href="/copywriter/admin/briefings">/copywriter/admin/briefings</a></td><td class="desc">Gerenciar briefings</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Criar, editar briefing</td></tr>
+<tr><td class="path"><a href="/copywriter/admin/reviews">/copywriter/admin/reviews</a></td><td class="desc">Revisar submissions</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Aprovar, dar nota, XP</td></tr>
+
+<tr><td colspan="4" style="background:var(--surface);font-weight:700;color:var(--accent);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;padding:8px 14px">Especiais</td></tr>
+<tr><td class="path"><a href="/portal">/portal</a></td><td class="desc">Portal (redirect por role)</td><td><span class="role-tag" style="background:rgba(99,102,241,.2);color:var(--accent)">any</span></td><td class="desc">Redireciona ao dashboard correto</td></tr>
+<tr><td class="path"><a href="/feedback">/feedback</a></td><td class="desc">Enviar feedback UAT</td><td><span class="role-tag" style="background:rgba(99,102,241,.2);color:var(--accent)">logado</span></td><td class="desc">Form, categorias</td></tr>
+<tr><td class="path">/api/director/export-kpis</td><td class="desc">API: exportar KPIs CSV</td><td><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold)">director</span></td><td class="desc">Download automatico</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- TABs POR PERFIL (director, manager, etc) -->
+<!-- ══════════════════════════════════════════ -->
+
+<!-- DIRECTOR -->
+<div class="section" id="sec-director">
+<div class="role-section">
+  <div class="role-header">
+    <div class="role-icon" style="background:rgba(214,178,94,.12)">&#128081;</div>
+    <div>
+      <div class="role-name" style="color:var(--gold)">Diretor</div>
+      <div class="role-meta">Visao executiva de toda a rede — acesso total</div>
+      <div class="role-cred">diretor@a7lavanderia.com.br &bull; A7teste@2026</div>
+    </div>
+  </div>
+  <div class="url-grid">
+    <div class="url-card" style="--c:var(--gold)"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/director/dashboard">/director/dashboard</a></div><span class="url-epic" style="background:rgba(234,179,8,.15);color:var(--yellow)">E7</span></div><div class="url-desc">Dashboard executivo com KPIs consolidados, gauges, alertas inteligentes e comparativo entre unidades.</div><div class="url-checks"><span class="url-check">KPI cards</span><span class="url-check">Graficos</span><span class="url-check">Alertas</span><span class="url-check">Periodo</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/director/units">/director/units</a></div><span class="url-epic" style="background:rgba(99,102,241,.15);color:var(--accent)">E1</span></div><div class="url-desc">Criar novas unidades, ativar/desativar, configurar custos operacionais.</div><div class="url-checks"><span class="url-check">Criar unidade</span><span class="url-check">Toggle ativo</span><span class="url-check">Lista</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/director/users">/director/users</a></div><span class="url-epic" style="background:rgba(99,102,241,.15);color:var(--accent)">E1</span></div><div class="url-desc">Gerenciar usuarios da rede: criar, editar role, atribuir unidade, ativar/desativar.</div><div class="url-checks"><span class="url-check">Criar user</span><span class="url-check">Roles</span><span class="url-check">Error handling</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/director/financial">/director/financial</a></div><span class="url-epic" style="background:rgba(34,197,94,.15);color:var(--green)">E6</span></div><div class="url-desc">Visao consolidada financeira: billing, cashflow, DRE, receivables, payables por unidade.</div><div class="url-checks"><span class="url-check">Consolidado</span><span class="url-check">Por unidade</span><span class="url-check">CSV</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/director/nps">/director/nps</a></div><span class="url-epic" style="background:rgba(234,179,8,.15);color:var(--yellow)">E7</span></div><div class="url-desc">NPS consolidado por unidade, scores, promotores/detratores, evolucao temporal.</div><div class="url-checks"><span class="url-check">Score NPS</span><span class="url-check">Por unidade</span><span class="url-check">Timeline</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/director/audit">/director/audit</a></div><span class="url-epic" style="background:rgba(168,85,247,.15);color:var(--purple)">E8</span></div><div class="url-desc">Trail completo de acoes: quem fez o que, quando, em qual entidade.</div><div class="url-checks"><span class="url-check">Filtros</span><span class="url-check">Timeline</span><span class="url-check">Detalhes</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/director/reports">/director/reports</a></div><span class="url-epic" style="background:rgba(168,85,247,.15);color:var(--purple)">E8</span></div><div class="url-desc">Relatorios historicos com exportacao CSV. Selector de periodo.</div><div class="url-checks"><span class="url-check">Export CSV</span><span class="url-check">Periodo</span><span class="url-check">Download</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/director/feedback">/director/feedback</a></div></div><div class="url-desc">Ver e gerenciar feedbacks de UAT enviados por todos os testadores.</div><div class="url-checks"><span class="url-check">Filtros</span><span class="url-check">Categorias</span><span class="url-check">Responder</span></div></div>
+  </div>
+</div>
+</div>
+
+<!-- MANAGER -->
+<div class="section" id="sec-manager">
+<div class="role-section">
+  <div class="role-header">
+    <div class="role-icon" style="background:rgba(34,197,94,.12)">&#128188;</div>
+    <div>
+      <div class="role-name" style="color:var(--green)">Gerente de Unidade</div>
+      <div class="role-meta">Operacao diaria da unidade — producao, logistica, financeiro, RH</div>
+      <div class="role-cred">gerente@a7lavanderia.com.br &bull; A7teste@2026</div>
+    </div>
+  </div>
+  <p style="color:var(--dim);font-size:.78rem;margin-bottom:16px">Todas as URLs abaixo usam <code style="color:var(--cyan)">/unit/[unitId]/</code> — substitua pelo ID da unidade atribuida ao gerente.</p>
+  <div class="url-grid">
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--green);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path">/unit/[id]/dashboard</div><span class="url-epic" style="background:rgba(239,68,68,.15);color:var(--red)">E2</span></div><div class="url-desc">Dashboard da unidade: producao ao vivo, filas por setor, KPIs diarios.</div><div class="url-checks"><span class="url-check">KPIs</span><span class="url-check">Filas</span><span class="url-check">Realtime</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--green);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path">/unit/[id]/production/orders/new</div><span class="url-epic" style="background:rgba(239,68,68,.15);color:var(--red)">E2</span></div><div class="url-desc">Criar nova comanda: selecionar cliente, adicionar itens com tipo e peso.</div><div class="url-checks"><span class="url-check">Form</span><span class="url-check">Itens</span><span class="url-check">Validacao</span><span class="url-check">Preco</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--green);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path">/unit/[id]/production/orders</div><span class="url-epic" style="background:rgba(239,68,68,.15);color:var(--red)">E2</span></div><div class="url-desc">Lista de todas as comandas com filtros de status, busca e paginacao.</div><div class="url-checks"><span class="url-check">Filtros</span><span class="url-check">Busca</span><span class="url-check">Paginacao</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--green);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path">/unit/[id]/production/orders/[orderId]</div><span class="url-epic" style="background:rgba(239,68,68,.15);color:var(--red)">E2</span></div><div class="url-desc">Detalhe da comanda: timeline de eventos, itens, fotos, etiqueta QR.</div><div class="url-checks"><span class="url-check">Timeline</span><span class="url-check">Itens</span><span class="url-check">QR</span><span class="url-check">Fotos</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--green);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path">/unit/[id]/clients</div><span class="url-epic" style="background:rgba(6,182,212,.15);color:var(--cyan)">E4</span></div><div class="url-desc">Cadastro de clientes: CRUD, CPF/CNPJ, tipo (PJ/PF), contato.</div><div class="url-checks"><span class="url-check">Criar</span><span class="url-check">Editar</span><span class="url-check">CPF/CNPJ</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--green);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path">/unit/[id]/equipment</div><span class="url-epic" style="background:rgba(249,115,22,.15);color:var(--orange)">E3</span></div><div class="url-desc">Gestao de equipamentos: lavadoras, secadoras, etc. com logs diarios.</div><div class="url-checks"><span class="url-check">CRUD</span><span class="url-check">Logs</span><span class="url-check">Manutencao</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--green);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path">/unit/[id]/recipes</div><span class="url-epic" style="background:rgba(249,115,22,.15);color:var(--orange)">E3</span></div><div class="url-desc">Receitas de lavagem: temperatura, tempo, quimicos vinculados.</div><div class="url-checks"><span class="url-check">CRUD</span><span class="url-check">Quimicos</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--green);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path">/unit/[id]/supplies</div><span class="url-epic" style="background:rgba(249,115,22,.15);color:var(--orange)">E3</span></div><div class="url-desc">Insumos quimicos: estoque atual, movimentacoes (entrada/saida).</div><div class="url-checks"><span class="url-check">Estoque</span><span class="url-check">Movimentos</span><span class="url-check">Alertas</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--green);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path">/unit/[id]/manifests</div><span class="url-epic" style="background:rgba(6,182,212,.15);color:var(--cyan)">E4</span></div><div class="url-desc">Romaneios diarios: criar, configurar stops, imprimir, acompanhar status.</div><div class="url-checks"><span class="url-check">Criar</span><span class="url-check">Stops</span><span class="url-check">Status</span><span class="url-check">Imprimir</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--green);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path">/unit/[id]/financial</div><span class="url-epic" style="background:rgba(34,197,94,.15);color:var(--green)">E6</span></div><div class="url-desc">Financeiro: receivables, payables, fluxo de caixa, custos operacionais.</div><div class="url-checks"><span class="url-check">Receber</span><span class="url-check">Pagar</span><span class="url-check">Cashflow</span><span class="url-check">DRE</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--green);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path">/unit/[id]/pricing</div><span class="url-epic" style="background:rgba(236,72,153,.15);color:var(--pink)">E5</span></div><div class="url-desc">Tabela de precos: preco padrao por item, preco especifico por cliente.</div><div class="url-checks"><span class="url-check">Precos</span><span class="url-check">Por cliente</span><span class="url-check">Editar</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--green);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path">/unit/[id]/quotes</div><span class="url-epic" style="background:rgba(236,72,153,.15);color:var(--pink)">E5</span></div><div class="url-desc">Orcamentos: criar, enviar para cliente, converter em ordem.</div><div class="url-checks"><span class="url-check">Criar</span><span class="url-check">Converter</span><span class="url-check">PDF</span></div></div>
+  </div>
+</div>
+</div>
+
+<!-- OPERATOR -->
+<div class="section" id="sec-operator">
+<div class="role-section">
+  <div class="role-header">
+    <div class="role-icon" style="background:rgba(239,68,68,.12)">&#9881;</div>
+    <div>
+      <div class="role-name" style="color:var(--red)">Operador de Setor</div>
+      <div class="role-meta">Interface tablet para cada setor da producao — touch-first</div>
+      <div class="role-cred">triagem@ / lavagem@ / secagem@ / passadoria@ / expedicao@ &bull; A7teste@2026</div>
+    </div>
+  </div>
+  <div class="flow">
+    <div class="flow-step" style="background:rgba(239,68,68,.15);color:var(--red)">Triagem</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(99,102,241,.15);color:var(--accent)">Lavagem</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(168,85,247,.15);color:var(--purple)">Secagem</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(234,179,8,.15);color:var(--yellow)">Passadoria</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(34,197,94,.15);color:var(--green)">Expedicao</div>
+  </div>
+  <div class="url-grid">
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--red);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/sector/select">/sector/select</a></div></div><div class="url-desc">Tela inicial: operador escolhe em qual setor vai trabalhar.</div><div class="url-checks"><span class="url-check">5 opcoes</span><span class="url-check">Touch</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--red);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/sector/sorting">/sector/sorting</a></div><span class="url-epic" style="background:rgba(239,68,68,.15);color:var(--red)">E2.3</span></div><div class="url-desc">Triagem: scan QR, pesar roupa, registrar tipos, encaminhar para lavagem.</div><div class="url-checks"><span class="url-check">QR scan</span><span class="url-check">Peso</span><span class="url-check">Form</span><span class="url-check">Realtime</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--accent);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/sector/washing">/sector/washing</a></div><span class="url-epic" style="background:rgba(99,102,241,.15);color:var(--accent)">E2.4</span></div><div class="url-desc">Lavagem: fila de comandas, selecionar maquina, iniciar/concluir carga.</div><div class="url-checks"><span class="url-check">Queue</span><span class="url-check">Iniciar</span><span class="url-check">Concluir</span><span class="url-check">Realtime</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--purple);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/sector/drying">/sector/drying</a></div><span class="url-epic" style="background:rgba(168,85,247,.15);color:var(--purple)">E2.5</span></div><div class="url-desc">Secagem: receber do setor anterior, processar e concluir.</div><div class="url-checks"><span class="url-check">Queue</span><span class="url-check">Processar</span><span class="url-check">Concluir</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--yellow);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/sector/ironing">/sector/ironing</a></div><span class="url-epic" style="background:rgba(234,179,8,.15);color:var(--yellow)">E2.6</span></div><div class="url-desc">Passadoria: fila de roupas secas para passar e embalar.</div><div class="url-checks"><span class="url-check">Queue</span><span class="url-check">Processar</span><span class="url-check">Concluir</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--green);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/sector/shipping">/sector/shipping</a></div><span class="url-epic" style="background:rgba(34,197,94,.15);color:var(--green)">E2.7</span></div><div class="url-desc">Expedicao: conferir, embalar e liberar para entrega/retirada.</div><div class="url-checks"><span class="url-check">Conferir</span><span class="url-check">Despachar</span><span class="url-check">Status</span></div></div>
+  </div>
+</div>
+</div>
+
+<!-- STORE -->
+<div class="section" id="sec-store">
+<div class="role-section">
+  <div class="role-header">
+    <div class="role-icon" style="background:rgba(236,72,153,.12)">&#128722;</div>
+    <div>
+      <div class="role-name" style="color:var(--pink)">Loja / PDV</div>
+      <div class="role-meta">Ponto de venda, atendimento ao cliente, financeiro da loja</div>
+      <div class="role-cred">(conta de loja nao listada nos seeds padrao — criar via director)</div>
+    </div>
+  </div>
+  <div class="url-grid">
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--pink);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/store/pdv">/store/pdv</a></div></div><div class="url-desc">Ponto de venda: selecionar itens, quantidade, tipo de roupa, gerar comanda.</div><div class="url-checks"><span class="url-check">Selecionar itens</span><span class="url-check">Preco</span><span class="url-check">Criar ordem</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--pink);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/store/dashboard">/store/dashboard</a></div></div><div class="url-desc">Dashboard: metas de vendas, gauge de meta, receita semanal, graficos.</div><div class="url-checks"><span class="url-check">Metas</span><span class="url-check">Gauge</span><span class="url-check">Grafico</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--pink);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/store/comandas">/store/comandas</a></div></div><div class="url-desc">Lista de comandas da loja com status e acompanhamento.</div><div class="url-checks"><span class="url-check">Lista</span><span class="url-check">Status</span><span class="url-check">Detalhes</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--pink);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/store/coletas">/store/coletas</a></div></div><div class="url-desc">Agendar coletas de roupas para clientes corporativos.</div><div class="url-checks"><span class="url-check">Agendar</span><span class="url-check">Status</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--pink);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/store/financeiro">/store/financeiro</a></div></div><div class="url-desc">Financeiro: contas a receber, a pagar, fluxo de caixa.</div><div class="url-checks"><span class="url-check">Resumo</span><span class="url-check">Cashflow</span><span class="url-check">Pagamentos</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--pink);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/store/relatorios">/store/relatorios</a></div></div><div class="url-desc">Relatorios de vendas por periodo com filtros.</div><div class="url-checks"><span class="url-check">Periodo</span><span class="url-check">Vendas</span><span class="url-check">Filtros</span></div></div>
+  </div>
+</div>
+</div>
+
+<!-- DRIVER -->
+<div class="section" id="sec-driver">
+<div class="role-section">
+  <div class="role-header">
+    <div class="role-icon" style="background:rgba(249,115,22,.12)">&#128666;</div>
+    <div>
+      <div class="role-name" style="color:var(--orange)">Motorista</div>
+      <div class="role-meta">Interface mobile-first para rota diaria e entrega de romaneios</div>
+      <div class="role-cred">motorista@a7lavanderia.com.br &bull; A7teste@2026</div>
+    </div>
+  </div>
+  <div class="url-grid">
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--orange);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/driver/route">/driver/route</a></div><span class="url-epic" style="background:rgba(6,182,212,.15);color:var(--cyan)">E4.3</span></div><div class="url-desc">Rota do dia: lista de paradas (coleta/entrega) em ordem otimizada.</div><div class="url-checks"><span class="url-check">Lista stops</span><span class="url-check">Ordem</span><span class="url-check">Mobile</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--orange);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path">/driver/[manifestId]</div><span class="url-epic" style="background:rgba(6,182,212,.15);color:var(--cyan)">E4.3</span></div><div class="url-desc">Romaneio especifico: ver stops, marcar concluido, capturar assinatura digital.</div><div class="url-checks"><span class="url-check">Stops</span><span class="url-check">Assinatura</span><span class="url-check">Completar</span></div></div>
+  </div>
+  <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:14px 18px;margin-top:16px;font-size:.82rem;color:var(--red)">
+    <strong>Issue conhecida:</strong> E4.3 — A pagina do motorista chama server actions com guard de <code>unit_manager</code>. Usuarios com role <code>driver</code> podem receber erro 403 ao tentar atualizar stops.
+  </div>
+</div>
+</div>
+
+<!-- CLIENT -->
+<div class="section" id="sec-client">
+<div class="role-section">
+  <div class="role-header">
+    <div class="role-icon" style="background:rgba(6,182,212,.12)">&#128100;</div>
+    <div>
+      <div class="role-name" style="color:var(--cyan)">Cliente (Portal)</div>
+      <div class="role-meta">Portal do cliente para acompanhar pedidos em tempo real</div>
+      <div class="role-cred">(conta customer — criar via director ou vincular client existente)</div>
+    </div>
+  </div>
+  <div class="url-grid">
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--cyan);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/client/orders">/client/orders</a></div></div><div class="url-desc">Lista de pedidos do cliente com atualizacao em tempo real via WebSocket.</div><div class="url-checks"><span class="url-check">Lista</span><span class="url-check">Realtime</span><span class="url-check">Status</span><span class="url-check">Timeline</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--cyan);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/client/profile">/client/profile</a></div></div><div class="url-desc">Editar dados pessoais: nome, telefone, endereco.</div><div class="url-checks"><span class="url-check">Editar</span><span class="url-check">Salvar</span><span class="url-check">Validacao</span></div></div>
+  </div>
+</div>
+</div>
+
+<!-- COMMERCIAL -->
+<div class="section" id="sec-commercial">
+<div class="role-section">
+  <div class="role-header">
+    <div class="role-icon" style="background:rgba(168,85,247,.12)">&#128200;</div>
+    <div>
+      <div class="role-name" style="color:var(--purple)">Comercial (CRM)</div>
+      <div class="role-meta">Pipeline de vendas, leads, campanhas — para SDR e Closers</div>
+      <div class="role-cred">(conta sdr/closer — criar via director)</div>
+    </div>
+  </div>
+  <div class="url-grid">
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--purple);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/commercial/dashboard">/commercial/dashboard</a></div><span class="url-epic" style="background:rgba(236,72,153,.15);color:var(--pink)">E5</span></div><div class="url-desc">Dashboard comercial: pipeline visual, metricas de conversao, metas.</div><div class="url-checks"><span class="url-check">Pipeline</span><span class="url-check">Metricas</span><span class="url-check">Metas</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--purple);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/commercial/leads">/commercial/leads</a></div><span class="url-epic" style="background:rgba(236,72,153,.15);color:var(--pink)">E5</span></div><div class="url-desc">Kanban de leads: arrastar entre colunas (novo > qualificado > proposta > ganho/perdido).</div><div class="url-checks"><span class="url-check">Kanban drag</span><span class="url-check">Criar lead</span><span class="url-check">Filtros</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--purple);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path">/commercial/leads/[id]</div></div><div class="url-desc">Detalhe do lead: timeline de atividades, notas, dados de contato.</div><div class="url-checks"><span class="url-check">Timeline</span><span class="url-check">Notas</span><span class="url-check">Atividades</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--purple);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/commercial/campaigns">/commercial/campaigns</a></div></div><div class="url-desc">Campanhas de marketing: criar, enviar, acompanhar resultados.</div><div class="url-checks"><span class="url-check">Criar</span><span class="url-check">Enviar</span><span class="url-check">Stats</span></div></div>
+  </div>
+</div>
+</div>
+
+<!-- COPYWRITER -->
+<div class="section" id="sec-copywriter">
+<div class="role-section">
+  <div class="role-header">
+    <div class="role-icon" style="background:rgba(234,179,8,.12)">&#9997;</div>
+    <div>
+      <div class="role-name" style="color:var(--yellow)">Copywriter (Portal Gamificado)</div>
+      <div class="role-meta">Missoes de escrita, XP, niveis, badges, leaderboard</div>
+      <div class="role-cred">(conta copywriter — criar via director)</div>
+    </div>
+  </div>
+  <div class="flow">
+    <div class="flow-step" style="background:rgba(234,179,8,.15);color:var(--yellow)">Ver Missoes</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(99,102,241,.15);color:var(--accent)">Aceitar</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(168,85,247,.15);color:var(--purple)">Escrever</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(34,197,94,.15);color:var(--green)">Enviar</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(214,178,94,.15);color:var(--gold)">Review &#8594; XP</div>
+  </div>
+  <div class="url-grid">
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--yellow);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/copywriter/dashboard">/copywriter/dashboard</a></div></div><div class="url-desc">Dashboard pessoal: XP total, nivel atual, streak, badges recentes.</div><div class="url-checks"><span class="url-check">XP bar</span><span class="url-check">Nivel</span><span class="url-check">Streak</span><span class="url-check">Badges</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--yellow);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/copywriter/missions">/copywriter/missions</a></div></div><div class="url-desc">Lista de missoes (briefings) disponiveis, filtradas por dificuldade.</div><div class="url-checks"><span class="url-check">Lista</span><span class="url-check">Dificuldade</span><span class="url-check">Aceitar</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--yellow);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path">/copywriter/missions/[id]</div></div><div class="url-desc">Editor: escrever texto, enviar submission para review.</div><div class="url-checks"><span class="url-check">Editor</span><span class="url-check">Preview</span><span class="url-check">Enviar</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--yellow);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/copywriter/leaderboard">/copywriter/leaderboard</a></div></div><div class="url-desc">Ranking dos writers: XP total, nivel, badges raros.</div><div class="url-checks"><span class="url-check">Ranking</span><span class="url-check">XP</span><span class="url-check">Nivel</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--yellow);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/copywriter/profile">/copywriter/profile</a></div></div><div class="url-desc">Perfil: todas as badges conquistadas, historico de XP, editar bio.</div><div class="url-checks"><span class="url-check">Badges</span><span class="url-check">XP timeline</span><span class="url-check">Editar</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/copywriter/admin/reviews">/copywriter/admin/reviews</a></div><span class="role-tag" style="background:rgba(214,178,94,.2);color:var(--gold);font-size:.6rem">ADMIN</span></div><div class="url-desc">Revisar submissions: dar nota, aprovar/rejeitar, conceder XP e badges.</div><div class="url-checks"><span class="url-check">Review</span><span class="url-check">Nota</span><span class="url-check">XP</span><span class="url-check">Badge</span></div></div>
+  </div>
+</div>
+</div>
+
+<!-- PUBLIC -->
+<div class="section" id="sec-public">
+<div class="role-section">
+  <div class="role-header">
+    <div class="role-icon" style="background:rgba(100,116,139,.12)">&#127760;</div>
+    <div>
+      <div class="role-name">Paginas Publicas</div>
+      <div class="role-meta">Sem necessidade de login — acesso livre</div>
+    </div>
+  </div>
+  <div class="url-grid">
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--dim);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/login">/login</a></div></div><div class="url-desc">Tela de login com branding A7x. Email + senha, mensagens de erro.</div><div class="url-checks"><span class="url-check">Login</span><span class="url-check">Erros</span><span class="url-check">Redirect</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--dim);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/home">/home</a></div></div><div class="url-desc">Landing page marketing: hero, features, CTA, depoimentos.</div><div class="url-checks"><span class="url-check">Layout</span><span class="url-check">CTA</span><span class="url-check">Responsivo</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--dim);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/oferta">/oferta</a></div></div><div class="url-desc">Pagina de oferta com formulario de conversao.</div><div class="url-checks"><span class="url-check">Form</span><span class="url-check">Envio</span><span class="url-check">Validacao</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--dim);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/captacao">/captacao</a></div></div><div class="url-desc">Formulario de captacao de leads para franquias e parceiros.</div><div class="url-checks"><span class="url-check">Form</span><span class="url-check">Campos</span><span class="url-check">Submit</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--dim);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path">/nps/[surveyId]</div></div><div class="url-desc">Pesquisa NPS publica: nota 0-10 + comentario. Sem login.</div><div class="url-checks"><span class="url-check">Nota</span><span class="url-check">Comentario</span><span class="url-check">Submit</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--dim);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path"><a href="/uat-guide">/uat-guide</a></div></div><div class="url-desc">Guia completo de UAT: credenciais, categorias de feedback, instrucoes.</div><div class="url-checks"><span class="url-check">Contas</span><span class="url-check">Instrucoes</span><span class="url-check">Links</span></div></div>
+    <div class="url-card"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--dim);border-radius:3px 0 0 3px"></div><div class="url-top"><div class="url-path">/display/[token]</div></div><div class="url-desc">TV de producao publica: autenticada por token, sem login necessario.</div><div class="url-checks"><span class="url-check">Fullscreen</span><span class="url-check">Auto-refresh</span><span class="url-check">Token auth</span></div></div>
+  </div>
+</div>
+</div>
+
+<!-- FLUXOS -->
+<div class="section" id="sec-flow">
+<h2 style="font-size:1.15rem;margin-bottom:20px">Fluxos de Teste End-to-End</h2>
+
+<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:20px">
+  <h3 style="font-size:.95rem;margin-bottom:12px;color:var(--red)">Fluxo 1: Comanda do Inicio ao Fim</h3>
+  <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px">Percurso completo de uma roupa pela lavanderia</p>
+  <div class="flow">
+    <div class="flow-step" style="background:rgba(34,197,94,.15);color:var(--green)">Gerente cria comanda</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(239,68,68,.15);color:var(--red)">Triagem pesa</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(99,102,241,.15);color:var(--accent)">Lavagem</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(168,85,247,.15);color:var(--purple)">Secagem</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(234,179,8,.15);color:var(--yellow)">Passadoria</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(34,197,94,.15);color:var(--green)">Expedicao</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(249,115,22,.15);color:var(--orange)">Motorista entrega</div>
+  </div>
+  <div style="font-size:.78rem;color:var(--dim);margin-top:8px">
+    <strong>URLs:</strong> /unit/[id]/production/orders/new &#8594; /sector/sorting &#8594; /sector/washing &#8594; /sector/drying &#8594; /sector/ironing &#8594; /sector/shipping &#8594; /driver/route
+  </div>
+</div>
+
+<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:20px">
+  <h3 style="font-size:.95rem;margin-bottom:12px;color:var(--gold)">Fluxo 2: Visao Executiva</h3>
+  <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px">Diretor monitora KPIs e financeiro de toda a rede</p>
+  <div class="flow">
+    <div class="flow-step" style="background:rgba(214,178,94,.15);color:var(--gold)">Login diretor</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(214,178,94,.15);color:var(--gold)">Dashboard KPIs</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(34,197,94,.15);color:var(--green)">Financial DRE</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(6,182,212,.15);color:var(--cyan)">NPS por unidade</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(168,85,247,.15);color:var(--purple)">Export CSV</div>
+  </div>
+  <div style="font-size:.78rem;color:var(--dim);margin-top:8px">
+    <strong>URLs:</strong> /login &#8594; /director/dashboard &#8594; /director/financial/dre &#8594; /director/nps &#8594; /director/reports
+  </div>
+</div>
+
+<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:20px">
+  <h3 style="font-size:.95rem;margin-bottom:12px;color:var(--pink)">Fluxo 3: Venda na Loja (PDV)</h3>
+  <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px">Atendimento ao balcao: cadastro, orcamento, ordem</p>
+  <div class="flow">
+    <div class="flow-step" style="background:rgba(236,72,153,.15);color:var(--pink)">Login loja</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(236,72,153,.15);color:var(--pink)">Cadastrar cliente</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(236,72,153,.15);color:var(--pink)">PDV: itens</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(34,197,94,.15);color:var(--green)">Gerar comanda</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(234,179,8,.15);color:var(--yellow)">Acompanhar</div>
+  </div>
+  <div style="font-size:.78rem;color:var(--dim);margin-top:8px">
+    <strong>URLs:</strong> /login &#8594; /store/clients &#8594; /store/pdv &#8594; /store/comandas
+  </div>
+</div>
+
+<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:20px">
+  <h3 style="font-size:.95rem;margin-bottom:12px;color:var(--purple)">Fluxo 4: Pipeline Comercial</h3>
+  <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px">Lead captado ate virar cliente com orcamento</p>
+  <div class="flow">
+    <div class="flow-step" style="background:rgba(100,116,139,.15);color:var(--dim)">Lead via /captacao</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(168,85,247,.15);color:var(--purple)">SDR qualifica</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(168,85,247,.15);color:var(--purple)">Closer proposta</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(34,197,94,.15);color:var(--green)">Cliente cadastrado</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(236,72,153,.15);color:var(--pink)">Orcamento</div>
+  </div>
+  <div style="font-size:.78rem;color:var(--dim);margin-top:8px">
+    <strong>URLs:</strong> /captacao &#8594; /commercial/leads &#8594; /commercial/leads/[id] &#8594; /unit/[id]/clients &#8594; /unit/[id]/quotes
+  </div>
+</div>
+
+<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:20px">
+  <h3 style="font-size:.95rem;margin-bottom:12px;color:var(--cyan)">Fluxo 5: Cliente Acompanha Pedido</h3>
+  <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px">Cliente acompanha o status em tempo real pelo portal</p>
+  <div class="flow">
+    <div class="flow-step" style="background:rgba(6,182,212,.15);color:var(--cyan)">Login cliente</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(6,182,212,.15);color:var(--cyan)">/client/orders</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(34,197,94,.15);color:var(--green)">Realtime updates</div><span class="flow-arrow">&#8594;</span>
+    <div class="flow-step" style="background:rgba(100,116,139,.15);color:var(--dim)">Recebe email/SMS</div>
+  </div>
+  <div style="font-size:.78rem;color:var(--dim);margin-top:8px">
+    <strong>URLs:</strong> /login &#8594; /client/orders (WebSocket atualiza automaticamente)
+  </div>
+</div>
+
+</div>
+
+</div>
+
+<footer style="border-top:1px solid var(--border);padding:24px 0;margin-top:48px;text-align:center;color:var(--dim);font-size:.78rem">
+  <div class="container">
+    A7x TecNologia — Painel de Onboarding &amp; Mapa de URLs &mdash; 03/03/2026<br>
+    <a href="/roadmap.html" style="color:var(--gold);margin-top:4px;display:inline-block">Ver Roadmap Completo</a>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('sec-'+tab.dataset.tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
