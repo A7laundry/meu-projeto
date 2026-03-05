@@ -1,5 +1,6 @@
 import { login } from './actions'
 import Link from 'next/link'
+import { PasswordInput } from '@/components/ui/password-input'
 
 export default function LoginPage({
   searchParams,
@@ -23,9 +24,9 @@ export default function LoginPage({
 
       {/* ── LEFT PANEL — Branding ──────────────────────────────── */}
       <div
-        className="hidden lg:flex flex-col justify-between relative z-10"
+        className="hidden md:flex flex-col justify-between relative z-10"
         style={{
-          width: '52%',
+          width: '50%',
           padding: '48px 56px',
           borderRight: '1px solid rgba(59,130,246,0.09)',
           background: 'linear-gradient(160deg, rgba(59,130,246,0.05) 0%, transparent 50%)',
@@ -50,9 +51,7 @@ export default function LoginPage({
             Sistema Operacional Inteligente
           </p>
 
-          <h1 className="text-hero" style={{
-            color: '#fff', marginBottom: 32,
-          }}>
+          <h1 className="text-hero" style={{ color: '#fff', marginBottom: 32 }}>
             Tudo que sua{' '}
             <span className="shimmer-text">lavanderia</span>
             {' '}precisa em um só lugar.
@@ -90,15 +89,16 @@ export default function LoginPage({
       {/* ── RIGHT PANEL — Form ────────────────────────────────── */}
       <div
         className="flex-1 flex flex-col items-center justify-center relative z-10"
-        style={{ padding: '48px 24px' }}
+        style={{ padding: '48px 24px', minHeight: '100vh' }}
       >
         {/* Mobile logo */}
-        <div className="lg:hidden mb-10 text-center">
+        <div className="md:hidden mb-10 text-center">
           <div style={{
-            width: 44, height: 44, borderRadius: 12, margin: '0 auto 12px',
+            width: 48, height: 48, borderRadius: 14, margin: '0 auto 14px',
             background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 18, fontWeight: 900, color: '#ffffff',
+            fontSize: 20, fontWeight: 900, color: '#ffffff',
+            boxShadow: '0 8px 32px rgba(59,130,246,0.35)',
           }}>A</div>
           <p className="shimmer-text" style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-0.04em' }}>A7X System&apos;s</p>
           <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.30)', marginTop: 4 }}>Sistema Operacional Inteligente</p>
@@ -107,13 +107,11 @@ export default function LoginPage({
         {/* Form card */}
         <div
           className="card-premium w-full slide-up"
-          style={{ maxWidth: 400, padding: '40px 36px', borderRadius: 20 }}
+          style={{ maxWidth: 420, padding: '40px 36px', borderRadius: 20 }}
         >
           {/* Header */}
           <div style={{ marginBottom: 32 }}>
-            <h2 className="text-display-md" style={{
-              color: '#fff', margin: '0 0 8px',
-            }}>
+            <h2 className="text-display-md" style={{ color: '#fff', margin: '0 0 8px' }}>
               Bem-vindo de volta
             </h2>
             <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', margin: 0 }}>
@@ -127,7 +125,12 @@ export default function LoginPage({
           <div style={{ marginTop: 24, textAlign: 'center' }}>
             <Link
               href="/home"
-              style={{ fontSize: 12, color: 'rgba(255,255,255,0.50)', textDecoration: 'none' }}
+              style={{
+                fontSize: 12,
+                color: 'rgba(255,255,255,0.50)',
+                textDecoration: 'none',
+                transition: 'color 0.2s',
+              }}
             >
               Conhecer o sistema →
             </Link>
@@ -188,11 +191,15 @@ async function LoginForm({
         </div>
       )}
 
+      {/* Email */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <label style={{
-          fontSize: 11, fontWeight: 600, letterSpacing: '0.08em',
-          textTransform: 'uppercase', color: 'rgba(255,255,255,0.40)',
-        }}>
+        <label
+          htmlFor="email"
+          style={{
+            fontSize: 11, fontWeight: 600, letterSpacing: '0.08em',
+            textTransform: 'uppercase', color: 'rgba(255,255,255,0.40)',
+          }}
+        >
           Email
         </label>
         <input
@@ -210,25 +217,23 @@ async function LoginForm({
         />
       </div>
 
+      {/* Password — with show/hide toggle */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <label style={{
-          fontSize: 11, fontWeight: 600, letterSpacing: '0.08em',
-          textTransform: 'uppercase', color: 'rgba(255,255,255,0.40)',
-        }}>
+        <label
+          htmlFor="password"
+          style={{
+            fontSize: 11, fontWeight: 600, letterSpacing: '0.08em',
+            textTransform: 'uppercase', color: 'rgba(255,255,255,0.40)',
+          }}
+        >
           Senha
         </label>
-        <input
+        <PasswordInput
           id="password"
           name="password"
-          type="password"
           placeholder="••••••••"
           required
           autoComplete="current-password"
-          className="input-premium"
-          style={{
-            padding: '12px 16px', borderRadius: 10,
-            fontSize: 14, width: '100%', boxSizing: 'border-box',
-          }}
         />
       </div>
 
