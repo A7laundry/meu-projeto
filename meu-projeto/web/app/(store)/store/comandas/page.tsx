@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
+import { ClipboardList } from 'lucide-react'
 import { getUser } from '@/lib/auth/get-user'
 import { listOrders } from '@/actions/orders/list'
+import { PageHeader } from '@/components/layout/page-header'
 import { ComandasClient } from './page-client'
 
 export default async function StoreComandasPage() {
@@ -11,16 +13,12 @@ export default async function StoreComandasPage() {
 
   return (
     <div className="p-4 lg:p-6 space-y-5">
-      {/* Header */}
-      <div>
-        <p
-          className="text-[10px] uppercase tracking-widest font-semibold mb-1"
-          style={{ color: 'rgba(52,211,153,0.40)' }}
-        >
-          Comandas
-        </p>
-        <h1 className="text-xl font-bold text-white tracking-tight">Acompanhamento</h1>
-      </div>
+      <PageHeader
+        overline="Comandas"
+        title="Acompanhamento"
+        accent="#10b981"
+        icon={ClipboardList}
+      />
 
       <ComandasClient orders={orders} />
     </div>

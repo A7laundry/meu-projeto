@@ -4,7 +4,8 @@ import { getCashflowData, getDreData } from '@/actions/financial/cashflow'
 import { StoreCashflowTable } from '@/components/domain/store/store-cashflow-table'
 import { StoreDreTable } from '@/components/domain/store/store-dre-table'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Wallet } from 'lucide-react'
+import { PageHeader } from '@/components/layout/page-header'
 
 export default async function CashflowPage() {
   const user = await getUser()
@@ -32,15 +33,12 @@ export default async function CashflowPage() {
         >
           <ArrowLeft size={16} style={{ color: 'rgba(255,255,255,0.50)' }} />
         </Link>
-        <div>
-          <p
-            className="text-[10px] uppercase tracking-widest font-semibold mb-1"
-            style={{ color: 'rgba(52,211,153,0.40)' }}
-          >
-            Fluxo de Caixa & DRE
-          </p>
-          <h1 className="text-xl font-bold text-white tracking-tight capitalize">{monthLabel}</h1>
-        </div>
+        <PageHeader
+          overline="Fluxo de Caixa & DRE"
+          title={monthLabel}
+          accent="#10b981"
+          icon={Wallet}
+        />
       </div>
 
       {/* Cashflow */}

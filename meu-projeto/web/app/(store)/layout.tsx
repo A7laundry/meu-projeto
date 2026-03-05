@@ -2,8 +2,8 @@ import { redirect } from 'next/navigation'
 import { getUser } from '@/lib/auth/get-user'
 import { getUnit } from '@/actions/units/crud'
 import { getNotificationCount } from '@/actions/notifications'
-import { AppHeader } from '@/components/layout/app-header'
-import { StoreSidebar } from '@/components/layout/store-sidebar'
+import { logout } from '@/app/(auth)/login/actions'
+import { StoreShell } from './store-shell'
 
 export default async function StoreLayout({ children }: { children: React.ReactNode }) {
   const user = await getUser()
@@ -19,14 +19,13 @@ export default async function StoreLayout({ children }: { children: React.ReactN
   const unitName = unit?.name ?? 'Loja'
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#07070a]">
-      <AppHeader user={user} dark subtitle={unitName} notificationCount={notificationCount} />
-      <div className="flex flex-1 overflow-hidden">
-        <StoreSidebar userName={user.full_name} unitName={unitName} />
-        <main className="flex-1 overflow-auto bg-obsidian scrollbar-dark">
-          {children}
-        </main>
-      </div>
-    </div>
+    <StoreShell
+      userName={user.full_name}
+      userRole={unitName}
+      notificationCount={notificationCount}
+      logoutAction={logout}
+    >
+      {children}
+    </StoreShell>
   )
 }

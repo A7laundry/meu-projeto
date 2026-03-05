@@ -14,7 +14,9 @@ import {
   TrendingUp,
   Clock,
   CheckCircle,
+  LayoutDashboard,
 } from 'lucide-react'
+import { PageHeader } from '@/components/layout/page-header'
 
 export default async function StoreDashboardPage() {
   const user = await getUser()
@@ -28,15 +30,13 @@ export default async function StoreDashboardPage() {
   return (
     <div className="p-4 lg:p-8 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-overline mb-2" style={{ color: 'rgba(52,211,153,0.55)' }}>
-            Dashboard
-          </p>
-          <h1 className="text-display-lg text-white">Visão Geral da Loja</h1>
-        </div>
-        <StoreGoalForm unitId={user.unit_id} currentGoal={kpis.dailyGoal} />
-      </div>
+      <PageHeader
+        overline="Dashboard"
+        title="Visao Geral da Loja"
+        icon={LayoutDashboard}
+        accent="#10b981"
+        actions={<StoreGoalForm unitId={user.unit_id} currentGoal={kpis.dailyGoal} />}
+      />
 
       {/* Meta do Dia + KPIs */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">

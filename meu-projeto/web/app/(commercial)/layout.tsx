@@ -1,8 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getUser } from '@/lib/auth/get-user'
-import { getNotificationCount } from '@/actions/notifications'
-import { AppHeader } from '@/components/layout/app-header'
-import { CommercialSidebar } from '@/components/layout/commercial-sidebar'
+import { logout } from '@/app/(auth)/login/actions'
+import { CommercialShell } from './commercial-shell'
 
 const ROLE_LABELS: Record<string, string> = {
   director: 'Diretor',
@@ -19,17 +18,14 @@ export default async function CommercialLayout({ children }: { children: React.R
   if (!allowed.includes(user.role)) redirect('/auth/error')
 
   const roleLabel = ROLE_LABELS[user.role] ?? user.role
-  const notificationCount = await getNotificationCount()
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#07070a]">
-      <AppHeader user={user} dark subtitle="Comercial" notificationCount={notificationCount} />
-      <div className="flex flex-1 overflow-hidden">
-        <CommercialSidebar userName={user.full_name} roleLabel={roleLabel} />
-        <main className="flex-1 overflow-auto bg-obsidian scrollbar-dark">
-          {children}
-        </main>
-      </div>
-    </div>
+    <CommercialShell
+      userName={user.full_name}
+      userRole={roleLabel}
+      logoutAction={logout}
+    >
+      {children}
+    </CommercialShell>
   )
 }

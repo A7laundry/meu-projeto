@@ -1,6 +1,8 @@
+import { MapPin } from 'lucide-react'
 import { listActiveClients } from '@/actions/clients/crud'
 import { listRoutes } from '@/actions/routes/crud'
 import { RouteList } from '@/components/domain/logistics/route-list'
+import { PageHeader } from '@/components/layout/page-header'
 
 export const revalidate = 0
 
@@ -17,12 +19,13 @@ export default async function RoutesPage({
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Rotas Fixas</h1>
-        <p className="text-sm text-white/40 mt-1">
-          Rotas de coleta e entrega com paradas em sequência
-        </p>
-      </div>
+      <PageHeader
+        overline="Unidade"
+        title="Rotas Fixas"
+        subtitle="Rotas de coleta e entrega com paradas em sequência"
+        accent="#3b82f6"
+        icon={MapPin}
+      />
 
       <RouteList
         unitId={unitId}

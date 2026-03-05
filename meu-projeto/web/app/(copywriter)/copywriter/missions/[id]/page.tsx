@@ -5,7 +5,9 @@ import { getUser } from '@/lib/auth/get-user'
 import { DifficultyBadge } from '@/components/domain/copywriter/difficulty-badge'
 import { SubmissionEditor } from '@/components/domain/copywriter/submission-editor'
 import { FeedbackThread } from '@/components/domain/copywriter/feedback-thread'
+import { PageHeader } from '@/components/layout/page-header'
 import { Button } from '@/components/ui/button'
+import { ScrollText } from 'lucide-react'
 
 interface MissionDetailProps {
   params: Promise<{ id: string }>
@@ -24,29 +26,19 @@ export default async function MissionDetailPage({ params }: MissionDetailProps) 
   return (
     <div className="p-6 space-y-6 max-w-4xl mx-auto">
       {/* Header */}
-      <div className="animate-fade-up space-y-2">
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="text-xl font-bold text-white/90">{briefing.title}</h1>
-          <DifficultyBadge difficulty={briefing.difficulty} />
-        </div>
-        <div className="flex items-center gap-3 text-xs text-white/40">
-          <span className="text-[#60a5fa] font-medium">+{briefing.xp_reward} XP</span>
-          <span>·</span>
-          <span className="capitalize">{briefing.content_type.replace('_', ' ')}</span>
-          {briefing.word_limit && (
-            <>
-              <span>·</span>
-              <span>{briefing.word_limit} palavras</span>
-            </>
-          )}
-          {briefing.deadline && (
-            <>
-              <span>·</span>
-              <span>Deadline: {new Date(briefing.deadline).toLocaleDateString('pt-BR')}</span>
-            </>
-          )}
-        </div>
-      </div>
+      <PageHeader
+        overline="Missão"
+        title={briefing.title}
+        subtitle={[
+          `+${briefing.xp_reward} XP`,
+          briefing.content_type.replace('_', ' '),
+          briefing.word_limit ? `${briefing.word_limit} palavras` : null,
+          briefing.deadline ? `Deadline: ${new Date(briefing.deadline).toLocaleDateString('pt-BR')}` : null,
+        ].filter(Boolean).join(' · ')}
+        accent="#a855f7"
+        icon={ScrollText}
+        actions={<DifficultyBadge difficulty={briefing.difficulty} />}
+      />
 
       {/* Briefing completo */}
       <div className="card-stat rounded-xl p-5 space-y-3 animate-fade-up stagger-1">

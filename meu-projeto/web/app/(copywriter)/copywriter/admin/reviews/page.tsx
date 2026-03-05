@@ -5,6 +5,8 @@ import { getSubmissionComments } from '@/actions/copywriter/submissions'
 import { ReviewPanel } from '@/components/domain/copywriter/review-panel'
 import { FeedbackThread } from '@/components/domain/copywriter/feedback-thread'
 import { DifficultyBadge } from '@/components/domain/copywriter/difficulty-badge'
+import { PageHeader } from '@/components/layout/page-header'
+import { ClipboardCheck } from 'lucide-react'
 
 export default async function AdminReviewsPage() {
   const user = await getUser()
@@ -23,12 +25,13 @@ export default async function AdminReviewsPage() {
 
   return (
     <div className="p-6 space-y-6 max-w-5xl mx-auto">
-      <div className="animate-fade-up">
-        <h1 className="text-xl font-bold text-white/90 mb-1">Fila de Avaliações</h1>
-        <p className="text-sm text-white/40">
-          {queue.length} submission{queue.length !== 1 ? 's' : ''} aguardando review
-        </p>
-      </div>
+      <PageHeader
+        overline="Revisão"
+        title="Fila de Avaliações"
+        subtitle={`${queue.length} submission${queue.length !== 1 ? 's' : ''} aguardando review`}
+        accent="#a855f7"
+        icon={ClipboardCheck}
+      />
 
       {queue.length === 0 ? (
         <div className="card-dark rounded-xl p-8 text-center animate-fade-up stagger-1">

@@ -1,5 +1,7 @@
+import { Users } from 'lucide-react'
 import { listClients } from '@/actions/clients/crud'
 import { ClientList } from '@/components/domain/client/client-list'
+import { PageHeader } from '@/components/layout/page-header'
 
 export const revalidate = 0
 
@@ -13,13 +15,13 @@ export default async function ClientsPage({
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
-      <div className="mb-6">
-        <p className="text-[11px] uppercase tracking-widest font-semibold mb-1" style={{ color: 'rgba(59,130,246,0.50)' }}>Unidade</p>
-        <h1 className="text-2xl font-bold text-white tracking-tight">Clientes</h1>
-        <p className="text-sm text-white/40 mt-1">
-          Cadastro de clientes B2B e pessoas físicas da unidade
-        </p>
-      </div>
+      <PageHeader
+        overline="Unidade"
+        title="Clientes"
+        subtitle="Cadastro de clientes B2B e pessoas físicas da unidade"
+        accent="#3b82f6"
+        icon={Users}
+      />
 
       <ClientList unitId={unitId} initialClients={clients} />
     </div>

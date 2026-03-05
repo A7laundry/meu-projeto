@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
-import { ClipboardList, Package, Activity, DollarSign, TrendingDown, TrendingUp, Clock } from 'lucide-react'
+import { ClipboardList, Package, Activity, DollarSign, TrendingDown, TrendingUp, Clock, LayoutDashboard } from 'lucide-react'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { PageHeader } from '@/components/layout/page-header'
 import { getProductionKpis } from '@/lib/queries/production-kpis'
 import { KpiCard } from '@/components/domain/kpi/kpi-card'
 import { ProductionChart } from '@/components/domain/kpi/production-chart'
@@ -111,16 +112,14 @@ export default async function UnitDashboardPage({
     <div className="p-6 lg:p-8 space-y-10">
 
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-overline mb-2">Operacional</p>
-          <h1 className="text-display-lg text-white">Dashboard de Produção</h1>
-          <p className="text-sm text-white/40 mt-2">{periodLabel} — atualiza a cada 60s</p>
-        </div>
-        <Suspense>
-          <PeriodFilter />
-        </Suspense>
-      </div>
+      <PageHeader
+        overline="Operacional"
+        title="Dashboard de Produção"
+        subtitle={`${periodLabel} — atualiza a cada 60s`}
+        icon={LayoutDashboard}
+        accent="#3b82f6"
+        actions={<Suspense><PeriodFilter /></Suspense>}
+      />
 
       {/* KPIs principais */}
       <section className="space-y-4">

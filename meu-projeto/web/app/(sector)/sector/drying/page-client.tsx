@@ -3,9 +3,11 @@
 import { useState } from 'react'
 import { SectorQueue } from '@/components/domain/production/sector-queue'
 import { GenericSectorForm } from '@/components/domain/production/generic-sector-form'
+import type { SectorKpi } from '@/actions/production/sector-kpis'
 import type { Order, OrderStatus } from '@/types/order'
 import type { Equipment } from '@/types/equipment'
 import type { ShiftCycleCount } from '@/actions/equipment/shift-cycles'
+import type { ManifestOption } from '@/components/domain/production/generic-sector-form'
 
 interface SectorPageClientProps {
   unitId: string
@@ -15,6 +17,9 @@ interface SectorPageClientProps {
   statuses: OrderStatus[]
   equipment?: Equipment[]
   shiftCycles?: ShiftCycleCount[]
+  shiftPiecesCount?: number
+  manifests?: ManifestOption[]
+  sectorKpis?: SectorKpi
 }
 
 export function SectorPageClient({
@@ -25,6 +30,9 @@ export function SectorPageClient({
   statuses,
   equipment,
   shiftCycles,
+  shiftPiecesCount,
+  manifests,
+  sectorKpis,
 }: SectorPageClientProps) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -49,6 +57,9 @@ export function SectorPageClient({
           sectorKey={sectorKey}
           equipment={equipment}
           shiftCycles={shiftCycles}
+          shiftPiecesCount={shiftPiecesCount}
+          manifests={manifests}
+          sectorKpis={sectorKpis}
           onComplete={handleComplete}
           onCancel={() => setSelectedOrder(null)}
         />

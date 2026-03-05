@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getCampaign, updateCampaign, updateCampaignStatus } from '@/actions/commercial/campaigns'
 import type { CampaignChannel, CampaignStatus } from '@/actions/commercial/campaigns'
+import { PageHeader } from '@/components/layout/page-header'
+import { Megaphone } from 'lucide-react'
 
 export const revalidate = 0
 
@@ -66,47 +68,47 @@ export default async function CampaignDetailPage({ params }: Props) {
       </div>
 
       {/* ── Header ────────────────────────────────── */}
-      <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-4">
-          <span className="text-4xl">{CHANNEL_ICONS[campaign.channel] ?? '📣'}</span>
-          <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">{campaign.name}</h1>
-            <div className="flex items-center gap-2 mt-1">
-              <span
-                className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full"
-                style={{ background: status.bg, color: status.color }}
-              >
-                {status.label}
-              </span>
-              <span className="text-xs capitalize" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                {campaign.channel} · {campaign.objective}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Ação de status */}
-        {campaign.status !== 'completed' && (
-          <form action={async () => {
-            'use server'
-            const next: CampaignStatus = campaign.status === 'active' ? 'paused' : 'active'
-            await updateCampaignStatus(id, next)
-          }}>
-            <button
-              type="submit"
-              className="text-sm px-4 py-2 rounded-xl transition-all"
-              style={{
-                border: '1px solid rgba(255,255,255,0.10)',
-                color: 'rgba(255,255,255,0.45)',
-                background: 'transparent',
-                cursor: 'pointer',
-              }}
+      <PageHeader
+        overline="Campanha"
+        title={campaign.name}
+        icon={Megaphone}
+        accent="#06b6d4"
+        subtitle={
+          <>
+            <span
+              className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full inline-block"
+              style={{ background: status.bg, color: status.color }}
             >
-              {campaign.status === 'active' ? '⏸ Pausar campanha' : '▶ Reativar campanha'}
-            </button>
-          </form>
-        )}
-      </div>
+              {status.label}
+            </span>
+            <span className="text-xs capitalize ml-2" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              {campaign.channel} · {campaign.objective}
+            </span>
+          </>
+        }
+        actions={
+          campaign.status !== 'completed' ? (
+            <form action={async () => {
+              'use server'
+              const next: CampaignStatus = campaign.status === 'active' ? 'paused' : 'active'
+              await updateCampaignStatus(id, next)
+            }}>
+              <button
+                type="submit"
+                className="text-sm px-4 py-2 rounded-xl transition-all"
+                style={{
+                  border: '1px solid rgba(255,255,255,0.10)',
+                  color: 'rgba(255,255,255,0.45)',
+                  background: 'transparent',
+                  cursor: 'pointer',
+                }}
+              >
+                {campaign.status === 'active' ? '⏸ Pausar campanha' : '▶ Reativar campanha'}
+              </button>
+            </form>
+          ) : undefined
+        }
+      />
 
       {/* ── KPIs ──────────────────────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

@@ -1,6 +1,8 @@
 import { listBriefings } from '@/actions/copywriter/briefings'
 import { MissionCard } from '@/components/domain/copywriter/mission-card'
+import { PageHeader } from '@/components/layout/page-header'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { Crosshair } from 'lucide-react'
 
 export default async function MissionsPage() {
   const briefings = await listBriefings()
@@ -23,10 +25,13 @@ export default async function MissionsPage() {
 
   return (
     <div className="p-6 space-y-8 max-w-5xl mx-auto">
-      <div className="animate-fade-up">
-        <h1 className="text-xl font-bold text-white/90 mb-1">Board de Missões</h1>
-        <p className="text-sm text-white/40">Aceite missões, escreva conteúdo e ganhe XP</p>
-      </div>
+      <PageHeader
+        overline="Missões"
+        title="Board de Missões"
+        subtitle="Aceite missões, escreva conteúdo e ganhe XP"
+        accent="#a855f7"
+        icon={Crosshair}
+      />
 
       {/* Missões ativas */}
       <div className="space-y-4">

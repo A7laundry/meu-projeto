@@ -1,4 +1,7 @@
+import { LayoutDashboard } from 'lucide-react'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { PageHeader } from '@/components/layout/page-header'
+import { StatCard } from '@/components/ui/stat-card'
 import type { LeadStage } from '@/actions/commercial/leads'
 
 export const revalidate = 60
@@ -133,30 +136,24 @@ export default async function CommercialDashboardPage() {
     <div className="p-6 space-y-8">
 
       {/* ── Header ─────────────────────────────────────── */}
-      <div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">Dashboard Comercial</h1>
-        <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
-          Visão geral do pipeline e performance
-        </p>
-      </div>
+      <PageHeader
+        overline="Comercial"
+        title="Dashboard Comercial"
+        subtitle="Visao geral do pipeline e performance"
+        icon={LayoutDashboard}
+        accent="#06b6d4"
+      />
 
       {/* ── KPIs ──────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((k) => (
-          <div key={k.label} style={CARD}>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-lg">{k.icon}</span>
-              <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.30)' }}>
-                {k.label}
-              </p>
-            </div>
-            <p className="text-2xl font-bold tabular-nums" style={{ color: k.accent }}>
-              {k.value}
-            </p>
-            <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.28)' }}>
-              {k.sub}
-            </p>
-          </div>
+          <StatCard
+            key={k.label}
+            label={k.label}
+            value={k.value}
+            sub={k.sub}
+            accent={k.accent}
+          />
         ))}
       </div>
 

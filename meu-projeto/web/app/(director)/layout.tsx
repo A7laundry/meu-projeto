@@ -1,7 +1,7 @@
 import { getUser } from '@/lib/auth/get-user'
-import { AppHeader } from '@/components/layout/app-header'
-import { DirectorNav } from '@/components/layout/director-nav'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { logout } from '@/app/(auth)/login/actions'
+import { DirectorShell } from './director-shell'
 
 async function getAllActiveUnits(): Promise<{ id: string; name: string }[]> {
   const admin = createAdminClient()
@@ -21,17 +21,13 @@ export default async function DirectorLayout({
   const [user, units] = await Promise.all([getUser(), getAllActiveUnits()])
 
   return (
-    <div className="min-h-screen flex flex-col bg-obsidian">
-      <AppHeader
-        user={user}
-        subtitle="Painel Executivo"
-        logoHref="/director/dashboard"
-        dark
-      />
-      <div className="flex flex-1 overflow-hidden">
-        <DirectorNav units={units} />
-        <main className="flex-1 overflow-auto scrollbar-dark">{children}</main>
-      </div>
-    </div>
+    <DirectorShell
+      userName={user?.full_name}
+      userRole="Diretor"
+      units={units}
+      logoutAction={logout}
+    >
+      {children}
+    </DirectorShell>
   )
 }

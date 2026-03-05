@@ -2,7 +2,9 @@ import { redirect } from 'next/navigation'
 import { getUser } from '@/lib/auth/get-user'
 import { getDashboardStats, listWriters } from '@/actions/copywriter/admin'
 import { KpiCard } from '@/components/domain/kpi/kpi-card'
+import { PageHeader } from '@/components/layout/page-header'
 import { getWriterLevel } from '@/lib/gamification'
+import { LayoutDashboard } from 'lucide-react'
 
 export default async function AdminDashboardPage() {
   const user = await getUser()
@@ -15,10 +17,13 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="p-6 space-y-8 max-w-5xl mx-auto">
-      <div className="animate-fade-up">
-        <h1 className="text-xl font-bold text-white/90 mb-1">Admin Dashboard</h1>
-        <p className="text-sm text-white/40">Visão geral do squad de copywriters</p>
-      </div>
+      <PageHeader
+        overline="Administração"
+        title="Admin Dashboard"
+        subtitle="Visão geral do squad de copywriters"
+        accent="#a855f7"
+        icon={LayoutDashboard}
+      />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

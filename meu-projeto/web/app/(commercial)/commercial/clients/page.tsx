@@ -1,5 +1,7 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { differenceInMonths } from 'date-fns'
+import { PageHeader } from '@/components/layout/page-header'
+import { Users } from 'lucide-react'
 
 export const revalidate = 60
 
@@ -119,12 +121,12 @@ export default async function CommercialClientsPage() {
     <div className="p-6 space-y-6">
 
       {/* ── Header ──────────────────────────────────────── */}
-      <div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">Clientes + LTV</h1>
-        <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
-          {clients.length} clientes · {activeClients.length} com histórico · LTV médio: R$ {avgLtv.toFixed(0)}/ano
-        </p>
-      </div>
+      <PageHeader
+        title="Clientes + LTV"
+        icon={Users}
+        accent="#06b6d4"
+        subtitle={`${clients.length} clientes · ${activeClients.length} com histórico · LTV médio: R$ ${avgLtv.toFixed(0)}/ano`}
+      />
 
       {/* ── KPIs ─────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

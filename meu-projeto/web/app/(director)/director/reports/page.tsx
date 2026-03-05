@@ -1,7 +1,9 @@
 import Link from 'next/link'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getHistoricalKpis } from '@/actions/director/historical'
+import { PageHeader } from '@/components/layout/page-header'
 import { ExportCsvButton } from './export-csv-button'
+import { BarChart3 } from 'lucide-react'
 import type { Unit } from '@/types/unit'
 
 export const revalidate = 0
@@ -36,12 +38,13 @@ export default async function DirectorReportsPage({ searchParams }: Props) {
 
   return (
     <div className="p-8 max-w-5xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-white">Relatórios da Rede</h1>
-        <p className="text-sm text-white/40 mt-1">
-          Dados históricos consolidados de {units?.length ?? 0} unidades
-        </p>
-      </div>
+      <PageHeader
+        overline="Análise"
+        title="Relatórios da Rede"
+        subtitle={`Dados históricos consolidados de ${units?.length ?? 0} unidades`}
+        accent="#3b82f6"
+        icon={BarChart3}
+      />
 
       {/* Filtro de período */}
       <div className="flex gap-2 flex-wrap">

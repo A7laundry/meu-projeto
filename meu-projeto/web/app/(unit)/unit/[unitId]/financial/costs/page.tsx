@@ -1,7 +1,9 @@
 export const revalidate = 0
 
 import Link from 'next/link'
+import { TrendingDown } from 'lucide-react'
 import { getOperationalCostReport } from '@/actions/financial/operational-cost'
+import { PageHeader } from '@/components/layout/page-header'
 
 interface Props {
   params: Promise<{ unitId: string }>
@@ -19,27 +21,30 @@ export default async function OperationalCostsPage({ params, searchParams }: Pro
 
   return (
     <div className="p-8 max-w-5xl mx-auto space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Custo Operacional</h1>
-          <p className="text-sm text-white/40 mt-1">{report.period}</p>
-        </div>
-        <div className="flex gap-2">
-          {[7, 30, 90].map((d) => (
-            <Link
-              key={d}
-              href={`?days=${d}`}
-              className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
-                days === d
-                  ? 'btn-gold rounded-full'
-                  : 'border-white/15 bg-white/04 text-white/60 hover:text-white'
-              }`}
-            >
-              {d}d
-            </Link>
-          ))}
-        </div>
-      </div>
+      <PageHeader
+        overline="Financeiro"
+        title="Custo Operacional"
+        subtitle={report.period}
+        accent="#3b82f6"
+        icon={TrendingDown}
+        actions={
+          <div className="flex gap-2">
+            {[7, 30, 90].map((d) => (
+              <Link
+                key={d}
+                href={`?days=${d}`}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                  days === d
+                    ? 'btn-gold rounded-full'
+                    : 'border-white/15 bg-white/04 text-white/60 hover:text-white'
+                }`}
+              >
+                {d}d
+              </Link>
+            ))}
+          </div>
+        }
+      />
 
       {/* DRE resumido */}
       <div className="card-dark rounded-xl overflow-hidden">

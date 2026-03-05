@@ -38,7 +38,7 @@ export async function listUnits(): Promise<Unit[]> {
 }
 
 export async function getUnit(id: string): Promise<Unit | null> {
-  await requireRole(['director', 'unit_manager'])
+  await requireRole(['director', 'unit_manager', 'store', 'operator', 'driver'])
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('units')

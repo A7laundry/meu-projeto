@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { listCampaigns, createCampaign, updateCampaignStatus } from '@/actions/commercial/campaigns'
 import type { Campaign, CampaignStatus } from '@/actions/commercial/campaigns'
+import { PageHeader } from '@/components/layout/page-header'
+import { Megaphone } from 'lucide-react'
 
 export const revalidate = 0
 
@@ -187,93 +189,85 @@ export default async function CampaignsPage() {
     <div className="p-6 space-y-6">
 
       {/* ── Header ─────────────────────────────────────── */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Campanhas</h1>
-          <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            {active.length} ativa{active.length !== 1 ? 's' : ''}
-            {' · '}{totalLeads} leads
-            {' · '}{totalConversions} conversões
-            {' · '}
-            <span style={{ color: '#60a5fa', fontWeight: 600 }}>
-              R$ {totalSpent.toFixed(2).replace('.', ',')} investido
-            </span>
-          </p>
-        </div>
-
-        {/* Form nova campanha */}
-        <details className="relative">
-          <summary
-            className="cursor-pointer inline-flex items-center gap-2 text-sm font-semibold px-4 py-2.5 rounded-xl transition-all list-none"
-            style={{
-              background: 'linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%)',
-              color: '#05050a',
-              boxShadow: '0 4px 16px rgba(59,130,246,0.22)',
-            }}
-          >
-            + Nova Campanha
-          </summary>
-          <div
-            className="absolute right-0 top-12 z-20 w-80 rounded-xl shadow-2xl p-5"
-            style={{ background: '#0e0e14', border: '1px solid rgba(255,255,255,0.10)' }}
-          >
-            <h3 className="font-semibold text-white mb-4 text-sm">Criar Campanha</h3>
-            <form action={createCampaign} className="space-y-3">
-              <input
-                name="name"
-                required
-                placeholder="Nome da campanha *"
-                className="input-premium w-full"
-                style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14 }}
-              />
-              <div className="grid grid-cols-2 gap-2">
-                <select name="channel" className="input-premium w-full" style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14 }}>
-                  <option value="instagram">Instagram</option>
-                  <option value="google">Google</option>
-                  <option value="whatsapp">WhatsApp</option>
-                  <option value="email">E-mail</option>
-                  <option value="referral">Indicação</option>
-                  <option value="offline">Offline</option>
-                </select>
-                <select name="objective" className="input-premium w-full" style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14 }}>
-                  <option value="leads">Geração de Leads</option>
-                  <option value="brand">Branding</option>
-                  <option value="retention">Retenção</option>
-                </select>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <label className="text-[11px] font-medium" style={{ color: 'rgba(255,255,255,0.35)' }}>Orçamento (R$)</label>
-                  <input name="budget" type="number" min="0" step="0.01" defaultValue="0"
-                    className="input-premium w-full" style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14 }} />
+      <PageHeader
+        title="Campanhas"
+        icon={Megaphone}
+        accent="#06b6d4"
+        subtitle={`${active.length} ativa${active.length !== 1 ? 's' : ''} · ${totalLeads} leads · ${totalConversions} conversões · R$ ${totalSpent.toFixed(2).replace('.', ',')} investido`}
+        actions={
+          <details className="relative">
+            <summary
+              className="cursor-pointer inline-flex items-center gap-2 text-sm font-semibold px-4 py-2.5 rounded-xl transition-all list-none"
+              style={{
+                background: 'linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%)',
+                color: '#05050a',
+                boxShadow: '0 4px 16px rgba(59,130,246,0.22)',
+              }}
+            >
+              + Nova Campanha
+            </summary>
+            <div
+              className="absolute right-0 top-12 z-20 w-80 rounded-xl shadow-2xl p-5"
+              style={{ background: '#0e0e14', border: '1px solid rgba(255,255,255,0.10)' }}
+            >
+              <h3 className="font-semibold text-white mb-4 text-sm">Criar Campanha</h3>
+              <form action={createCampaign} className="space-y-3">
+                <input
+                  name="name"
+                  required
+                  placeholder="Nome da campanha *"
+                  className="input-premium w-full"
+                  style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14 }}
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  <select name="channel" className="input-premium w-full" style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14 }}>
+                    <option value="instagram">Instagram</option>
+                    <option value="google">Google</option>
+                    <option value="whatsapp">WhatsApp</option>
+                    <option value="email">E-mail</option>
+                    <option value="referral">Indicação</option>
+                    <option value="offline">Offline</option>
+                  </select>
+                  <select name="objective" className="input-premium w-full" style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14 }}>
+                    <option value="leads">Geração de Leads</option>
+                    <option value="brand">Branding</option>
+                    <option value="retention">Retenção</option>
+                  </select>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-medium" style={{ color: 'rgba(255,255,255,0.35)' }}>Orçamento (R$)</label>
+                    <input name="budget" type="number" min="0" step="0.01" defaultValue="0"
+                      className="input-premium w-full" style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14 }} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-medium" style={{ color: 'rgba(255,255,255,0.35)' }}>Início</label>
+                    <input name="starts_at" type="date" required
+                      className="input-premium w-full" style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14, colorScheme: 'dark' }} />
+                  </div>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[11px] font-medium" style={{ color: 'rgba(255,255,255,0.35)' }}>Início</label>
-                  <input name="starts_at" type="date" required
+                  <label className="text-[11px] font-medium" style={{ color: 'rgba(255,255,255,0.35)' }}>Término (opcional)</label>
+                  <input name="ends_at" type="date"
                     className="input-premium w-full" style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14, colorScheme: 'dark' }} />
                 </div>
-              </div>
-              <div className="space-y-1">
-                <label className="text-[11px] font-medium" style={{ color: 'rgba(255,255,255,0.35)' }}>Término (opcional)</label>
-                <input name="ends_at" type="date"
-                  className="input-premium w-full" style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14, colorScheme: 'dark' }} />
-              </div>
-              <button
-                type="submit"
-                className="w-full text-sm font-semibold py-2.5 rounded-xl"
-                style={{
-                  background: 'linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%)',
-                  color: '#05050a',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                Criar
-              </button>
-            </form>
-          </div>
-        </details>
-      </div>
+                <button
+                  type="submit"
+                  className="w-full text-sm font-semibold py-2.5 rounded-xl"
+                  style={{
+                    background: 'linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%)',
+                    color: '#05050a',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Criar
+                </button>
+              </form>
+            </div>
+          </details>
+        }
+      />
 
       {/* ── Ativas ───────────────────────────────────────── */}
       {active.length > 0 && (

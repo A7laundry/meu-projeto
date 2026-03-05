@@ -1,5 +1,6 @@
 import { requireUser } from '@/lib/auth/get-user'
 import { listManifests } from '@/actions/manifests/crud'
+import { getSectorKpis } from '@/actions/production/sector-kpis'
 import { SectorPageClient } from './page-client'
 
 export default async function ExpedicaoPage() {
@@ -16,17 +17,20 @@ export default async function ExpedicaoPage() {
         label: `${m.route_name ?? 'Rota'} — ${m.driver_name ?? 'Sem motorista'}`,
       }))
   } catch {
-    // Se não tiver permissão ou não houver romaneios, segue sem
+    // Se nao tiver permissao ou nao houver romaneios, segue sem
   }
+
+  const sectorKpis = await getSectorKpis(user.unit_id!, 'shipping')
 
   return (
     <SectorPageClient
       unitId={user.unit_id!}
       operatorName={user.full_name}
       sectorKey="shipping"
-      sectorName="Expedição"
+      sectorName="Expedicao"
       statuses={['ready']}
       manifests={manifestOptions}
+      sectorKpis={sectorKpis}
     />
   )
 }

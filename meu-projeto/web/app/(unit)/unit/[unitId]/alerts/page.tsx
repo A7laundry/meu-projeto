@@ -1,6 +1,8 @@
+import { Bell } from 'lucide-react'
 import { requireUser } from '@/lib/auth/get-user'
 import { getSlaAlerts } from '@/lib/queries/sla-alerts'
 import { SlaAlertList } from '@/components/domain/production/sla-alert-list'
+import { PageHeader } from '@/components/layout/page-header'
 
 export const revalidate = 60
 
@@ -15,19 +17,13 @@ export default async function AlertsPage({
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">
-          Alertas de SLA
-          {alerts.length > 0 && (
-            <span className="ml-3 inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100 text-red-700 text-sm font-bold">
-              {alerts.length}
-            </span>
-          )}
-        </h1>
-        <p className="text-sm text-white/40 mt-1">
-          Comandas paradas além do tempo esperado por setor · atualiza a cada 60s
-        </p>
-      </div>
+      <PageHeader
+        overline="Unidade"
+        title={`Alertas de SLA${alerts.length > 0 ? ` (${alerts.length})` : ''}`}
+        subtitle="Comandas paradas além do tempo esperado por setor · atualiza a cada 60s"
+        accent="#3b82f6"
+        icon={Bell}
+      />
 
       <SlaAlertList alerts={alerts} unitId={unitId} operatorId={user.id} />
     </div>

@@ -1,8 +1,10 @@
+import { FileText } from 'lucide-react'
 import { listActiveClients } from '@/actions/clients/crud'
 import { listPriceTable } from '@/actions/pricing/crud'
 import { listQuotes } from '@/actions/quotes/crud'
 import { QuoteFormDialog } from '@/components/domain/commercial/quote-form-dialog'
 import { QuoteList } from '@/components/domain/commercial/quote-list'
+import { PageHeader } from '@/components/layout/page-header'
 
 export const revalidate = 0
 
@@ -20,19 +22,20 @@ export default async function QuotesPage({
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
-      <div className="mb-6 flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Orçamentos</h1>
-          <p className="text-sm text-white/40 mt-1">
-            Crie e acompanhe orçamentos para clientes
-          </p>
-        </div>
-        <QuoteFormDialog
-          unitId={unitId}
-          activeClients={activeClients}
-          priceTable={priceTable}
-        />
-      </div>
+      <PageHeader
+        overline="Unidade"
+        title="Orçamentos"
+        subtitle="Crie e acompanhe orçamentos para clientes"
+        accent="#3b82f6"
+        icon={FileText}
+        actions={
+          <QuoteFormDialog
+            unitId={unitId}
+            activeClients={activeClients}
+            priceTable={priceTable}
+          />
+        }
+      />
 
       <QuoteList unitId={unitId} quotes={quotes} />
     </div>

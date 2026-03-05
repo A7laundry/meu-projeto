@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { DollarSign } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { listReceivables } from '@/actions/financial/receivables'
 import { listPayables } from '@/actions/financial/payables'
@@ -6,6 +7,7 @@ import { FinancialSummaryCard } from '@/components/domain/financial/financial-su
 import { ReceivableList } from '@/components/domain/financial/receivable-list'
 import { PayableList } from '@/components/domain/financial/payable-list'
 import { FinancialExportButtons } from '@/components/domain/financial/financial-export'
+import { PageHeader } from '@/components/layout/page-header'
 import type { FinancialSummary } from '@/types/financial'
 
 export const revalidate = 0
@@ -38,21 +40,24 @@ export default async function FinancialPage({
 
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Financeiro</h1>
-          <p className="text-sm text-white/40 mt-1">Contas a receber e a pagar da unidade</p>
-        </div>
-        <div className="flex gap-2">
-          <FinancialExportButtons receivables={receivables} payables={payables} />
-          <Button asChild variant="outline" size="sm">
-            <Link href={`/unit/${unitId}/financial/costs`}>Custo Operacional</Link>
-          </Button>
-          <Button asChild variant="outline" size="sm">
-            <Link href={`/unit/${unitId}/financial/cashflow`}>Fluxo de Caixa / DRE</Link>
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        overline="Unidade"
+        title="Financeiro"
+        subtitle="Contas a receber e a pagar da unidade"
+        accent="#3b82f6"
+        icon={DollarSign}
+        actions={
+          <>
+            <FinancialExportButtons receivables={receivables} payables={payables} />
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/unit/${unitId}/financial/costs`}>Custo Operacional</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/unit/${unitId}/financial/cashflow`}>Fluxo de Caixa / DRE</Link>
+            </Button>
+          </>
+        }
+      />
 
       <FinancialSummaryCard summary={summary} />
 

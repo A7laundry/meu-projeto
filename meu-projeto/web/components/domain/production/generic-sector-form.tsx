@@ -4,6 +4,9 @@ import { useState, useTransition, useCallback } from 'react'
 import { completeSector, type SectorCompletionData } from '@/actions/production/complete-sector'
 import { useOfflineAction } from '@/hooks/use-offline-action'
 import { OfflineQueueBanner } from '@/components/layout/offline-queue-banner'
+import { SectorKpiBar } from '@/components/domain/production/sector-kpi-bar'
+import { PieceChecklist } from '@/components/domain/production/piece-checklist'
+import type { SectorKpi } from '@/actions/production/sector-kpis'
 import type { Order } from '@/types/order'
 import type { Equipment } from '@/types/equipment'
 import type { ShiftCycleCount } from '@/actions/equipment/shift-cycles'
@@ -54,6 +57,7 @@ interface GenericSectorFormProps {
   shiftCycles?: ShiftCycleCount[]
   manifests?: ManifestOption[]
   shiftPiecesCount?: number
+  sectorKpis?: SectorKpi
   onComplete: () => void
   onCancel: () => void
 }
@@ -66,6 +70,7 @@ export function GenericSectorForm({
   shiftCycles,
   manifests,
   shiftPiecesCount,
+  sectorKpis,
   onComplete,
   onCancel,
 }: GenericSectorFormProps) {
@@ -74,6 +79,8 @@ export function GenericSectorForm({
   const [error, setError] = useState<string | null>(null)
   const [notes, setNotes] = useState('')
   const [selectedEquipmentId, setSelectedEquipmentId] = useState<string | null>(null)
+  const [filterClean, setFilterClean] = useState(false)
+  const [allPiecesChecked, setAllPiecesChecked] = useState(false)
 
   const sectorHandler = useCallback(
     async (payload: Record<string, unknown>) => completeSector(payload as SectorCompletionData),
@@ -96,6 +103,17 @@ export function GenericSectorForm({
 
   function handleSubmit() {
     setError(null)
+
+    // Validacoes por setor
+    if (sectorKey === 'drying' && !filterClean) {
+      setError('Verifique o filtro da secadora antes de iniciar.')
+      return
+    }
+    if (sectorKey === 'ironing' && !allPiecesChecked) {
+      setError('Marque todas as pecas como passadas antes de concluir.')
+      return
+    }
+
     const data: SectorCompletionData = {
       sectorKey,
       orderId: order.id,
@@ -150,6 +168,15 @@ export function GenericSectorForm({
       style={{ background: 'linear-gradient(180deg, #060609 0%, #07070a 100%)' }}
     >
       <OfflineQueueBanner pendingCount={pendingCount} syncing={syncing} isOnline={isOnline} />
+
+      {/* KPI Bar */}
+      {sectorKpis && (
+        <SectorKpiBar
+          kpis={sectorKpis}
+          accentColor={config.accentColor}
+          accentBg={config.accentBg}
+        />
+      )}
 
       {/* Header */}
       <div
@@ -248,6 +275,34 @@ export function GenericSectorForm({
 
         {sectorKey === 'drying' && (
           <>
+            {/* Pre-check: Filtro limpo */}
+            <button
+              type="button"
+              onClick={() => setFilterClean((v) => !v)}
+              className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all active:scale-[0.98]"
+              style={{
+                background: filterClean ? 'rgba(52,211,153,0.08)' : 'rgba(248,113,113,0.06)',
+                border: `1.5px solid ${filterClean ? 'rgba(52,211,153,0.25)' : 'rgba(248,113,113,0.20)'}`,
+              }}
+            >
+              <div
+                className="w-6 h-6 rounded-lg flex items-center justify-center text-sm flex-shrink-0"
+                style={{
+                  background: filterClean ? '#34d399' : 'rgba(255,255,255,0.06)',
+                  color: filterClean ? '#fff' : 'transparent',
+                  border: filterClean ? 'none' : '1.5px solid rgba(255,255,255,0.12)',
+                }}
+              >
+                {filterClean ? '\u2713' : ''}
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-semibold" style={{ color: filterClean ? '#34d399' : '#f87171' }}>
+                  Filtro da secadora {filterClean ? 'verificado' : 'nao verificado'}
+                </p>
+                <p className="text-[11px] text-white/30">Pre-check obrigatorio antes de iniciar</p>
+              </div>
+            </button>
+
             {/* Shift KPI strip */}
             {shiftCycles && shiftCycles.length > 0 && (
               <div
@@ -265,20 +320,25 @@ export function GenericSectorForm({
             <div style={cardStyle}>
               <p className="text-[10px] uppercase tracking-widest text-white/30 font-semibold mb-4">Temperatura de Secagem</p>
               <div className="grid grid-cols-3 gap-2">
-                {(['low', 'medium', 'high'] as const).map((level) => (
-                  <button
-                    key={level} type="button"
-                    onClick={() => setTempLevel(level)}
-                    className="py-4 rounded-xl text-sm font-semibold transition-all"
-                    style={{
-                      background: tempLevel === level ? config.accentBg : 'rgba(255,255,255,0.04)',
-                      border: `2px solid ${tempLevel === level ? config.accentBorder : 'rgba(255,255,255,0.08)'}`,
-                      color: tempLevel === level ? config.accentColor : 'rgba(255,255,255,0.40)',
-                    }}
-                  >
-                    {level === 'low' ? '🌡️ Baixa' : level === 'medium' ? '🌡️ Média' : '🌡️ Alta'}
-                  </button>
-                ))}
+                {(['low', 'medium', 'high'] as const).map((level) => {
+                  const labels = { low: 'Baixa', medium: 'Media', high: 'Alta' }
+                  const temps = { low: '~40C', medium: '~60C', high: '~80C' }
+                  return (
+                    <button
+                      key={level} type="button"
+                      onClick={() => setTempLevel(level)}
+                      className="py-4 rounded-xl text-center transition-all"
+                      style={{
+                        background: tempLevel === level ? config.accentBg : 'rgba(255,255,255,0.04)',
+                        border: `2px solid ${tempLevel === level ? config.accentBorder : 'rgba(255,255,255,0.08)'}`,
+                        color: tempLevel === level ? config.accentColor : 'rgba(255,255,255,0.40)',
+                      }}
+                    >
+                      <span className="text-sm font-semibold block">{labels[level]}</span>
+                      <span className="text-[10px] opacity-50">{temps[level]}</span>
+                    </button>
+                  )
+                })}
               </div>
             </div>
           </>
@@ -293,33 +353,22 @@ export function GenericSectorForm({
                 style={{ background: config.accentBg, border: `1px solid ${config.accentBorder}` }}
               >
                 <span className="text-xs font-semibold" style={{ color: config.accentColor }}>
-                  Peças passadas no turno
+                  Pecas passadas no turno
                 </span>
                 <span className="text-lg font-black tabular-nums" style={{ color: config.accentColor }}>
                   {shiftPiecesCount}
                 </span>
               </div>
             )}
-          <div style={cardStyle}>
-            <p className="text-[10px] uppercase tracking-widest text-white/30 font-semibold mb-3">Itens Passados</p>
-            <div className="space-y-2">
-              {order.items?.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex justify-between items-center py-2"
-                  style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-                >
-                  <span className="text-sm text-white/55">{item.piece_type}</span>
-                  <span
-                    className="text-sm font-bold px-2.5 py-0.5 rounded-lg"
-                    style={{ background: config.accentBg, color: config.accentColor }}
-                  >
-                    {item.quantity}×
-                  </span>
-                </div>
-              ))}
+            <div style={cardStyle}>
+              <PieceChecklist
+                items={order.items ?? []}
+                accentColor={config.accentColor}
+                accentBg={config.accentBg}
+                accentBorder={config.accentBorder}
+                onAllChecked={setAllPiecesChecked}
+              />
             </div>
-          </div>
           </>
         )}
 

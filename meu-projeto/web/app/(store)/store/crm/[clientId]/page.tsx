@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { UserRound } from 'lucide-react'
 import { getUser } from '@/lib/auth/get-user'
 import { getClientStats, listClientNotes, listClientOrders, createCrmNote } from '@/actions/crm/notes'
+import { PageHeader } from '@/components/layout/page-header'
 import { CrmNoteForm } from './crm-note-form'
 import { CRM_NOTE_CATEGORY_LABELS } from '@/types/crm'
 
@@ -31,7 +33,14 @@ export default async function StoreCrmDetailPage({ params }: Props) {
         >
           ← CRM
         </Link>
-        <h1 className="text-xl font-bold text-white tracking-tight mt-2">Detalhe do Cliente</h1>
+        <div className="mt-2">
+          <PageHeader
+            overline="Cliente"
+            title="Detalhe do Cliente"
+            accent="#10b981"
+            icon={UserRound}
+          />
+        </div>
       </div>
 
       {/* Stats */}

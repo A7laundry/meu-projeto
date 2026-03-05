@@ -6,7 +6,9 @@ import { BadgeGrid } from '@/components/domain/copywriter/badge-grid'
 import { XpTimeline } from '@/components/domain/copywriter/xp-timeline'
 import { StreakIndicator } from '@/components/domain/copywriter/streak-indicator'
 import { ProfileEditDialog } from '@/components/domain/copywriter/profile-edit-dialog'
+import { PageHeader } from '@/components/layout/page-header'
 import { Button } from '@/components/ui/button'
+import { UserCircle } from 'lucide-react'
 import type { BadgeDefinition } from '@/types/copywriter'
 
 export default async function ProfilePage() {
@@ -25,31 +27,39 @@ export default async function ProfilePage() {
   return (
     <div className="p-6 space-y-8 max-w-4xl mx-auto">
       {/* Header com info */}
-      <div className="flex items-start justify-between animate-fade-up">
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-xl font-bold text-white/90">{user?.full_name}</h1>
-            {profile && <StreakIndicator streak={profile.current_streak} />}
+      <PageHeader
+        overline="Perfil"
+        title={user?.full_name ?? 'Perfil'}
+        subtitle={`${stats?.levelTitle ?? 'Novato'} · Nível ${stats?.level ?? 0}`}
+        accent="#a855f7"
+        icon={UserCircle}
+        actions={
+          <ProfileEditDialog
+            bio={profile?.bio ?? ''}
+            specialties={profile?.specialties ?? []}
+            trigger={<Button className="btn-ghost text-xs px-3 py-1.5 rounded-lg">Editar Perfil</Button>}
+          />
+        }
+      />
+      {/* Extra profile info */}
+      <div className="space-y-2 -mt-4">
+        {profile && (
+          <div className="flex items-center gap-2">
+            <StreakIndicator streak={profile.current_streak} />
           </div>
-          <p className="text-sm text-[#60a5fa]/60">{stats?.levelTitle ?? 'Novato'} · Nível {stats?.level ?? 0}</p>
-          {profile?.bio && (
-            <p className="text-xs text-white/40 mt-2 max-w-md">{profile.bio}</p>
-          )}
-          {profile?.specialties && profile.specialties.length > 0 && (
-            <div className="flex gap-1.5 mt-2">
-              {profile.specialties.map((s) => (
-                <span key={s} className="text-[10px] px-2 py-0.5 rounded-full bg-[#60a5fa]/10 text-[#60a5fa]/60 border border-[#60a5fa]/15">
-                  {s}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-        <ProfileEditDialog
-          bio={profile?.bio ?? ''}
-          specialties={profile?.specialties ?? []}
-          trigger={<Button className="btn-ghost text-xs px-3 py-1.5 rounded-lg">Editar Perfil</Button>}
-        />
+        )}
+        {profile?.bio && (
+          <p className="text-xs text-white/40 max-w-md">{profile.bio}</p>
+        )}
+        {profile?.specialties && profile.specialties.length > 0 && (
+          <div className="flex gap-1.5">
+            {profile.specialties.map((s) => (
+              <span key={s} className="text-[10px] px-2 py-0.5 rounded-full bg-[#60a5fa]/10 text-[#60a5fa]/60 border border-[#60a5fa]/15">
+                {s}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Stats rápidos */}

@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, LayoutDashboard } from 'lucide-react'
+import { PageHeader } from '@/components/layout/page-header'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getProductionKpis } from '@/lib/queries/production-kpis'
 import { getNetworkFinancial, getNetworkSlaAlerts, getNetworkManifests } from '@/actions/director/consolidated'
@@ -100,23 +101,20 @@ export default async function DirectorDashboardPage() {
     <div className="p-6 lg:p-8 space-y-8">
 
       {/* ── Header ───────────────────────────────────────── */}
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-overline mb-2">Painel Executivo</p>
-          <h1 className="text-display-lg text-white">Dashboard Executivo</h1>
-          <p className="text-sm text-white/40 mt-2">
-            <span className="text-white/60 font-medium">{unitList.length}</span> unidade{unitList.length !== 1 ? 's' : ''} ativas
-            <span className="mx-2 text-white/20">·</span>
-            <span className="num-stat text-white/30 text-xs">{timestamp}</span>
-          </p>
-        </div>
-        <div className="flex items-center gap-4">
-          <LiveIndicator intervalSeconds={60} />
-          <div className="w-px h-4 bg-white/10" />
-          <Link href="/director/nps" className="text-sm text-[#60a5fa]/70 hover:text-[#60a5fa] transition-colors">NPS</Link>
-          <Link href="/director/reports" className="text-sm text-[#60a5fa]/70 hover:text-[#60a5fa] transition-colors">Relatórios</Link>
-        </div>
-      </div>
+      <PageHeader
+        overline="Painel Executivo"
+        title="Dashboard Executivo"
+        subtitle={`${unitList.length} unidade${unitList.length !== 1 ? 's' : ''} ativas · ${timestamp}`}
+        icon={LayoutDashboard}
+        actions={
+          <div className="flex items-center gap-4">
+            <LiveIndicator intervalSeconds={60} />
+            <div className="w-px h-4 bg-white/10" />
+            <Link href="/director/nps" className="text-sm text-[#60a5fa]/70 hover:text-[#60a5fa] transition-colors">NPS</Link>
+            <Link href="/director/reports" className="text-sm text-[#60a5fa]/70 hover:text-[#60a5fa] transition-colors">Relatorios</Link>
+          </div>
+        }
+      />
 
       {/* ── Alertas Executivos ─────────────────────────── */}
       <ExecutiveAlerts alerts={executiveAlerts} />

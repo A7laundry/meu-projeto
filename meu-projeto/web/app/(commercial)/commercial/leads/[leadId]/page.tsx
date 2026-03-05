@@ -4,6 +4,8 @@ import { getLead, moveLeadStage, convertLeadToClient } from '@/actions/commercia
 import { listActivities, createActivity } from '@/actions/commercial/activities'
 import type { LeadStage } from '@/actions/commercial/leads'
 import type { ActivityType } from '@/actions/commercial/activities'
+import { PageHeader } from '@/components/layout/page-header'
+import { Target } from 'lucide-react'
 
 const STAGE_LABELS: Record<LeadStage, string> = {
   prospect: 'Prospecto',
@@ -107,12 +109,15 @@ export default async function LeadDetailPage({
       </div>
 
       {/* ── Header ──────────────────────────────────────── */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-2xl font-bold text-white tracking-tight">{lead.name}</h1>
+      <PageHeader
+        overline="Lead"
+        title={lead.name}
+        icon={Target}
+        accent="#06b6d4"
+        subtitle={
+          <>
             <span
-              className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
+              className="text-[11px] font-semibold px-2.5 py-1 rounded-full inline-block"
               style={{
                 background: `${stageColor.replace(/[\d.]+\)$/, '0.12)')}`,
                 color: stageColor,
@@ -120,38 +125,41 @@ export default async function LeadDetailPage({
             >
               {STAGE_LABELS[lead.stage as LeadStage] ?? lead.stage}
             </span>
-          </div>
-          {lead.company && (
-            <p className="mt-0.5 text-sm" style={{ color: 'rgba(255,255,255,0.45)' }}>
-              {lead.company}
-            </p>
-          )}
-        </div>
-
-        {isWon && !lead.converted_client_id && (
-          <form action={convert}>
-            <button
-              type="submit"
-              className="text-sm font-semibold px-4 py-2 rounded-xl transition-all"
-              style={{
-                background: 'linear-gradient(135deg, rgba(52,211,153,0.20) 0%, rgba(16,185,129,0.12) 100%)',
-                border: '1px solid rgba(52,211,153,0.30)',
-                color: 'rgba(52,211,153,0.90)',
-              }}
-            >
-              Converter em Cliente →
-            </button>
-          </form>
-        )}
-        {lead.converted_client_id && (
-          <span
-            className="text-xs px-3 py-1.5 rounded-full font-semibold"
-            style={{ background: 'rgba(52,211,153,0.10)', color: 'rgba(52,211,153,0.85)', border: '1px solid rgba(52,211,153,0.20)' }}
-          >
-            ✓ Convertido em Cliente
-          </span>
-        )}
-      </div>
+            {lead.company && (
+              <span className="ml-2" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                {lead.company}
+              </span>
+            )}
+          </>
+        }
+        actions={
+          <>
+            {isWon && !lead.converted_client_id && (
+              <form action={convert}>
+                <button
+                  type="submit"
+                  className="text-sm font-semibold px-4 py-2 rounded-xl transition-all"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(52,211,153,0.20) 0%, rgba(16,185,129,0.12) 100%)',
+                    border: '1px solid rgba(52,211,153,0.30)',
+                    color: 'rgba(52,211,153,0.90)',
+                  }}
+                >
+                  Converter em Cliente →
+                </button>
+              </form>
+            )}
+            {lead.converted_client_id && (
+              <span
+                className="text-xs px-3 py-1.5 rounded-full font-semibold"
+                style={{ background: 'rgba(52,211,153,0.10)', color: 'rgba(52,211,153,0.85)', border: '1px solid rgba(52,211,153,0.20)' }}
+              >
+                ✓ Convertido em Cliente
+              </span>
+            )}
+          </>
+        }
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 

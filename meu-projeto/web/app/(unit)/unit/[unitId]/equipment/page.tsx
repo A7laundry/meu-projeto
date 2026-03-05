@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, Wrench } from 'lucide-react'
 import { listEquipment } from '@/actions/equipment/crud'
 import { getMaintenanceAlerts, listMaintenanceSchedules } from '@/actions/equipment/maintenance-schedule'
 import { Badge } from '@/components/ui/badge'
@@ -7,6 +7,7 @@ import { MaintenanceSchedulePanel } from '@/components/domain/equipment/maintena
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { EquipmentFormDialog } from '@/components/domain/equipment/equipment-form-dialog'
+import { PageHeader } from '@/components/layout/page-header'
 import {
   EQUIPMENT_TYPE_LABELS,
   EQUIPMENT_STATUS_LABELS,
@@ -39,14 +40,15 @@ export default async function EquipmentPage({
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">Equipamentos</h1>
-          <p className="text-sm text-white/40 mt-1">
-            {byType.washer} lavadoras · {byType.dryer} secadoras · {byType.iron} passadeiras
-          </p>
-        </div>
-        <EquipmentFormDialog unitId={unitId} mode="create" />
+      <div className="mb-6">
+        <PageHeader
+          overline="Unidade"
+          title="Equipamentos"
+          subtitle={`${byType.washer} lavadoras · ${byType.dryer} secadoras · ${byType.iron} passadeiras`}
+          accent="#3b82f6"
+          icon={Wrench}
+          actions={<EquipmentFormDialog unitId={unitId} mode="create" />}
+        />
       </div>
 
       {/* Alertas de manutenção */}

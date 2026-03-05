@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
+import { DollarSign } from 'lucide-react'
 import { getUser } from '@/lib/auth/get-user'
 import { listPriceTable } from '@/actions/pricing/crud'
+import { PageHeader } from '@/components/layout/page-header'
 import { PIECE_TYPE_LABELS } from '@/types/recipe'
 import { PRICE_UNIT_LABELS } from '@/types/pricing'
 
@@ -21,17 +23,13 @@ export default async function StorePrecosPage() {
 
   return (
     <div className="p-4 lg:p-6 space-y-5">
-      {/* Header */}
-      <div>
-        <p
-          className="text-[10px] uppercase tracking-widest font-semibold mb-1"
-          style={{ color: 'rgba(52,211,153,0.40)' }}
-        >
-          Tabela de Preços
-        </p>
-        <h1 className="text-xl font-bold text-white tracking-tight">Preços da Unidade</h1>
-        <p className="text-xs text-white/30 mt-1">Tabela de preços vigente (somente leitura)</p>
-      </div>
+      <PageHeader
+        overline="Tabela de Preços"
+        title="Preços da Unidade"
+        subtitle="Tabela de preços vigente (somente leitura)"
+        accent="#10b981"
+        icon={DollarSign}
+      />
 
       {activePrices.length === 0 ? (
         <div

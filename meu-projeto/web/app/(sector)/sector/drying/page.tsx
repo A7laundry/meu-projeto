@@ -1,14 +1,16 @@
 import { requireUser } from '@/lib/auth/get-user'
 import { listEquipment } from '@/actions/equipment/crud'
 import { getShiftCycleCounts } from '@/actions/equipment/shift-cycles'
+import { getSectorKpis } from '@/actions/production/sector-kpis'
 import { SectorPageClient } from './page-client'
 
 export default async function SecagemPage() {
   const user = await requireUser()
 
-  const [allEquipment, shiftCycles] = await Promise.all([
+  const [allEquipment, shiftCycles, sectorKpis] = await Promise.all([
     listEquipment(user.unit_id!),
     getShiftCycleCounts(user.unit_id!),
+    getSectorKpis(user.unit_id!, 'drying'),
   ])
 
   const equipment = allEquipment.filter(
@@ -24,6 +26,7 @@ export default async function SecagemPage() {
       statuses={['drying']}
       equipment={equipment}
       shiftCycles={shiftCycles}
+      sectorKpis={sectorKpis}
     />
   )
 }

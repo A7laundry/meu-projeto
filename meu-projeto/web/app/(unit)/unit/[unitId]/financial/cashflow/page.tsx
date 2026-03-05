@@ -1,8 +1,10 @@
 import Link from 'next/link'
+import { Wallet } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getCashflowData, getDreData } from '@/actions/financial/cashflow'
 import { CashflowTable } from '@/components/domain/financial/cashflow-table'
 import { DreTable } from '@/components/domain/financial/dre-table'
+import { PageHeader } from '@/components/layout/page-header'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -44,25 +46,28 @@ export default async function CashflowPage({
         </Button>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Fluxo de Caixa</h1>
-          <p className="text-sm text-white/40 mt-1 capitalize">{monthLabel}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button asChild variant="outline" size="sm">
-            <Link href={prevUrl}>‹ Anterior</Link>
-          </Button>
-          {!isCurrentMonth && (
+      <PageHeader
+        overline="Financeiro"
+        title="Fluxo de Caixa"
+        subtitle={monthLabel}
+        accent="#3b82f6"
+        icon={Wallet}
+        actions={
+          <>
             <Button asChild variant="outline" size="sm">
-              <Link href={`/unit/${unitId}/financial/cashflow`}>Hoje</Link>
+              <Link href={prevUrl}>‹ Anterior</Link>
             </Button>
-          )}
-          <Button asChild variant="outline" size="sm">
-            <Link href={nextUrl}>Próximo ›</Link>
-          </Button>
-        </div>
-      </div>
+            {!isCurrentMonth && (
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/unit/${unitId}/financial/cashflow`}>Hoje</Link>
+              </Button>
+            )}
+            <Button asChild variant="outline" size="sm">
+              <Link href={nextUrl}>Próximo ›</Link>
+            </Button>
+          </>
+        }
+      />
 
       <section>
         <h2 className="text-lg font-semibold text-white/90 mb-3">Entradas vs. Saídas</h2>

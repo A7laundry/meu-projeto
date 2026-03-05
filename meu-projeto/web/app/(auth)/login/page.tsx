@@ -127,7 +127,7 @@ export default function LoginPage({
           <div style={{ marginTop: 24, textAlign: 'center' }}>
             <Link
               href="/home"
-              style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', textDecoration: 'none' }}
+              style={{ fontSize: 12, color: 'rgba(255,255,255,0.50)', textDecoration: 'none' }}
             >
               Conhecer o sistema →
             </Link>
@@ -162,22 +162,28 @@ async function LoginForm({
   return (
     <form action={login} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       {params?.error && (
-        <div style={{
-          borderRadius: 10, padding: '12px 16px',
-          background: 'rgba(248,113,113,0.08)',
-          border: '1px solid rgba(248,113,113,0.22)',
-          fontSize: 13, color: '#fca5a5',
-        }}>
+        <div
+          role="alert"
+          style={{
+            borderRadius: 10, padding: '12px 16px',
+            background: 'rgba(248,113,113,0.08)',
+            border: '1px solid rgba(248,113,113,0.22)',
+            fontSize: 13, color: '#fca5a5',
+          }}
+        >
           {params.error}
         </div>
       )}
       {params?.message && (
-        <div style={{
-          borderRadius: 10, padding: '12px 16px',
-          background: 'rgba(96,165,250,0.08)',
-          border: '1px solid rgba(96,165,250,0.22)',
-          fontSize: 13, color: '#93c5fd',
-        }}>
+        <div
+          role="status"
+          style={{
+            borderRadius: 10, padding: '12px 16px',
+            background: 'rgba(96,165,250,0.08)',
+            border: '1px solid rgba(96,165,250,0.22)',
+            fontSize: 13, color: '#93c5fd',
+          }}
+        >
           {params.message}
         </div>
       )}

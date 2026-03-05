@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { Users } from 'lucide-react'
 import { getUser } from '@/lib/auth/get-user'
 import { listClients } from '@/actions/clients/crud'
+import { PageHeader } from '@/components/layout/page-header'
 
 export default async function StoreCrmPage() {
   const user = await getUser()
@@ -12,16 +14,12 @@ export default async function StoreCrmPage() {
 
   return (
     <div className="p-4 lg:p-6 space-y-5">
-      {/* Header */}
-      <div>
-        <p
-          className="text-[10px] uppercase tracking-widest font-semibold mb-1"
-          style={{ color: 'rgba(52,211,153,0.40)' }}
-        >
-          CRM
-        </p>
-        <h1 className="text-xl font-bold text-white tracking-tight">Relacionamento com Clientes</h1>
-      </div>
+      <PageHeader
+        overline="CRM"
+        title="Relacionamento com Clientes"
+        accent="#10b981"
+        icon={Users}
+      />
 
       <p className="text-xs text-white/30">{activeClients.length} cliente{activeClients.length !== 1 ? 's' : ''} ativo{activeClients.length !== 1 ? 's' : ''}</p>
 

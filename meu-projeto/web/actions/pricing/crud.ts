@@ -19,7 +19,7 @@ const priceSchema = z.object({
 })
 
 export async function listPriceTable(unitId: string): Promise<PriceTableEntry[]> {
-  await requireUnitAccess(unitId, ['unit_manager', 'director'])
+  await requireUnitAccess(unitId, ['unit_manager', 'director', 'store'])
   const supabase = createAdminClient()
   const { data } = await supabase
     .from('price_table')
@@ -69,7 +69,7 @@ export async function getEffectivePrice(
   clientId: string,
   pieceType: string,
 ): Promise<number | null> {
-  await requireUnitAccess(unitId, ['unit_manager', 'director'])
+  await requireUnitAccess(unitId, ['unit_manager', 'director', 'store'])
   const supabase = createAdminClient()
 
   // Verifica preço especial do cliente

@@ -1,5 +1,7 @@
+import { Tag } from 'lucide-react'
 import { listPriceTable } from '@/actions/pricing/crud'
 import { PricingList } from '@/components/domain/commercial/pricing-list'
+import { PageHeader } from '@/components/layout/page-header'
 
 export const revalidate = 0
 
@@ -13,12 +15,13 @@ export default async function PricingPage({
 
   return (
     <div className="p-8 max-w-3xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Tabela de Preços</h1>
-        <p className="text-sm text-white/40 mt-1">
-          Preços base por tipo de peça para cálculo de orçamentos
-        </p>
-      </div>
+      <PageHeader
+        overline="Unidade"
+        title="Tabela de Preços"
+        subtitle="Preços base por tipo de peça para cálculo de orçamentos"
+        accent="#3b82f6"
+        icon={Tag}
+      />
 
       <PricingList unitId={unitId} entries={entries} />
     </div>

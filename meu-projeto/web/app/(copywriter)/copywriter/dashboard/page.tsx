@@ -1,6 +1,8 @@
+import { Crosshair } from 'lucide-react'
 import { getWriterStats } from '@/actions/copywriter/gamification'
 import { listBriefings } from '@/actions/copywriter/briefings'
 import { KpiCard } from '@/components/domain/kpi/kpi-card'
+import { PageHeader } from '@/components/layout/page-header'
 import { LevelProgress } from '@/components/domain/copywriter/level-progress'
 import { MissionCard } from '@/components/domain/copywriter/mission-card'
 import { XpTimeline } from '@/components/domain/copywriter/xp-timeline'
@@ -26,13 +28,14 @@ export default async function CopywriterDashboardPage() {
   return (
     <div className="p-6 space-y-8 max-w-6xl mx-auto">
       {/* Hero */}
-      <div className="animate-fade-up">
-        <div className="flex items-center gap-3 mb-1">
-          <h1 className="text-xl font-bold text-white/90">Quartel General</h1>
-          {profile && <StreakIndicator streak={profile.current_streak} />}
-        </div>
-        <p className="text-sm text-white/40">Sua base de operações como redator</p>
-      </div>
+      <PageHeader
+        overline="Redator"
+        title="Quartel General"
+        subtitle="Sua base de operações como redator"
+        icon={Crosshair}
+        accent="#a855f7"
+        actions={profile ? <StreakIndicator streak={profile.current_streak} /> : undefined}
+      />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
