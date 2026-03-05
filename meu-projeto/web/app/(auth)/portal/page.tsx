@@ -1,3 +1,6 @@
+'use client'
+
+import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getUser } from '@/lib/auth/get-user'
@@ -122,25 +125,39 @@ const QUICK_ACTIONS = [
   { label: 'Auditoria', icon: '⊡', color: '#8b5cf6', href: '/director/audit', roles: ['director'] as UserRole[] },
 ]
 
-export default async function PortalPage() {
-  const maybeUser = await getUser()
+export default function PortalPage() {
+  const [user, setUser] = useState<any>(null)
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
 
-  if (!maybeUser) {
-    redirect('/login')
+  useEffect(() => {
+    getUser().then(u => {
+      if (!u) redirect('/login')
+      setUser(u)
+    })
+  }, [])
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    setMousePos({ x: e.clientX, y: e.clientY })
   }
 
-  const user = maybeUser
-  const visiblePanels = PANELS.filter(p => p.roles.includes(user.role))
-  const visibleActions = QUICK_ACTIONS.filter(a => a.roles.includes(user.role))
+  const visiblePanels = useMemo(() => {
+    if (!user) return []
+    return PANELS.filter(p => p.roles.includes(user.role))
+  }, [user])
+
+  const visibleActions = useMemo(() => {
+    if (!user) return []
+    return QUICK_ACTIONS.filter(a => a.roles.includes(user.role))
+  }, [user])
 
   function resolveHref(panel: PanelDef): string {
     let href = panel.href
-    if (href.includes('{unitId}') && user.unit_id) {
+    if (href.includes('{unitId}') && user?.unit_id) {
       href = href.replace('{unitId}', user.unit_id)
     } else if (href.includes('{unitId}')) {
       href = '/login'
     }
-    if (href.includes('{sector}') && user.sector) {
+    if (href.includes('{sector}') && user?.sector) {
       href = href.replace('{sector}', user.sector)
     } else if (href.includes('{sector}')) {
       href = '/login'
@@ -155,506 +172,212 @@ export default async function PortalPage() {
     return 'Boa noite'
   })()
 
+  if (!user) return null
+
   return (
     <>
       <style>{`
-        /* ── Portal Card — Apple-inspired ── */
+        /* ── Modern Premium Portal Styles ── */
         .portal-card-v2 {
           position: relative;
           overflow: hidden;
-          border-radius: 20px;
-          background: rgba(255,255,255,0.025);
-          border: 1px solid rgba(255,255,255,0.06);
-          transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+          border-radius: 24px;
+          background: rgba(255,255,255,0.03);
+          backdrop-filter: blur(32px) saturate(1.8);
+          border: 1px solid rgba(255,255,255,0.08);
+          transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
           text-decoration: none;
           display: flex;
           flex-direction: column;
         }
         .portal-card-v2:hover {
-          transform: translateY(-6px) scale(1.01);
-          box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(59,130,246,0.12);
-        }
-        .portal-card-v2:hover .card-img-overlay {
-          opacity: 0.6;
+          transform: translateY(-8px) scale(1.02);
+          background: rgba(255,255,255,0.06);
+          border-color: rgba(255,255,255,0.15);
+          box-shadow: 0 40px 100px rgba(0,0,0,0.8), 0 0 0 1px rgba(59,130,246,0.15);
         }
         .portal-card-v2:hover .card-img {
-          transform: scale(1.08);
+          transform: scale(1.1) rotate(1deg);
+          filter: grayscale(0) brightness(1.1);
         }
-        .portal-card-v2:hover .card-arrow {
-          transform: translateX(4px);
-          opacity: 1;
-        }
-        .portal-card-v2:hover .card-glow-line {
-          opacity: 1;
+        .portal-card-v2 .card-img {
+          transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+          filter: grayscale(0.2) brightness(0.85);
         }
 
-        /* ── Quick Action ── */
-        .quick-action {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 8px;
-          padding: 16px 12px;
-          border-radius: 16px;
-          background: rgba(255,255,255,0.025);
-          border: 1px solid rgba(255,255,255,0.06);
-          transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
-          text-decoration: none;
-          cursor: pointer;
-        }
-        .quick-action:hover {
-          transform: translateY(-3px) scale(1.04);
-          background: rgba(255,255,255,0.05);
-          box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+        /* Spotlight Effect */
+        .spotlight {
+          position: absolute;
+          width: 600px;
+          height: 600px;
+          border-radius: 50%;
+          background: radial-gradient(circle at center, rgba(59,130,246,0.04) 0%, transparent 70%);
+          pointer-events: none;
+          z-index: 1;
+          mix-blend-mode: soft-light;
         }
 
-        /* ── Portal Grid — Responsive ── */
+        /* Digital Noise Texture */
+        .noise-grain {
+          position: fixed;
+          inset: 0;
+          z-index: 99;
+          pointer-events: none;
+          opacity: 0.025;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
         .portal-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-          gap: 20px;
+          grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+          gap: 24px;
         }
-        @media (max-width: 480px) {
-          .portal-grid {
-            grid-template-columns: 1fr;
-            gap: 16px;
-          }
-        }
-        @media (min-width: 1200px) {
-          .portal-grid {
-            grid-template-columns: repeat(3, 1fr);
-          }
+        @media (max-width: 640px) {
+          .portal-grid { grid-template-columns: 1fr; }
         }
 
-        /* ── Dot grid (portal-specific to avoid conflict) ── */
-        .portal-dot-grid {
-          background-image: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
-          background-size: 32px 32px;
-        }
-
-        /* ── Hero gradient animation ── */
-        @keyframes portal-gradient {
-          0%, 100% { opacity: 0.5; }
-          50% { opacity: 0.8; }
-        }
-        .portal-hero-glow {
-          animation: portal-gradient 6s ease-in-out infinite;
-        }
-
-        /* ── Stagger animations ── */
-        .portal-fade-up {
-          opacity: 0;
-          transform: translateY(16px);
-          animation: portalFadeUp 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
-        }
-        @keyframes portalFadeUp {
+        @keyframes stagger-in {
+          from { opacity: 0; transform: translateY(24px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        .stagger-item {
+          animation: stagger-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
       `}</style>
 
       <div
-        className="min-h-screen text-white"
-        style={{ background: 'linear-gradient(180deg, #040610 0%, #0a1628 40%, #071020 100%)' }}
+        className="min-h-screen text-white noise-grain-container"
+        onMouseMove={handleMouseMove}
+        style={{ background: '#02040a', position: 'relative', overflowX: 'hidden' }}
       >
-        {/* Background layers */}
-        <div className="portal-dot-grid fixed inset-0 pointer-events-none" style={{ zIndex: 0, opacity: 0.5 }} />
+        <div className="noise-grain" />
 
-        {/* Hero spotlight */}
-        <div className="fixed pointer-events-none" style={{
-          top: 0, left: '50%', transform: 'translateX(-50%)',
-          width: 1200, height: 600, zIndex: 0,
-          background: 'radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.10) 0%, transparent 55%)',
+        {/* Dynamic Spotlight */}
+        <div
+          className="spotlight"
+          style={{
+            left: mousePos.x - 300,
+            top: mousePos.y - 300,
+            transition: 'left 0.1s ease-out, top 0.1s ease-out'
+          }}
+        />
+
+        {/* Global Gradients */}
+        <div className="fixed inset-0 pointer-events-none" style={{
+          background: 'radial-gradient(circle at 50% -10%, rgba(59,130,246,0.08) 0%, transparent 60%), radial-gradient(circle at 0% 100%, rgba(139,92,246,0.04) 0%, transparent 40%)'
         }} />
 
-        {/* Secondary glow */}
-        <div className="portal-hero-glow fixed pointer-events-none" style={{
-          top: -100, right: -200, width: 800, height: 800, zIndex: 0,
-          background: 'radial-gradient(ellipse, rgba(139,92,246,0.06) 0%, transparent 60%)',
-          borderRadius: '50%',
-        }} />
-
-        <div style={{ position: 'relative', zIndex: 1 }}>
-
-          {/* ── NAV — Glassmorphism ── */}
-          <nav style={{
-            position: 'sticky', top: 0, zIndex: 50,
-            background: 'rgba(4,6,16,0.75)',
-            backdropFilter: 'blur(24px) saturate(1.5)',
-            borderBottom: '1px solid rgba(255,255,255,0.05)',
-          }}>
-            <div style={{
-              maxWidth: 1200, margin: '0 auto', padding: '0 24px',
-              height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            }}>
-              <Link href="/portal" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
-                <div style={{
-                  width: 36, height: 36, borderRadius: 10,
-                  background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 14, fontWeight: 900, color: '#fff',
-                  boxShadow: '0 4px 16px rgba(59,130,246,0.3)',
-                }}>A7</div>
+        <div style={{ position: 'relative', zIndex: 10 }}>
+          {/* ── Header ── */}
+          <nav className="glass py-4 px-6 sticky top-0 z-50 border-b border-white/05 backdrop-blur-xl">
+            <div className="max-w-7xl mx-auto flex items-center justify-between">
+              <Link href="/portal" className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center font-black shadow-lg shadow-blue-500/20">A7</div>
                 <div>
-                  <span style={{ fontWeight: 800, fontSize: 15, color: '#fff', letterSpacing: '-0.02em' }}>
-                    A7X System&apos;s
-                  </span>
-                  <span style={{ display: 'block', fontSize: 10, color: 'rgba(255,255,255,0.30)', letterSpacing: '0.08em', textTransform: 'uppercase', marginTop: -1 }}>
-                    Sistema Operacional
-                  </span>
+                  <h1 className="text-15 font-black tracking-tight leading-none">A7X <span className="text-white/30 font-medium font-inter">Intelligence</span></h1>
+                  <span className="text-10 uppercase tracking-widest text-white/25">Operations Hub</span>
                 </div>
               </Link>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <Link href="/home" style={{
-                  fontSize: 12, color: 'rgba(255,255,255,0.35)', textDecoration: 'none',
-                  transition: 'color 0.2s',
-                }}>
-                  Site
-                </Link>
-                <div style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.08)' }} />
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{
-                    width: 32, height: 32, borderRadius: 10,
-                    background: 'linear-gradient(135deg, rgba(59,130,246,0.15) 0%, rgba(59,130,246,0.05) 100%)',
-                    border: '1px solid rgba(59,130,246,0.15)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 13, fontWeight: 700, color: '#60a5fa',
-                  }}>
-                    {user.full_name.charAt(0).toUpperCase()}
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-3 bg-white/03 border border-white/05 rounded-full py-1.5 pl-1.5 pr-4">
+                  <div className="w-7 h-7 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-xs font-bold text-blue-400">
+                    {user.full_name.charAt(0)}
                   </div>
-                  <div>
-                    <span style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.80)' }}>
-                      {user.full_name}
-                    </span>
-                    <span style={{
-                      fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase',
-                      color: '#60a5fa',
-                    }}>
-                      {user.role.replace('_', ' ')}
-                    </span>
+                  <div className="leading-none">
+                    <p className="text-12 font-bold">{user.full_name}</p>
+                    <p className="text-10 text-white/40 uppercase tracking-wider mt-0.5">{user.role}</p>
                   </div>
                 </div>
               </div>
             </div>
           </nav>
 
-          {/* ── HERO SECTION ── */}
-          <section style={{ position: 'relative', overflow: 'hidden' }}>
-            {/* Hero Background Image */}
-            <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-              <img
-                src="https://images.unsplash.com/photo-1545173168-9f1947eebb7f?w=1600&h=600&fit=crop&q=80"
-                alt=""
-                loading="eager"
-                style={{
-                  width: '100%', height: '100%', objectFit: 'cover',
-                  opacity: 0.12, filter: 'saturate(0.8)',
-                }}
-              />
-              <div style={{
-                position: 'absolute', inset: 0,
-                background: 'linear-gradient(180deg, rgba(4,6,16,0.5) 0%, rgba(10,22,40,0.85) 60%, rgba(7,16,32,1) 100%)',
-              }} />
-            </div>
-
-            <div style={{ position: 'relative', zIndex: 1, padding: '72px 24px 48px', textAlign: 'center' }}>
-              <div style={{ maxWidth: 700, margin: '0 auto' }}>
-                {/* Overline badge */}
-                <div className="portal-fade-up" style={{ marginBottom: 20, animationDelay: '0s' }}>
-                  <span style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 8,
-                    padding: '6px 16px', borderRadius: 100,
-                    background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.18)',
-                    fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
-                    color: '#60a5fa',
-                  }}>
-                    <span style={{
-                      width: 6, height: 6, borderRadius: '50%',
-                      background: '#10b981',
-                      boxShadow: '0 0 8px rgba(16,185,129,0.6)',
-                    }} />
-                    Sistema Online
-                  </span>
-                </div>
-
-                {/* Greeting */}
-                <h1 className="portal-fade-up" style={{
-                  fontSize: 'clamp(32px, 5vw, 52px)',
-                  fontWeight: 900, letterSpacing: '-0.035em',
-                  color: '#fff', margin: '0 0 8px', lineHeight: 1.1,
-                  animationDelay: '0.08s',
-                }}>
-                  {greeting},{' '}
-                  <span style={{
-                    background: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #93c5fd 100%)',
-                    WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                  }}>
-                    {user.full_name.split(' ')[0]}
-                  </span>
-                </h1>
-
-                <p className="portal-fade-up" style={{
-                  fontSize: 17, color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, margin: '0 0 32px',
-                  maxWidth: 480, marginLeft: 'auto', marginRight: 'auto',
-                  animationDelay: '0.16s',
-                }}>
-                  Escolha o painel que deseja acessar ou use os atalhos rápidos abaixo.
-                </p>
-
-                {/* Quick Actions */}
-                {visibleActions.length > 0 && (
-                  <div className="portal-fade-up" style={{
-                    display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap',
-                    animationDelay: '0.24s',
-                  }}>
-                    {visibleActions.map(action => (
-                      <Link key={action.label} href={action.href} className="quick-action" style={{ minWidth: 90 }}>
-                        <div style={{
-                          width: 40, height: 40, borderRadius: 12,
-                          background: `${action.color}12`,
-                          border: `1px solid ${action.color}25`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: 18, color: action.color,
-                        }}>{action.icon}</div>
-                        <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.55)' }}>
-                          {action.label}
-                        </span>
-                      </Link>
-                    ))}
-                  </div>
-                )}
+          {/* ── Hero ── */}
+          <section className="pt-20 pb-12 px-6">
+            <div className="max-w-4xl mx-auto text-center space-y-6">
+              <div className="stagger-item" style={{ animationDelay: '0.1s' }}>
+                <span className="px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-10 font-black tracking-widest text-blue-400 uppercase">
+                  Connected & Active
+                </span>
               </div>
-            </div>
-          </section>
+              <h2 className="text-5xl md:text-6xl font-black tracking-tighter shimmer-text stagger-item" style={{ animationDelay: '0.2s' }}>
+                {greeting}, {user.full_name.split(' ')[0]}
+              </h2>
+              <p className="text-18 text-white/40 leading-relaxed stagger-item" style={{ animationDelay: '0.3s' }}>
+                Integrated control center for next-gen laundry intelligence. <br className="hidden md:block" />
+                Choose a module to begin your operation.
+              </p>
 
-          {/* ── Divider ── */}
-          <div style={{
-            maxWidth: 1200, margin: '0 auto', padding: '0 24px',
-          }}>
-            <div style={{
-              height: 1,
-              background: 'linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.15) 30%, rgba(59,130,246,0.15) 70%, transparent 100%)',
-            }} />
-          </div>
-
-          {/* ── SECTION HEADER ── */}
-          <section style={{ padding: '48px 24px 8px' }}>
-            <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-              <div className="portal-fade-up" style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                animationDelay: '0.32s',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <h2 style={{
-                    fontSize: 12, fontWeight: 700, letterSpacing: '0.14em',
-                    textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', margin: 0,
-                  }}>
-                    Seus Painéis
-                  </h2>
-                  <span style={{
-                    fontSize: 11, fontWeight: 700,
-                    padding: '2px 10px', borderRadius: 100,
-                    background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.15)',
-                    color: 'rgba(59,130,246,0.65)',
-                  }}>
-                    {visiblePanels.length}
-                  </span>
-                </div>
-                <div style={{
-                  flex: 1, maxWidth: 400, height: 1, marginLeft: 20,
-                  background: 'linear-gradient(90deg, rgba(59,130,246,0.2) 0%, transparent 100%)',
-                }} />
-              </div>
-            </div>
-          </section>
-
-          {/* ── PANELS GRID ── */}
-          <section style={{ padding: '24px 24px 64px' }}>
-            <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-              {visiblePanels.length === 0 ? (
-                <div className="portal-fade-up" style={{
-                  textAlign: 'center', padding: '80px 24px',
-                  background: 'rgba(255,255,255,0.02)', borderRadius: 24,
-                  border: '1px solid rgba(255,255,255,0.06)',
-                  animationDelay: '0.3s',
-                }}>
-                  <div style={{
-                    width: 64, height: 64, borderRadius: 20, margin: '0 auto 20px',
-                    background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.15)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 28,
-                  }}>🔒</div>
-                  <p style={{ fontSize: 18, fontWeight: 700, color: 'rgba(255,255,255,0.60)', margin: '0 0 8px' }}>
-                    Nenhum painel disponível
-                  </p>
-                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.30)', margin: 0, maxWidth: 400, marginLeft: 'auto', marginRight: 'auto' }}>
-                    Seu perfil ainda não tem permissão para acessar os painéis do sistema.
-                    Entre em contato com o administrador.
-                  </p>
-                </div>
-              ) : (
-                <div className="portal-grid">
-                  {visiblePanels.map((panel, i) => (
-                    <Link
-                      key={panel.title}
-                      href={resolveHref(panel)}
-                      className="portal-card-v2 portal-fade-up"
-                      style={{ animationDelay: `${0.3 + i * 0.08}s` }}
-                    >
-                      {/* Card Image */}
-                      <div style={{
-                        position: 'relative', height: 180, overflow: 'hidden',
-                        borderRadius: '20px 20px 0 0',
-                      }}>
-                        <img
-                          className="card-img"
-                          src={panel.img}
-                          alt={panel.title}
-                          loading="lazy"
-                          style={{
-                            width: '100%', height: '100%', objectFit: 'cover',
-                            transition: 'transform 0.6s cubic-bezier(0.16,1,0.3,1)',
-                          }}
-                        />
-                        <div className="card-img-overlay" style={{
-                          position: 'absolute', inset: 0,
-                          background: `linear-gradient(180deg, ${panel.color}08 0%, rgba(4,6,16,0.92) 100%)`,
-                          transition: 'opacity 0.4s ease', opacity: 0.75,
-                        }} />
-
-                        {/* Tag badge */}
-                        <div style={{
-                          position: 'absolute', top: 14, left: 14,
-                          padding: '4px 12px', borderRadius: 8,
-                          background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(12px)',
-                          border: `1px solid ${panel.border}`,
-                          fontSize: 9, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase',
-                          color: panel.color,
-                        }}>
-                          {panel.tag}
-                        </div>
-
-                        {/* Glow line on top */}
-                        <div className="card-glow-line" style={{
-                          position: 'absolute', top: 0, left: 0, right: 0, height: 2,
-                          background: `linear-gradient(90deg, transparent, ${panel.color}, transparent)`,
-                          opacity: 0, transition: 'opacity 0.4s ease',
-                        }} />
-                      </div>
-
-                      {/* Card Content */}
-                      <div style={{ padding: '20px 24px 24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 12 }}>
-                          <div style={{
-                            width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-                            background: panel.bg, border: `1px solid ${panel.border}`,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: 20, color: panel.color,
-                          }}>{panel.icon}</div>
-                          <div>
-                            <h3 style={{
-                              fontSize: 17, fontWeight: 800, color: '#fff',
-                              margin: '0 0 4px', letterSpacing: '-0.02em',
-                            }}>{panel.title}</h3>
-                            <p style={{
-                              fontSize: 13, color: 'rgba(255,255,255,0.38)',
-                              lineHeight: 1.55, margin: 0,
-                            }}>{panel.desc}</p>
-                          </div>
-                        </div>
-
-                        <div style={{ flex: 1 }} />
-
-                        {/* Footer */}
-                        <div style={{
-                          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                          paddingTop: 16,
-                          borderTop: '1px solid rgba(255,255,255,0.04)',
-                        }}>
-                          <span style={{
-                            fontSize: 11, fontWeight: 600,
-                            color: 'rgba(255,255,255,0.25)',
-                            letterSpacing: '0.04em',
-                          }}>
-                            {panel.roles.length > 2 ? 'Multi-acesso' : panel.roles.map(r => r.replace('_', ' ')).join(', ')}
-                          </span>
-                          <span className="card-arrow" style={{
-                            display: 'flex', alignItems: 'center', gap: 6,
-                            fontSize: 13, fontWeight: 700, color: panel.color,
-                            transition: 'all 0.3s ease', opacity: 0.7,
-                          }}>
-                            Acessar
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ display: 'block' }}>
-                              <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          </section>
-
-          {/* ── SYSTEM INFO BAR ── */}
-          <section style={{ padding: '0 24px 48px' }}>
-            <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-              <div className="portal-fade-up" style={{
-                display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center',
-                animationDelay: '0.6s',
-              }}>
-                {[
-                  { label: 'Versão', value: '4.2', color: '#3b82f6' },
-                  { label: 'API', value: 'Online', color: '#10b981' },
-                  { label: 'Uptime', value: '99.9%', color: '#10b981' },
-                ].map(item => (
-                  <div key={item.label} style={{
-                    display: 'flex', alignItems: 'center', gap: 8,
-                    padding: '8px 16px', borderRadius: 12,
-                    background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
-                    fontSize: 12,
-                  }}>
-                    <span style={{ color: 'rgba(255,255,255,0.30)' }}>{item.label}</span>
-                    <span style={{ color: item.color, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{item.value}</span>
-                  </div>
+              {/* Quick Actions */}
+              <div className="flex flex-wrap justify-center gap-3 pt-4 stagger-item" style={{ animationDelay: '0.4s' }}>
+                {visibleActions.map(action => (
+                  <Link
+                    key={action.label}
+                    href={action.href}
+                    className="flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-white/03 border border-white/05 hover:bg-white/07 transition-all group"
+                  >
+                    <span className="text-lg" style={{ color: action.color }}>{action.icon}</span>
+                    <span className="text-12 font-bold text-white/60 group-hover:text-white transition-colors">{action.label}</span>
+                  </Link>
                 ))}
               </div>
             </div>
           </section>
 
-          {/* ── FOOTER ── */}
-          <footer style={{
-            borderTop: '1px solid rgba(255,255,255,0.04)',
-            padding: '28px 24px',
-          }}>
-            <div style={{
-              maxWidth: 1200, margin: '0 auto',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12,
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{
-                  width: 24, height: 24, borderRadius: 6,
-                  background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 9, fontWeight: 900, color: '#fff',
-                }}>A</div>
-                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.20)' }}>
-                  © {new Date().getFullYear()} A7X System&apos;s
-                </span>
+          {/* ── Main Grid ── */}
+          <section className="px-6 pb-24">
+            <div className="max-w-7xl mx-auto">
+              <div className="flex items-center gap-4 mb-10 stagger-item" style={{ animationDelay: '0.5s' }}>
+                <h3 className="section-title-lg m-0">Operation Modules</h3>
+                <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
               </div>
-              <div style={{ display: 'flex', gap: 20 }}>
-                <Link href="/home" style={{ fontSize: 12, color: 'rgba(255,255,255,0.20)', textDecoration: 'none' }}>
-                  Site
-                </Link>
-                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.12)' }}>
-                  Sistema Operacional Inteligente
-                </span>
+
+              <div className="portal-grid">
+                {visiblePanels.map((panel, idx) => (
+                  <Link
+                    key={panel.title}
+                    href={resolveHref(panel)}
+                    className="portal-card-v2 stagger-item"
+                    style={{ animationDelay: `${0.6 + idx * 0.1}s` }}
+                  >
+                    <div className="relative h-56 overflow-hidden">
+                      <img src={panel.img} className="card-img w-full h-full object-cover" alt={panel.title} />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#02040a] via-[#02040a]/20 to-transparent opacity-90" />
+                      <div className="absolute top-4 left-4 px-3 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-9 font-black tracking-widest text-white/80 uppercase">
+                        {panel.tag}
+                      </div>
+                    </div>
+
+                    <div className="p-8 flex flex-col flex-1">
+                      <div className="flex items-start gap-5 mb-6">
+                        <div
+                          className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl"
+                          style={{ background: `${panel.color}15`, border: `1px solid ${panel.color}30`, color: panel.color }}
+                        >
+                          {panel.icon}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-22 font-black tracking-tight text-white mb-2">{panel.title}</h4>
+                          <p className="text-14 text-white/40 leading-relaxed font-medium">{panel.desc}</p>
+                        </div>
+                      </div>
+
+                      <div className="mt-auto pt-6 border-t border-white/05 flex items-center justify-between">
+                        <span className="text-11 font-bold text-white/20 uppercase tracking-widest">
+                          Access Ready
+                        </span>
+                        <div className="flex items-center gap-2 group-hover:gap-4 transition-all" style={{ color: panel.color }}>
+                          <span className="text-13 font-black uppercase tracking-wider">Launch</span>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-7-7 7 7-7 7" /></svg>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
               </div>
             </div>
-          </footer>
-
+          </section>
         </div>
       </div>
     </>
